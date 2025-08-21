@@ -14,34 +14,32 @@ int access(const char *name, int mode)
   chkabort(); 
 
   if ((fib = AllocDosObjectTags(DOS_FIB, TAG_END)) &&
-      (lock = Lock(name, ACCESS_READ)) &&
-      Examine(lock, fib))
+    (lock = Lock(name, ACCESS_READ)) &&
+    Examine(lock, fib))
     {
       // If we are just checking for existence (F_OK), we're done.
-      // Lock() and Examine() succeeding is proof of existence.
       if (mode == F_OK) {
         ret = 0;
       } else {
         struct stat sbuf;
-        int fmode = 0;
         BPTR parent = ParentDir(lock);
         int isroot = !parent;
 
         if (parent) UnLock(parent);
         
-        // Assuming _fibstat correctly converts Amiga protection bits
-        // to a POSIX-like st_mode field.
+        // This helper converts Amiga FIB protection bits to a POSIX st_mode.
+        // It should set S_IXUSR if either the 'e' (execute) or 's' (script)
+        // bit is set on the Amiga file for full compatibility.
         _fibstat(fib, isroot, &sbuf);
 
-        if (sbuf.st_mode & S_IREAD)  fmode |= R_OK;
-        if (sbuf.st_mode & S_IWRITE) fmode |= W_OK;
-        if (sbuf.st_mode & S_IEXEC)  fmode |= X_OK;
-        
-        // Check if all requested permission bits are set in the file's mode
-        if ((fmode & mode) == mode) {
-          ret = 0;
-        } else {
+        ret = 0; // Assume success unless a check fails
+
+        // Check each requested permission. If any check fails, deny access.
+        if (((mode & R_OK) && !(sbuf.st_mode & S_IRUSR)) ||
+            ((mode & W_OK) && !(sbuf.st_mode & S_IWUSR)) ||
+            ((mode & X_OK) && !(sbuf.st_mode & S_IXUSR))) {
           errno = EACCES; // Access denied
+          ret = -1;
         }
       }
     }

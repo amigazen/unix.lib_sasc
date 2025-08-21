@@ -1,8 +1,9 @@
-#include "amiga.h"
-#include "files.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>  // For size_t
+
+#include "amiga.h"
+#include "files.h"
 
 /*
  * Modern POSIX-compatible write() function implementation for AmigaOS.

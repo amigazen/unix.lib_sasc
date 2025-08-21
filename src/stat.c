@@ -24,7 +24,7 @@ static int attach (char *dest, int dlen, char *dirname, char *name)
 static struct FileInfoBlock fakefib;
 static char last_name[256];
 
-int stat(char *name, struct stat *sbuf)
+int stat(const char *name, struct stat *sbuf)
 {
   struct FileInfoBlock *fib = 0;
   BPTR lock = 0;

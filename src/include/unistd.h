@@ -1,185 +1,110 @@
-/*-
- * Copyright (c) 1991 The Regents of the University of California.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- *	@(#)unistd.h	5.13 (Berkeley) 6/17/91
- */
-
 #ifndef _UNISTD_H_
-#define	_UNISTD_H_
+#define _UNISTD_H_
 
-#include <sys/cdefs.h>
+/* For size_t, ssize_t, uid_t, gid_t, etc. */
 #include <sys/types.h>
-#include <sys/unistd.h>
 
-#define	 STDIN_FILENO	0	/* standard input file descriptor */
-#define	STDOUT_FILENO	1	/* standard output file descriptor */
-#define	STDERR_FILENO	2	/* standard error file descriptor */
+/* For NULL */
+#include <stddef.h>
 
-/* fnmatch(3) defines */
-#define	FNM_PATHNAME	0x01	/* match pathnames, not filenames */
-#ifndef _POSIX_SOURCE
-#define	FNM_QUOTE	0x02	/* escape special chars with \ */
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-#ifndef NULL
-#define	NULL		0	/* null pointer constant */
+/* --- Standard File Descriptors --- */
+#define STDIN_FILENO   0   /* Standard input file descriptor */
+#define STDOUT_FILENO  1   /* Standard output file descriptor */
+#define STDERR_FILENO  2   /* Standard error file descriptor */
+
+/* --- Constants for lseek() --- */
+#define SEEK_SET    0   /* Set file offset to offset */
+#define SEEK_CUR    1   /* Set file offset to current plus offset */
+#define SEEK_END    2   /* Set file offset to EOF plus offset */
+
+/* --- POSIX Version --- */
+/* Identifies the version of the POSIX standard implemented (1990) */
+#define _POSIX_VERSION 199009L
+
+/* --- Constants for pathconf() and fpathconf() --- */
+#define _PC_LINK_MAX        1
+#define _PC_MAX_CANON       2
+#define _PC_MAX_INPUT       3
+#define _PC_NAME_MAX        4
+#define _PC_PATH_MAX        5
+#define _PC_PIPE_BUF        6
+#define _PC_CHOWN_RESTRICTED 7
+#define _PC_NO_TRUNC        8
+#define _PC_VDISABLE        9
+
+/* --- Constants for sysconf() --- */
+#define _SC_ARG_MAX         1
+#define _SC_CHILD_MAX       2
+#define _SC_CLK_TCK         3
+#define _SC_NGROUPS_MAX     4
+#define _SC_OPEN_MAX        5
+#define _SC_JOB_CONTROL     6
+#define _SC_SAVED_IDS       7
+#define _SC_VERSION         8
+
+/* --- POSIX Standard Function Prototypes (C89 Style) --- */
+
+/* Process Control */
+void     _exit(int status);
+pid_t    fork(void);
+int      execl(const char *path, const char *arg0, ...);
+int      execle(const char *path, const char *arg0, ...);
+int      execlp(const char *file, const char *arg0, ...);
+int      execv(const char *path, char *const argv[]);
+int      execve(const char *path, char *const argv[], char *const envp[]);
+int      execvp(const char *file, char *const argv[]);
+pid_t    getpid(void);
+pid_t    getppid(void);
+pid_t    getpgrp(void);
+int      setpgid(pid_t pid, pid_t pgid);
+pid_t    setsid(void);
+
+/* User/Group Management */
+uid_t    getuid(void);
+uid_t    geteuid(void);
+gid_t    getgid(void);
+gid_t    getegid(void);
+int      setuid(uid_t uid);
+int      setgid(gid_t gid);
+int      getgroups(int gidsetsize, gid_t grouplist[]);
+char    *getlogin(void);
+
+/* File and Directory Management */
+int      access(const char *path, int amode);
+int      chdir(const char *path);
+int      chown(const char *path, uid_t owner, gid_t group);
+char    *getcwd(char *buf, size_t size);
+int      rmdir(const char *path);
+int      link(const char *oldpath, const char *newpath);
+int      unlink(const char *path);
+
+/* File Descriptor I/O */
+int      close(int fildes);
+off_t    lseek(int fildes, off_t offset, int whence);
+ssize_t  read(int fildes, void *buf, size_t nbyte);
+ssize_t  write(int fildes, const void *buf, size_t nbyte);
+int      dup(int oldfildes);
+int      dup2(int oldfildes, int newfildes);
+int      pipe(int fildes[2]);
+int      isatty(int fildes);
+char    *ttyname(int fildes);
+
+/* System Configuration */
+long     fpathconf(int fildes, int name);
+long     pathconf(const char *path, int name);
+long     sysconf(int name);
+
+/* Other */
+unsigned int alarm(unsigned int seconds);
+int          pause(void);
+unsigned int sleep(unsigned int seconds);
+
+#ifdef __cplusplus
+}
 #endif
-
-typedef	int ssize_t;		/* count of bytes or error indication */
-
-__BEGIN_DECLS
-void	 _exit __P((int));
-int	 access __P((const char *, int));
-u_int	 alarm __P((u_int));
-int	 chdir __P((const char *));
-int	 chown __P((const char *, uid_t, gid_t));
-int	 close __P((int));
-char	*cuserid __P((char *));
-int	 dup __P((int));
-int	 dup2 __P((int, int));
-int	 execl __P((const char *, const char *, ...));
-int	 execle __P((const char *, const char *, ...));
-int	 execlp __P((const char *, const char *, ...));
-int	 execv __P((const char *, char * const *));
-int	 execve __P((const char *, char * const *, char * const *));
-int	 execvp __P((const char *, char * const *));
-pid_t	 fork __P((void));
-long	 fpathconf __P((int, int));		/* not yet */
-char	*getcwd __P((char *, int));
-gid_t	 getegid __P((void));
-uid_t	 geteuid __P((void));
-gid_t	 getgid __P((void));
-int	 getgroups __P((int, int *));		/* XXX (gid_t *) */
-char	*getlogin __P((void));
-pid_t	 getpgrp __P((void));
-pid_t	 getpid __P((void));
-pid_t	 getppid __P((void));
-uid_t	 getuid __P((void));
-int	 isatty __P((int));
-int	 link __P((const char *, const char *));
-off_t	 lseek __P((int, off_t, int));
-long	 pathconf __P((const char *, int));	/* not yet */
-int	 pause __P((void));
-int	 pipe __P((int *));
-ssize_t	 read __P((int, void *, size_t));
-int	 rmdir __P((const char *));
-int	 setgid __P((gid_t));
-int	 setpgid __P((pid_t, pid_t));
-pid_t	 setsid __P((void));
-int	 setuid __P((uid_t));
-u_int	 sleep __P((u_int));
-long	 sysconf __P((int));			/* not yet */
-pid_t	 tcgetpgrp __P((int));
-int	 tcsetpgrp __P((int, pid_t));
-char	*ttyname __P((int));
-int	 unlink __P((const char *));
-ssize_t	 write __P((int, const void *, size_t));
-
-#ifndef	_POSIX_SOURCE
-
-/* structure timeval required for select() */
-#include <sys/time.h>
-
-int	 acct __P((const char *));
-int	 async_daemon __P((void));
-char	*brk __P((const char *));
-int	 chflags __P((const char *, long));
-int	 chroot __P((const char *));
-char	*crypt __P((const char *, const char *));
-int	 des_cipher __P((const char *, char *, long, int));
-int	 des_setkey __P((const char *key));
-int	 encrypt __P((char *, int));
-void	 endusershell __P((void));
-int	 exect __P((const char *, char * const *, char * const *));
-int	 fchdir __P((int));
-int	 fchflags __P((int, long));
-int	 fchown __P((int, int, int));
-int	 fnmatch __P((const char *, const char *, int));
-int	 fsync __P((int));
-int	 ftruncate __P((int, off_t));
-int	 getdtablesize __P((void));
-long	 gethostid __P((void));
-int	 gethostname __P((char *, int));
-mode_t	 getmode __P((const void *, mode_t));
-int	 getpagesize __P((void));
-char	*getpass __P((const char *));
-char	*getusershell __P((void));
-char	*getwd __P((char *));			/* obsoleted by getcwd() */
-int	 initgroups __P((const char *, int));
-int	 mknod __P((const char *, mode_t, dev_t));
-int	 mkstemp __P((char *));
-char	*mktemp __P((char *));
-int	 nfssvc __P((int));
-int	 nice __P((int));
-void	 psignal __P((u_int, const char *));
-extern char *sys_siglist[];
-int	 profil __P((char *, int, int, int));
-int	 rcmd __P((char **, int, const char *,
-		const char *, const char *, int *));
-char	*re_comp __P((const char *));
-int	 re_exec __P((const char *));
-int	 readlink __P((const char *, char *, int));
-int	 reboot __P((int));
-int	 revoke __P((const char *));
-int	 rresvport __P((int *));
-int	 ruserok __P((const char *, int, const char *, const char *));
-void	*sbrk __P((unsigned));
-int	 select __P((int, fd_set *, fd_set *, fd_set *, struct timeval *));
-int	 setegid __P((gid_t));
-int	 seteuid __P((uid_t));
-int	 setgroups __P((int, const int *));
-void	 sethostid __P((long));
-int	 sethostname __P((const char *, int));
-int	 setkey __P((const char *));
-int	 setlogin __P((const char *));
-void	*setmode __P((const char *));
-int	 setpgrp __P((pid_t pid, pid_t pgrp));	/* obsoleted by setpgid() */
-int	 setregid __P((int, int));
-int	 setreuid __P((int, int));
-int	 setrgid __P((gid_t));
-int	 setruid __P((uid_t));
-void	 setusershell __P((void));
-int	 swapon __P((const char *));
-int	 symlink __P((const char *, const char *));
-void	 sync __P((void));
-int	 syscall __P((int, ...));
-int	 truncate __P((const char *, off_t));
-int	 ttyslot __P((void));
-u_int	 ualarm __P((u_int, u_int));
-void	 usleep __P((u_int));
-void	*valloc __P((size_t));			/* obsoleted by malloc() */
-int	 vfork __P((void));
-
-#endif /* !_POSIX_SOURCE */
-__END_DECLS
 
 #endif /* !_UNISTD_H_ */

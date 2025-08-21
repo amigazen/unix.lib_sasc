@@ -43,8 +43,8 @@
  * Information about time zone files.
  */
 			/* Time zone object file directory */
-#define TZDIR		"s:zoneinfo"
-#define TZDEFAULT	"s:localtime"
+#define TZDIR		"ENV:zoneinfo"
+#define TZDEFAULT	"ENV:localtime"
 #define TZDEFRULES	"posixrules"
 
 /*

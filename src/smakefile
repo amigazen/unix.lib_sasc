@@ -18,8 +18,17 @@ OBJS =  _exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o bcmp.o 
         message.o mkdir.o mkfifo.o mktemp.o open.o perror.o pipe.o processes.o \
         protection.o pseudo_c.o pwd.o read.o rename.o rindex.o rmdir.o select.o \
         setjmp.o siglist.o signal.o signals.o sigpause.o sigsetmask.o sleep.o \
-        stat.o strftime.o time.o timeconvert.o timers.o truncate.o uid.o \
-        umask.o unlink.o utime.o wait4.o write.o
+        stat.o strftime.o strtol.o strtoll.o longlong.o snprintf.o time.o \
+        timeconvert.o timers.o truncate.o uid.o \
+        umask.o unlink.o utime.o vsnprintf.o wait4.o write.o \
+        dup.o dup2.o getopt.o gettimeofday.o usleep.o uname.o \
+        symlink.o readlink.o popen.o pclose.o strdup.o strcasecmp.o strncasecmp.o \
+        strnlen.o mkstemp.o fsync.o sysconf.o \
+        pathconf.o fpathconf.o getdtablesize.o setuid.o setgid.o getuid.o getgid.o \
+        geteuid.o getegid.o getlogin.o setpgid.o setsid.o nice.o wait.o waitpid.o \
+        fork.o pread.o pwrite.o lstat.o fchown.o tzset.o getpass.o basename.o \
+        dirname.o strsep.o strcoll.o strlcpy.o strlcat.o fnmatch.o \
+        glob.o scandir.o asprintf.o vasprintf.o err.o ffs.o
 
 # List of Assembly object files
 ASMOBJS = child.o sprintf.o _setjmp.o
@@ -30,11 +39,9 @@ ALLOBJS = $(OBJS) $(ASMOBJS)
 # Compiler and Assembler flags
 # Using GST (Global Symbol Table) for faster compilation
 INCS     = INCDIR=include/internal/ INCDIR=include/ INCDIR=include:
-OPTIMIZE = OPTIMIZE       # General optimization: Global, Temps in regs, Data in regs
-GSTFILE  = amiga.gst
-GSTFLAGS = GST=$(GSTFILE)
+OPTIMIZE = OPTIMIZE
 
-CFLAGS   = $(INCS) $(OPTIMIZE) $(GSTFLAGS) NOICONS
+CFLAGS   = $(INCS) $(OPTIMIZE) NOICONS UTILLIB IGNORE=84 IGNORE=224
 ASMFLAGS = 
 
 ## Main Targets
@@ -46,19 +53,7 @@ unix.lib: $(ALLOBJS)
     oml $@ a $(ALLOBJS)
 
 clean:
-    delete quiet $(ALLOBJS) unix.lib $(GSTFILE) am.c
-
-## Global Symbol Table (GST) Rule
-
-# Rule to create the GST file. This mirrors the original lmkfile's logic
-# by creating a temporary C file that just includes the master header.
-$(GSTFILE): amiga.h
-    copy amiga.h am.c
-    $(CC) am.c MGST $(GSTFILE) $(INCS)
-    delete quiet am.c
-
-# Ensure the GST file is created before compiling any C source file
-$(OBJS): $(GSTFILE)
+    -delete quiet $(ALLOBJS) unix.lib
 
 
 ## Implicit Suffix Rules
@@ -118,6 +113,7 @@ ioctl.o: ioctl.c amiga.h
 isatty.o: isatty.c amiga.h
 kill.o: kill.c processes.h signals.h amiga.h
 link.o: link.c amiga.h
+longlong.o: longlong.c longlong.h
 lseek.o: lseek.c amiga.h
 message.o: message.c amiga.h
 mkdir.o: mkdir.c amiga.h
@@ -142,8 +138,11 @@ signals.o: signals.c processes.h signals.h amiga.h
 sigpause.o: sigpause.c signals.h amiga.h
 sigsetmask.o: sigsetmask.c signals.h amiga.h
 sleep.o: sleep.c signals.h amiga.h
+snprintf.o: snprintf.c 
 stat.o: stat.c dir_data.h amiga.h
 strftime.o: strftime.c
+strtol.o: strtol.c
+strtoll.o: strtoll.c longlong.h
 time.o: time.c timeconvert.h amiga.h
 timeconvert.o: timeconvert.c timeconvert.h amiga.h
 timers.o: timers.c amiga.h
@@ -152,5 +151,65 @@ uid.o: uid.c amiga.h
 umask.o: umask.c amiga.h
 unlink.o: unlink.c amiga.h
 utime.o: utime.c timeconvert.h amiga.h
+vsnprintf.o: vsnprintf.c
 wait4.o: wait4.c processes.h signals.h amiga.h
 write.o: write.c amiga.h
+
+# New POSIX functions
+dup.o: dup.c amiga.h 
+dup2.o: dup2.c amiga.h 
+getopt.o: getopt.c
+gettimeofday.o: gettimeofday.c amiga.h
+usleep.o: usleep.c amiga.h
+#utimes.o: utimes.c amiga.h
+uname.o: uname.c amiga.h
+symlink.o: symlink.c amiga.h
+readlink.o: readlink.c amiga.h
+popen.o: popen.c amiga.h
+pclose.o: pclose.c amiga.h
+strdup.o: strdup.c
+strcasecmp.o: strcasecmp.c
+strncasecmp.o: strncasecmp.c
+strnlen.o: strnlen.c
+#realpath.o: realpath.c amiga.h
+mkstemp.o: mkstemp.c amiga.h
+#setenv.o: setenv.c amiga.h
+#unsetenv.o: unsetenv.c amiga.h
+fsync.o: fsync.c amiga.h
+sysconf.o: sysconf.c amiga.h
+pathconf.o: pathconf.c amiga.h
+fpathconf.o: fpathconf.c amiga.h
+getdtablesize.o: getdtablesize.c amiga.h
+setuid.o: setuid.c amiga.h
+setgid.o: setgid.c amiga.h
+getuid.o: getuid.c amiga.h
+getgid.o: getgid.c amiga.h
+geteuid.o: geteuid.c amiga.h
+getegid.o: getegid.c amiga.h
+getlogin.o: getlogin.c amiga.h
+setpgid.o: setpgid.c amiga.h
+setsid.o: setsid.c amiga.h
+nice.o: nice.c amiga.h
+wait.o: wait.c amiga.h
+waitpid.o: waitpid.c amiga.h
+fork.o: fork.c amiga.h
+pread.o: pread.c amiga.h 
+pwrite.o: pwrite.c amiga.h 
+lstat.o: lstat.c amiga.h
+fchown.o: fchown.c amiga.h 
+tzset.o: tzset.c amiga.h
+getpass.o: getpass.c amiga.h
+basename.o: basename.c amiga.h
+dirname.o: dirname.c amiga.h
+#getopt_long.o: getopt_long.c amiga.h
+strsep.o: strsep.c amiga.h
+strcoll.o: strcoll.c amiga.h
+strlcpy.o: strlcpy.c amiga.h
+strlcat.o: strlcat.c amiga.h
+fnmatch.o: fnmatch.c amiga.h
+glob.o: glob.c amiga.h
+scandir.o: scandir.c amiga.h
+asprintf.o: asprintf.c amiga.h
+vasprintf.o: vasprintf.c amiga.h
+err.o: err.c amiga.h
+ffs.o: ffs.c amiga.h

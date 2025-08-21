@@ -1,8 +1,9 @@
-#include "amiga.h"
-#include "timeconvert.h"
 #include <stdlib.h>
 #include <time.h>
 #include <utime.h>
+
+#include "amiga.h"
+#include "timeconvert.h"
 
 int utime(char *file, struct utimbuf *times)
 {

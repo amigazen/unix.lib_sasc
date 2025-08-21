@@ -2,6 +2,7 @@
 #include <dos/dos.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
+#include <proto/utility.h>
 
 #include <errno.h>
 #include <stddef.h>

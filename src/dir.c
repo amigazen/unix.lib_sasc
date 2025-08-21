@@ -21,9 +21,6 @@
 static iDIR *last_info = NULL;
 static struct idirect *last_entry = NULL;
 
-// Forward declaration for a function in your library
-extern void chkabort(void);
-
 // Simple implementation of _get_cd since it's not used elsewhere
 static long _get_cd(void)
 {

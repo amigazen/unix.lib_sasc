@@ -1,7 +1,8 @@
+#include <sys/wait.h>
+
 #include "amiga.h"
 #include "signals.h"
 #include "processes.h"
-#include <sys/wait.h>
 
 int wait4(int pid, int *statusp, int options, struct rusage *rusage)
 {
