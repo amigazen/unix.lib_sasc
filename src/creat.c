@@ -1,9 +1,15 @@
 #include "amiga.h"
 #include "files.h"
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 
-int creat(char *file, int prot)
+/*
+ * Creates and opens a file for writing. This is a legacy function.
+ * It is equivalent to open(pathname, O_WRONLY | O_CREAT | O_TRUNC, mode).
+ */
+int creat(const char *pathname, mode_t mode)
 {
-  chkabort();
-  return open(file, O_WRONLY | O_CREAT | O_TRUNC, prot);
+  chkabort(); // Your custom function for Amiga
+  return open(pathname, O_WRONLY | O_CREAT | O_TRUNC, mode);
 }

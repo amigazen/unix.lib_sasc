@@ -1,8 +1,19 @@
 #include "amiga.h"
-#include <string.h>
+#include <string.h> 
 
-void bcopy(char *b1, char *b2, int length)
+#undef bcopy /* undef SAS/C bcopy macro */
+
+/*
+ * Copies n bytes from src to dest. Handles overlapping memory correctly.
+ */
+void bcopy(const void *src, void *dest, size_t n)
 {
-  /* Unoptimised version */
-  memmove(b2, b1, length);
+  // A zero-length copy does nothing.
+  if (n == 0) {
+    return;
+  }
+
+  // memmove is the standard C function that does exactly what bcopy
+  // is supposed to do, including handling overlapping memory.
+  memmove(dest, src, n);
 }

@@ -1,3 +1,6 @@
+#ifndef _ERRNO_H
+#define _ERRNO_H
+
 /**
 *
 * The following symbols are the error codes returned by the UNIX system
@@ -49,3 +52,5 @@
 extern int errno, _OSERR;
 extern int sys_nerr;
 extern char *sys_errlist[];
+
+#endif /* _ERRNO_H */

@@ -1,5 +1,5 @@
-#ifndef _AMIGA_H
-#define _AMIGA_H
+#ifndef _AMIGA_IOCTL_H
+#define _AMIGA_IOCTL_H
 
 /* Amiga specific ioctl's */
 

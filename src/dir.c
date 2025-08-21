@@ -1,9 +1,43 @@
+#include <stdlib.h>   // For malloc(), free()
+#include <string.h>   // For strlen(), strcpy()
+#include <errno.h>    // For standard error numbers like ENOMEM
+#include <stddef.h>   // For offsetof()
+
 #include "amiga.h"
 #include "dir_data.h"
-#include <string.h>
 
-/* opendir/readdir/etc ... emulation w/ stat support hack */
+/*
+  The dir_data.h header now handles undefining and redefining
+  the directory functions to ensure POSIX compatibility.
+*/
 
+/*
+  opendir/readdir/etc ... emulation for AmigaOS.
+  This version reads the entire directory into a linked list in memory
+  upon opendir(), and then traverses that list for subsequent calls.
+*/
+
+// These are global variables for stat() support
+static iDIR *last_info = NULL;
+static struct idirect *last_entry = NULL;
+
+// Forward declaration for a function in your library
+extern void chkabort(void);
+
+// Simple implementation of _get_cd since it's not used elsewhere
+static long _get_cd(void)
+{
+  return 0; // Return 0 since cdir is not used
+}
+
+// Function prototypes to avoid warnings
+static void free_entries(iDIR *info);
+static int gobble_dir(DIR *dir);
+
+
+/*
+ * Frees the linked list of directory entries.
+ */
 static void free_entries(iDIR *info)
 {
   struct idirect *scan = info->files;
@@ -11,44 +45,51 @@ static void free_entries(iDIR *info)
   while (scan)
     {
       struct idirect *next = scan->next;
-      
       free(scan);
       scan = next;
     }
+  info->files = NULL; // Avoid dangling pointer
 }
 
+/*
+ * Reads all entries from an AmigaDOS directory lock into a linked list.
+ */
 static int gobble_dir(DIR *dir)
 {
   iDIR *info = (iDIR *)dir->dd_buf;
-  long ioerr;
+  int ioerr;
   struct idirect **last = &info->files;
   
   free_entries(info);
   last_info = 0;
   info->files = 0;
   dir->dd_loc = 0;
+
   while (ExNext(dir->dd_fd, &info->fib))
     {
-      u_short namlen = strlen(info->fib.fib_FileName);
-      u_short reclen = namlen + 1 + offsetof(struct idirect, entry.d_name);
+      size_t namlen = strlen(info->fib.fib_FileName);
+      // Calculate required size for the struct plus the flexible name array
+      size_t reclen = offsetof(struct idirect, entry.d_name) + namlen + 1;
       struct idirect *newentry = (struct idirect *)malloc(reclen);
       struct direct *entry;
       
       if (!newentry)
-	{
-	  errno = ENOMEM;
-	  return 0;
-	}
+      {
+        errno = ENOMEM;
+        return 0; // Failure
+      }
       newentry->next = 0;
       *last = newentry;
       last = &newentry->next;
       
+      // Cache Amiga-specific file info
       newentry->numblocks = info->fib.fib_NumBlocks;
       newentry->size = info->fib.fib_Size;
       newentry->date = info->fib.fib_Date;
       newentry->type = info->fib.fib_DirEntryType;
       newentry->protection = info->fib.fib_Protection;
       
+      // Populate the POSIX-like direct entry
       entry = &newentry->entry;
       entry->d_ino = info->fib.fib_DiskKey;
       entry->d_reclen = reclen;
@@ -56,20 +97,30 @@ static int gobble_dir(DIR *dir)
       entry->d_off = dir->dd_loc++;
       strcpy(entry->d_name, info->fib.fib_FileName);
     }
-  info->pos = info->files;
+
+  info->pos = info->files; // Reset position to the start of the list
   dir->dd_loc = 0;
   ioerr = IoErr();
-  if (ioerr == ERROR_NO_MORE_ENTRIES) return 1;
+
+  // In AmigaDOS, ExNext failing usually means no more entries (success)
+  // Only set errno if there's a real error
+  if (ioerr != 0) {
+    errno = convert_oserr(ioerr);
+    return 0; // Failure
+  }
   
-  errno = convert_oserr(ioerr);
-  return 0;
+  return 1; // Success
 }
 
-DIR *opendir(char *dirname)
+/*
+ * Opens a directory stream.
+ */
+DIR *opendir(const char *dirname)
 {
+  // In C, you don't need to cast the result of malloc
   DIR *new = (DIR *)malloc(sizeof *new);
   iDIR *info = (iDIR *)malloc(sizeof *info);
-  char *dircopy = malloc(strlen(dirname) + 1);
+  char *dircopy = (char *)malloc(strlen(dirname) + 1);
 
   chkabort();
   if (new && dircopy && info)
@@ -84,13 +135,18 @@ DIR *opendir(char *dirname)
       info->cdir = _get_cd();
       
       if ((new->dd_fd = Lock(dirname, ACCESS_READ)) &&
-	  Examine(new->dd_fd, &info->fib))
-	{
-	  if (gobble_dir(new)) return new;
-	}
-      else errno = convert_oserr(IoErr());
+          Examine(new->dd_fd, &info->fib))
+      {
+        if (gobble_dir(new)) {
+          return new; // Success
+        }
+      }
+      else {
+        errno = convert_oserr((int)IoErr());
+      }
+      // Cleanup on failure
       closedir(new);
-      return 0;
+      return NULL;
     }
   
   errno = ENOMEM;
@@ -98,10 +154,13 @@ DIR *opendir(char *dirname)
   if (dircopy) free(dircopy);
   if (info) free(info);
   
-  return 0;
+  return NULL;
 }
 
-void closedir(DIR *dir)
+/*
+ * Closes a directory stream. Must return an int.
+ */
+int closedir(DIR *dir)
 {
   iDIR *info = (iDIR *)dir->dd_buf;
   
@@ -109,37 +168,43 @@ void closedir(DIR *dir)
   last_info = 0;
   free_entries(info);
   free(info->dirname);
-  if (dir->dd_fd) UnLock(dir->dd_fd);
+  if (dir->dd_fd) {
+    UnLock(dir->dd_fd);
+  }
   free(dir->dd_buf);
   free(dir);
+
+  return 0; // Return 0 for success
 }
 
+/*
+ * Reads the next entry from a directory stream.
+ */
 struct direct *readdir(DIR *dir)
 {
   iDIR *info = (iDIR *)dir->dd_buf;
-  struct direct *entry = 0;
+  struct direct *entry = NULL;
   
   chkabort();
   if (info->seeked)
     {
       long cloc = 0;
-      struct idirect *pos;
-      
-      pos = info->files;
+      struct idirect *pos = info->files;
       
       while (cloc < dir->dd_loc && pos)
-	{
-	  cloc++; pos = pos->next;
-	}
-      /*if (cloc != dir->dd_loc) error ...
-	This doesn't seem to be defined very precisely */
+      {
+        cloc++; 
+        pos = pos->next;
+      }
       info->pos = pos;
       info->seeked = 0;
     }
+
   if (info->pos)
     {
       entry = &info->pos->entry;
       
+      // Update globals for stat() hack
       last_info = info;
       last_entry = info->pos;
       
@@ -149,12 +214,18 @@ struct direct *readdir(DIR *dir)
   return entry;
 }
 
+/*
+ * Returns the current location in the directory stream.
+ */
 long telldir(DIR *dir)
 {
   chkabort();
   return dir->dd_loc;
 }
 
+/*
+ * Sets the location in the directory stream for the next readdir().
+ */
 void seekdir(DIR *dir, long loc)
 {
   iDIR *info = (iDIR *)dir->dd_buf;
@@ -164,10 +235,15 @@ void seekdir(DIR *dir, long loc)
   dir->dd_loc = loc;
 }
 
-#if 0
-void rewwinddir(DIR *dir)
+/*
+ * Resets a directory stream to the beginning.
+ */
+void rewinddir(DIR *dir)
 {
+  iDIR *info = (iDIR *)dir->dd_buf;
+
   chkabort();
-  gobble_dir(dir);
+  info->pos = info->files; // Reset position to the start of the list
+  dir->dd_loc = 0;
+  info->seeked = 0;
 }
-#endif

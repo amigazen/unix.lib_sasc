@@ -192,3 +192,33 @@ alloca (size)			/* returns pointer to storage */
 }
 
 #endif /* no alloca */
+
+/*
+
+#include <exec/types.h>
+
+
+  An efficient, standalone alloca() written in SAS/C inline assembly.
+  The __asm keyword creates a function entirely from assembly code.
+  The return value is passed in the D0 register by convention.
+  
+__asm APTR alloca_asm(register __d0 ULONG size)
+{
+    // We must align the size to a 4-byte (longword) boundary for
+    // best performance and to keep the stack pointer valid.
+
+    ADD.L   #3,D0       // Add 3 to the size
+    ANDI.W  #0xFFFC,D0  // And with ~3 (binary ...11111100)
+                        // This rounds the size up to the nearest multiple of 4.
+
+    // Now, subtract the aligned size from the stack pointer (A7).
+    // This is the actual "allocation".
+    SUB.L   D0,A7
+
+    // The allocated memory is now at the top of the stack. The stack
+    // pointer (A7) is the address of our new memory block.
+    // Move A7 to D0 to return the pointer to the caller.
+    MOVE.L  A7,D0
+}
+
+*/
