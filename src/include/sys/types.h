@@ -98,6 +98,8 @@ typedef long time_t;
 typedef	unsigned int size_t;
 #endif
 
+
+
 #ifndef _POSIX_SOURCE
 
 #define	NBBY	8			/* number of bits in a byte */

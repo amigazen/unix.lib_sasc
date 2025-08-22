@@ -25,9 +25,9 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	regexp.o regsub.o rename.o rindex.o rmdir.o select.o setenv.o \
 	setjmp.o siglist.o signal.o signals.o sigpause.o sigprocmask.o \
 	sigsetmask.o sleep.o sockets.o snprintf.o stat.o strcasecmp.o \
-	strerror.o strftime.o strtol.o strtoll.o longlong.o symlink.o \
+	strdup.o strerror.o strftime.o strtol.o strtoll.o longlong.o symlink.o \
 	tempnam.o time.o timeconvert.o timers.o truncate.o uid.o umask.o \
-	unlink.o utime.o vsnprintf.o wait4.o write.o
+	unlink.o usleep.o utime.o vsnprintf.o wait4.o write.o
 
 DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	amigatime.do bcmp.do bcopy.do bzero.do chmod.do chown.do close.do \
@@ -42,9 +42,9 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	regex.do regexp.do regsub.do rename.do rindex.do rmdir.do select.do \
 	setenv.do setjmp.do siglist.do signal.do signals.do sigpause.do \
 	sigprocmask.do sigsetmask.do sleep.do sockets.do snprintf.do stat.do \
-	strcasecmp.do strerror.do strftime.do strtol.do strtoll.do longlong.do \
+	strcasecmp.do strdup.do strerror.do strftime.do strtol.do strtoll.do longlong.do \
 	symlink.do tempnam.do time.do timeconvert.do timers.do truncate.do \
-	uid.do umask.do unlink.do utime.do vsnprintf.do wait4.do write.do
+	uid.do umask.do unlink.do usleep.do utime.do vsnprintf.do wait4.do write.do
 
 NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	amigatime.nbo bcmp.nbo bcopy.nbo bzero.nbo chmod.nbo chown.nbo \
@@ -60,10 +60,10 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	regex.nbo regexp.nbo regsub.nbo rename.nbo rindex.nbo rmdir.nbo \
 	select.nbo setenv.nbo setjmp.nbo siglist.nbo signal.nbo signals.nbo \
 	sigpause.nbo sigprocmask.nbo sigsetmask.nbo sleep.nbo sockets.nbo \
-	snprintf.nbo stat.nbo strcasecmp.nbo strerror.nbo strftime.nbo \
+	snprintf.nbo stat.nbo strcasecmp.nbo strdup.nbo strerror.nbo strftime.nbo \
 	strtol.nbo strtoll.nbo longlong.nbo symlink.nbo tempnam.nbo time.nbo \
 	timeconvert.nbo timers.nbo truncate.nbo uid.nbo umask.nbo unlink.nbo \
-	utime.nbo vsnprintf.nbo wait4.nbo write.nbo
+	usleep.nbo utime.nbo vsnprintf.nbo wait4.nbo write.nbo
 
 DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	amigados.dnbo amigatime.dnbo bcmp.dnbo bcopy.dnbo bzero.dnbo \
@@ -81,10 +81,10 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	rename.dnbo rindex.dnbo rmdir.dnbo select.dnbo setenv.dnbo \
 	setjmp.dnbo siglist.dnbo signal.dnbo signals.dnbo sigpause.dnbo \
 	sigprocmask.dnbo sigsetmask.dnbo sleep.dnbo sockets.dnbo snprintf.dnbo \
-	stat.dnbo strcasecmp.dnbo strerror.dnbo strftime.dnbo strtol.dnbo \
+	stat.dnbo strcasecmp.dnbo strdup.dnbo strerror.dnbo strftime.dnbo strtol.dnbo \
 	strtoll.dnbo longlong.dnbo symlink.dnbo tempnam.dnbo time.dnbo \
 	timeconvert.dnbo timers.dnbo truncate.dnbo uid.dnbo umask.dnbo \
-	unlink.dnbo utime.dnbo vsnprintf.dnbo wait4.dnbo write.dnbo
+	unlink.dnbo usleep.dnbo utime.dnbo vsnprintf.dnbo wait4.dnbo write.dnbo
 
 ASMOBJS = child.o _sprintf.o _setjmp.o
 
@@ -302,6 +302,7 @@ sleep.o: sleep.c signals.h amiga.h
 sockets.o: sockets.c amiga.h
 stat.o: stat.c dir_data.h amiga.h
 strcasecmp.o: strcasecmp.c
+strdup.o: strdup.c
 strerror.o: strerror.c
 strftime.o: strftime.c
 symlink.o: symlink.c amiga.h
@@ -313,6 +314,7 @@ truncate.o: truncate.c amigados.h amiga.h
 uid.o: uid.c amiga.h
 umask.o: umask.c amiga.h
 unlink.o: unlink.c amiga.h
+usleep.o: usleep.c amiga.h
 utime.o: utime.c timeconvert.h amiga.h
 wait4.o: wait4.c processes.h signals.h amiga.h
 write.o: write.c amiga.h
@@ -401,6 +403,7 @@ sleep.nbo: sleep.c signals.h amiga.h
 sockets.nbo: sockets.c amiga.h
 stat.nbo: stat.c dir_data.h amiga.h
 strcasecmp.nbo: strcasecmp.c
+strdup.nbo: strdup.c
 strerror.nbo: strerror.c
 strftime.nbo: strftime.c
 symlink.nbo: symlink.c amiga.h
@@ -412,6 +415,7 @@ truncate.nbo: truncate.c amigados.h amiga.h
 uid.nbo: uid.c amiga.h
 umask.nbo: umask.c amiga.h
 unlink.nbo: unlink.c amiga.h
+usleep.nbo: usleep.c amiga.h
 utime.nbo: utime.c timeconvert.h amiga.h
 wait4.nbo: wait4.c processes.h signals.h amiga.h
 write.nbo: write.c amiga.h
@@ -500,6 +504,7 @@ sleep.do: sleep.c signals.h amiga.h
 sockets.do: sockets.c amiga.h
 stat.do: stat.c dir_data.h amiga.h
 strcasecmp.do: strcasecmp.c
+strdup.do: strdup.c
 strerror.do: strerror.c
 strftime.do: strftime.c
 symlink.do: symlink.c amiga.h
@@ -511,6 +516,7 @@ truncate.do: truncate.c amigados.h amiga.h
 uid.do: uid.c amiga.h
 umask.do: umask.c amiga.h
 unlink.do: unlink.c amiga.h
+usleep.do: usleep.c amiga.h
 utime.do: utime.c timeconvert.h amiga.h
 wait4.do: wait4.c processes.h signals.h amiga.h
 write.do: write.c amiga.h
@@ -599,6 +605,7 @@ sleep.dnbo: sleep.c signals.h amiga.h
 sockets.dnbo: sockets.c amiga.h
 stat.dnbo: stat.c dir_data.h amiga.h
 strcasecmp.dnbo: strcasecmp.c
+strdup.dnbo: strdup.c
 strerror.dnbo: strerror.c
 strftime.dnbo: strftime.c
 symlink.dnbo: symlink.c amiga.h
@@ -610,6 +617,7 @@ truncate.dnbo: truncate.c amigados.h amiga.h
 uid.dnbo: uid.c amiga.h
 umask.dnbo: umask.c amiga.h
 unlink.dnbo: unlink.c amiga.h
+usleep.dnbo: usleep.c amiga.h
 utime.dnbo: utime.c timeconvert.h amiga.h
 wait4.dnbo: wait4.c processes.h signals.h amiga.h
 write.dnbo: write.c amiga.h
