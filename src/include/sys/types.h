@@ -36,6 +36,13 @@
 #ifndef _TYPES_H_
 #define	_TYPES_H_
 
+/* Include netinclude headers first to provide socket types and basic definitions */
+#ifdef AMITCP
+#include "netinclude:sys/netinclude_types.h"
+#include "netinclude:sys/socket.h"
+#endif
+
+/* Standard POSIX types */
 typedef	unsigned char	u_char;
 typedef	unsigned short	u_short;
 typedef	unsigned int	u_int;
@@ -113,6 +120,10 @@ typedef	unsigned int size_t;
 #define FD_SETSIZE	64
 #endif
 
+/* Use netinclude fd_set definition if available, otherwise fall back to local */
+#ifdef AMITCP
+/* fd_set is already defined by netinclude:sys/socket.h */
+#else
 typedef long	fd_mask;
 #define NFDBITS	(sizeof(fd_mask) * NBBY) /* bits per mask */
 
@@ -129,6 +140,7 @@ typedef	struct fd_set {
 #define	FD_ISSET(n, p)	((p)->fds_bits[(n)/NFDBITS] & (1 << ((n) % NFDBITS)))
 #define FD_COPY(f, t)	memmove(t, f, sizeof(*(f)))
 #define	FD_ZERO(p)	memset((char *)(p), 0, sizeof(*(p)))
+#endif
 
 #endif /* !_POSIX_SOURCE */
 #endif /* !_TYPES_H_ */

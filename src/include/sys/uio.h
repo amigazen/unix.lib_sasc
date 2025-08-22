@@ -7,11 +7,17 @@
  *      manual pages for details.
  */
 
+#ifdef AMITCP
+/* When building with AMITCP, use netinclude headers directly */
+#include "netinclude:sys/uio.h"
+#else
+/* Fallback to local definition */
 #include <sys/types.h>
 
 struct iovec {
     caddr_t iov_base;
     int iov_len;
 };
+#endif
 
 #endif

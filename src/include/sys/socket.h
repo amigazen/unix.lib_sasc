@@ -3,13 +3,8 @@
 
 #ifdef AMITCP
 
-/* Include netinclude headers first to provide proper definitions */
+/* When building with AMITCP, use netinclude headers directly */
 #include "netinclude:sys/socket.h"
-
-#ifndef _TYPES_H_
-#include <sys/types.h>
-#define SYS_TYPES_H
-#endif
 
 #else
 
@@ -19,6 +14,7 @@
 
 #endif
 
+/* Our additional functions */
 extern int socketpair(int, int, int, int *);
 
 #endif
