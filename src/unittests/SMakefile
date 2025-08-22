@@ -1,0 +1,121 @@
+#
+# SAS/C smakefile for unix.lib2 unittests
+# This allows building and running tests independently from the main library
+# Integrates longlong tests with existing socks tests
+#
+
+## Macros and Variables
+
+CC      = sc
+ASM     = asm
+SLINK   = slink
+
+# Test programs
+LONGLONG_TESTS = test_strtoll test_overflow test_longlong
+SOCKS_TESTS = getaline strchkread streamwrite
+TEST_PROGRAMS = $(LONGLONG_TESTS) $(SOCKS_TESTS)
+
+# Compiler flags
+INCS     = IDIR=/include IDIR=/include/internal IDIR=include: IDIR=netinclude: IDIR=/
+OPTIMIZE = OPTIMIZE       # General optimization: Global, Temps in regs, Data in regs
+
+CFLAGS   = $(INCS) $(OPTIMIZE) LINK NOICONS UTILLIB
+SOCKS_CFLAGS = $(INCS) $(OPTIMIZE) LINK NOICONS DEF=AMITCP
+
+## Main Targets
+
+all: $(TEST_PROGRAMS)
+
+# Build longlong tests
+test_strtoll: test_strtoll.o /longlong.o /strtoll.o /strtol.o
+	$(CC) $(CFLAGS) TO $@ test_strtoll.o /longlong.o /strtoll.o /strtol.o
+
+test_overflow: test_overflow.o /longlong.o
+	$(CC) $(CFLAGS) TO $@ test_overflow.o /longlong.o
+
+test_longlong: test_longlong.o /longlong.o
+	$(CC) $(CFLAGS) TO $@ test_longlong.o /longlong.o
+
+# Build socks tests (using existing socks SMakefile)
+socks: 
+	cd socks && smake
+
+getaline: socks/getaline
+	copy CLONE QUIET socks/getaline ""
+
+strchkread: socks/strchkread
+	copy CLONE QUIET socks/strchkread ""
+
+streamwrite: socks/streamwrite
+	copy CLONE QUIET socks/streamwrite ""
+
+# Clean up test files
+clean:
+	-delete quiet *.o $(LONGLONG_TESTS)
+	cd socks && smake clean
+
+# Run all tests
+test: $(TEST_PROGRAMS)
+	echo "Running longlong tests..."
+	echo "Running test_strtoll..."
+	test_strtoll
+	echo ""
+	echo "Running test_overflow..."
+	test_overflow
+	echo ""
+	echo "Running test_longlong..."
+	test_longlong
+	echo ""
+	echo "Running socks tests..."
+	getaline
+	strchkread
+	streamwrite
+
+# Run individual test categories
+test-longlong: $(LONGLONG_TESTS)
+	echo "Running longlong tests..."
+	test_strtoll
+	test_overflow
+	test_longlong
+
+test-socks: $(SOCKS_TESTS)
+	echo "Running socks tests..."
+	getaline
+	strchkread
+	streamwrite
+
+# Run individual tests
+test-strtoll: test_strtoll
+	test_strtoll
+
+test-overflow: test_overflow
+	test_overflow
+
+test-longlong: test_longlong
+	test_longlong
+
+# Help target
+help:
+	echo "Available targets:"
+	echo "  all           - Build all test programs"
+	echo "  test_strtoll  - Build test_strtoll program"
+	echo "  test_overflow - Build test_overflow program"
+	echo "  test_longlong - Build test_longlong program"
+	echo "  socks         - Build socks test programs"
+	echo "  test          - Build and run all tests"
+	echo "  test-longlong - Build and run longlong tests"
+	echo "  test-socks    - Build and run socks tests"
+	echo "  clean         - Remove all test files"
+	echo "  help          - Show this help message"
+
+## Explicit Dependencies
+
+# Test source files
+test_strtoll.o: test_strtoll.c minunit.h
+test_overflow.o: test_overflow.c minunit.h
+test_longlong.o: test_longlong.c minunit.h
+
+# Object files from parent directory
+/longlong.o: /longlong.c
+/strtoll.o: /strtoll.c
+/strtol.o: /strtol.c

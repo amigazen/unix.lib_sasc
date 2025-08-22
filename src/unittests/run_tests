@@ -1,0 +1,21 @@
+; Simple test runner script for AmigaOS
+; This script builds and runs all tests
+;
+
+echo "Building and running unittests..."
+
+; Build all tests
+echo "Building test programs..."
+smake all
+
+; Run tests
+echo ""
+echo "Running test_strtoll..."
+test_strtoll
+
+echo ""
+echo "Running test_overflow..."
+test_overflow
+
+echo ""
+echo "All tests completed!"
