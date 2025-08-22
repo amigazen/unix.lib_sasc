@@ -26,15 +26,17 @@ SOCKS_CFLAGS = $(INCS) $(OPTIMIZE) LINK NOICONS DEF=AMITCP
 
 all: $(TEST_PROGRAMS)
 
-# Build longlong tests
-test_strtoll: test_strtoll.o /longlong.o /strtoll.o /strtol.o
-	$(CC) $(CFLAGS) TO $@ test_strtoll.o /longlong.o /strtoll.o /strtol.o
+# Build test_strtoll
+test_strtoll: test_strtoll.o /longlong.o
+    $(CC) $(CFLAGS) TO $@ test_strtoll.o /longlong.o /strtoll.o /strtol.o
 
+# Build test_overflow
 test_overflow: test_overflow.o /longlong.o
-	$(CC) $(CFLAGS) TO $@ test_overflow.o /longlong.o
+    $(CC) $(CFLAGS) TO $@ test_overflow.o /longlong.o /strtoll.o /strtol.o
 
+# Build test_longlong
 test_longlong: test_longlong.o /longlong.o
-	$(CC) $(CFLAGS) TO $@ test_longlong.o /longlong.o
+    $(CC) $(CFLAGS) TO $@ test_longlong.o /longlong.o /strtoll.o /strtol.o
 
 # Build socks tests (using existing socks SMakefile)
 socks: 
@@ -119,3 +121,6 @@ test_longlong.o: test_longlong.c minunit.h
 /longlong.o: /longlong.c
 /strtoll.o: /strtoll.c
 /strtol.o: /strtol.c
+
+
+
