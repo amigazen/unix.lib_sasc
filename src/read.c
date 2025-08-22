@@ -2,15 +2,15 @@
 #include "files.h"
 #include <fcntl.h>
 
-int read(int fd, void *buffer, unsigned int length)
+int __read(int fd, void *buffer, unsigned int length)
 {
-  struct fileinfo *fi;
+    struct fileinfo *fi;
 
-  chkabort();
-  if (fi = _find_fd(fd))
-    {
-      if (fi->flags & FI_READ) return fi->read(fi->userinfo, buffer, length);
-      errno = EACCES;
+    __chkabort();
+    if (fi = _find_fd(fd)) {
+	if (fi->flags & FI_READ)
+	    return fi->read(fi->userinfo, buffer, length);
+	errno = EACCES;
     }
-  return -1;
+    return -1;
 }

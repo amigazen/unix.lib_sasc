@@ -33,6 +33,13 @@
  *	@(#)stat.h	7.11 (Berkeley) 3/3/91
  */
 
+#ifndef _STAT_H
+#define _STAT_H 1
+
+#ifndef _TYPES_H_
+#include <sys/types.h>
+#endif
+
 struct stat
 {
 	dev_t	st_dev;			/* inode's device */
@@ -89,7 +96,7 @@ struct stat
 #define	S_IFDIR	 0040000		/* directory */
 #define	S_IFBLK	 0060000		/* block special */
 #define	S_IFREG	 0100000		/* regular */
-/*#define	S_IFLNK	 0120000*/		/* symbolic link */
+#define	S_IFLNK	 0120000		/* symbolic link */
 #define	S_IFSOCK 0140000		/* socket */
 
 #define	S_ISVTX	 0001000		/* save swapped text even after use */
@@ -106,7 +113,7 @@ struct stat
 #define	S_ISREG(m)	((m & 0170000) == 0100000)	/* regular file */
 #define	S_ISFIFO(m)	((m & 0170000) == 0010000)	/* fifo */
 #ifndef _POSIX_SOURCE
-/*#define	S_ISLNK(m)	((m & 0170000) == 0120000)*/	/* symbolic link */
+#define	S_ISLNK(m)	((m & 0170000) == 0120000)	/* symbolic link */
 #define	S_ISSOCK(m)	((m & 0170000) == 0140000)	/* socket */
 #endif
 
@@ -115,14 +122,16 @@ struct stat
 
 __BEGIN_DECLS
 mode_t	umask __P((mode_t));
-int	chmod __P((char *, mode_t));
+int	chmod __P((const char *, mode_t));
 int	fstat __P((int, struct stat *));
 int	mkdir __P((char *, mode_t));
 int	mkfifo __P((char *, mode_t));
-int	stat __P((char *, struct stat *));
+int	stat __P((const char *, struct stat *));
 #ifndef _POSIX_SOURCE
 int	fchmod __P((int, mode_t));
-int	lstat __P((char *, struct stat *));
+int	lstat __P((const char *, struct stat *));
 #endif /* not POSIX */
 __END_DECLS
+#endif
+
 #endif

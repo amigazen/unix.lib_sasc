@@ -380,8 +380,7 @@ static char		roll[TZ_MAX_LEAPS];
 */
 
 static char *
-memcheck(ptr)
-char * const	ptr;
+memcheck(char *ptr)
 {
 	if (ptr == NULL) {
 		(void) perror(progname);
@@ -400,11 +399,7 @@ char * const	ptr;
 */
 
 static void
-eats(name, num, rname, rnum)
-const char * const	name;
-const int		num;
-const char * const	rname;
-const int		rnum;
+eats(const char *name, int num, const char *rname, int rnum)
 {
 	filename = name;
 	linenum = num;
@@ -413,16 +408,13 @@ const int		rnum;
 }
 
 static void
-eat(name, num)
-const char * const	name;
-const int		num;
+eat(const char *name, int num)
 {
 	eats(name, num, (char *) NULL, -1);
 }
 
 static void
-error(string)
-const char * const	string;
+error(const char *string)
 {
 	/*
 	** Match the format of "cc" to allow sh users to
@@ -439,7 +431,7 @@ const char * const	string;
 }
 
 static void
-usage()
+usage(void)
 {
 	(void) fprintf(stderr,
 "%s: usage is %s [ -s ] [ -v ] [ -l localtime ] [ -p posixrules ] [ -d directory ]\n\
@@ -455,9 +447,7 @@ static const char *	leapsec = NULL;
 static int		sflag = FALSE;
 
 int
-main(argc, argv)
-int	argc;
-char *	argv[];
+main(int argc, char **argv)
 {
 	register int	i, j;
 	register int	c;
@@ -556,9 +546,7 @@ char *	argv[];
 }
 
 static void
-dolink(fromfile, tofile)
-const char * const	fromfile;
-const char * const	tofile;
+dolink(const char *fromfile, const char *tofile)
 {
 	register char *	fromname;
 	register char *	toname;
@@ -590,7 +578,7 @@ const char * const	tofile;
 }
 
 static void
-setboundaries()
+setboundaries(void)
 {
 	register time_t	bit;
 
@@ -616,8 +604,7 @@ setboundaries()
 }
 
 static int
-itsdir(name)
-const char * const	name;
+itsdir(const char *name)
 {
 	struct stat	s;
 
@@ -633,16 +620,14 @@ const char * const	name;
 */
 
 static int
-rcomp(cp1, cp2)
-const void *	cp1;
-const void *	cp2;
+rcomp(const void * cp1, const void * cp2)
 {
 	return strcmp(((struct rule *) cp1)->r_name,
 		((struct rule *) cp2)->r_name);
 }
 
 static void
-associate()
+associate(void)
 {
 	register struct zone *	zp;
 	register struct rule *	rp;
@@ -692,8 +677,7 @@ associate()
 }
 
 static void
-infile(name)
-const char *	name;
+infile(const char * name)
 {
 	register FILE *			fp;
 	register char **		fields;
@@ -790,10 +774,7 @@ const char *	name;
 */
 
 static long
-gethms(string, errstring, signable)
-char *		string;
-const char * const	errstring;
-const int		signable;
+gethms(char *string, const char *errstring, int signable)
 {
 	int	hh, mm, ss, sign;
 
@@ -825,9 +806,7 @@ const int		signable;
 }
 
 static void
-inrule(fields, nfields)
-register char ** const	fields;
-const int		nfields;
+inrule(char **fields, int nfields)
 {
 	static struct rule	r;
 
@@ -852,9 +831,7 @@ const int		nfields;
 }
 
 static int
-inzone(fields, nfields)
-register char ** const	fields;
-const int		nfields;
+inzone(char **fields, int nfields)
 {
 	register int	i;
 	char		buf[132];
@@ -892,9 +869,7 @@ const int		nfields;
 }
 
 static int
-inzcont(fields, nfields)
-register char ** const	fields;
-const int		nfields;
+inzcont(char **fields, int nfields)
 {
 	if (nfields < ZONEC_MINFIELDS || nfields > ZONEC_MAXFIELDS) {
 		error("wrong number of fields on Zone continuation line");
@@ -904,10 +879,7 @@ const int		nfields;
 }
 
 static int
-inzsub(fields, nfields, iscont)
-register char ** const	fields;
-const int		nfields;
-const int		iscont;
+inzsub(char **fields, int nfields, int iscont)
 {
 	register char *		cp;
 	static struct zone	z;
@@ -976,9 +948,7 @@ error("Zone continuation line end time is not after end time of previous line");
 }
 
 static void
-inleap(fields, nfields)
-register char ** const	fields;
-const int		nfields;
+inleap(char **fields, int nfields)
 {
 	register const char *		cp;
 	register const struct lookup *	lp;
@@ -1057,9 +1027,7 @@ const int		nfields;
 }
 
 static void
-inlink(fields, nfields)
-register char ** const	fields;
-const int		nfields;
+inlink(char **fields, int nfields)
 {
 	struct link	l;
 
@@ -1085,14 +1053,13 @@ const int		nfields;
 }
 
 static void
-rulesub(rp, loyearp, hiyearp, typep, monthp, dayp, timep)
-register struct rule * const	rp;
-char * const			loyearp;
-char * const			hiyearp;
-char * const			typep;
-char * const			monthp;
-char * const			dayp;
-char * const			timep;
+rulesub(struct rule *rp,
+	char *loyearp,
+	char *hiyearp,
+	char *typep,
+	char *monthp,
+	char *dayp,
+	char *timep)
 {
 	register struct lookup const *	lp;
 	register char *			cp;
@@ -1226,9 +1193,7 @@ char * const			timep;
 }
 
 static void
-convert(val, buf)
-const long	val;
-char * const	buf;
+convert(long val, char *buf)
 {
 	register int	i;
 	register long	shift;
@@ -1238,9 +1203,7 @@ char * const	buf;
 }
 
 static void
-puttzcode(val, fp)
-const long	val;
-FILE * const	fp;
+puttzcode(long val, FILE *fp)
 {
 	char	buf[4];
 
@@ -1249,8 +1212,7 @@ FILE * const	fp;
 }
 
 static void
-writezone(name)
-const char * const	name;
+writezone(const char *name)
 {
 	register FILE *		fp;
 	register int		i, j;
@@ -1328,9 +1290,7 @@ const char * const	name;
 }
 
 static void
-outzone(zpfirst, zonecount)
-const struct zone * const	zpfirst;
-const int			zonecount;
+outzone(const struct zone *zpfirst, int zonecount)
 {
 	register const struct zone *	zp;
 	register struct rule *		rp;
@@ -1486,9 +1446,7 @@ addtt(starttime, addtype(startoff, startbuf, startisdst, startttisstd));
 }
 
 static void
-addtt(starttime, type)
-const time_t	starttime;
-const int	type;
+addtt(time_t starttime, int type)
 {
 	if (timecnt != 0 && type == types[timecnt - 1])
 		return;	/* easy enough! */
@@ -1502,11 +1460,7 @@ const int	type;
 }
 
 static int
-addtype(gmtoff, abbr, isdst, ttisstd)
-const long		gmtoff;
-const char * const	abbr;
-const int		isdst;
-const int		ttisstd;
+addtype(long gmtoff, const char *abbr, int isdst, int ttisstd)
 {
 	register int	i, j;
 
@@ -1543,10 +1497,7 @@ const int		ttisstd;
 }
 
 static void
-addleap(t, positive, rolling)
-const time_t	t;
-const int	positive;
-const int	rolling;
+addleap(time_t t, int positive, int rolling)
 {
 	register int	i, j;
 
@@ -1574,7 +1525,7 @@ const int	rolling;
 }
 
 static void
-adjleap()
+adjleap(void)
 {
 	register int	i;
 	register long	last = 0;
@@ -1589,9 +1540,7 @@ adjleap()
 }
 
 static int
-yearistype(year, type)
-const int		year;
-const char * const	type;
+yearistype(int year, const char *type)
 {
 	char	buf[BUFSIZ];
 	int	result;
@@ -1616,16 +1565,14 @@ const char * const	type;
 }
 
 static int
-lowerit(a)
-const int	a;
+lowerit(int a)
 {
 	return (isascii(a) && isupper(a)) ? tolower(a) : a;
 }
 
+/* case-insensitive equality */
 static int
-ciequal(ap, bp)		/* case-insensitive equality */
-register const char *	ap;
-register const char *	bp;
+ciequal(register const char *ap, register const char *bp)
 {
 	while (lowerit(*ap) == lowerit(*bp++))
 		if (*ap++ == '\0')
@@ -1634,9 +1581,7 @@ register const char *	bp;
 }
 
 static int
-itsabbr(abbr, word)
-register const char *	abbr;
-register const char *	word;
+itsabbr(register const char *abbr, register const char *word)
 {
 	if (lowerit(*abbr) != lowerit(*word))
 		return FALSE;
@@ -1649,9 +1594,7 @@ register const char *	word;
 }
 
 static const struct lookup *
-byword(word, table)
-register const char * const		word;
-register const struct lookup * const	table;
+byword( const char *word, const struct lookup *table)
 {
 	register const struct lookup *	foundlp;
 	register const struct lookup *	lp;
@@ -1677,8 +1620,7 @@ register const struct lookup * const	table;
 }
 
 static char **
-getfields(cp)
-register char *	cp;
+getfields(register char *cp)
 {
 	register char *		dp;
 	register char **	array;
@@ -1712,9 +1654,7 @@ register char *	cp;
 }
 
 static long
-oadd(t1, t2)
-const long	t1;
-const long	t2;
+oadd(long t1, long t2)
 {
 	register long	t;
 
@@ -1727,9 +1667,7 @@ const long	t2;
 }
 
 static time_t
-tadd(t1, t2)
-const time_t	t1;
-const long	t2;
+tadd(time_t t1, long t2)
 {
 	register time_t	t;
 
@@ -1751,9 +1689,7 @@ const long	t2;
 */
 
 static time_t
-rpytime(rp, wantedy)
-register const struct rule * const	rp;
-register const int			wantedy;
+rpytime(const struct rule *rp, int wantedy)
 {
 	register int	y, m, i;
 	register long	dayoff;			/* with a nod to Margaret O. */
@@ -1842,8 +1778,7 @@ register const int			wantedy;
 }
 
 static void
-newabbr(string)
-const char * const	string;
+newabbr(const char *string)
 {
 	register int	i;
 
@@ -1857,8 +1792,7 @@ const char * const	string;
 }
 
 static int
-mkdirs(name)
-char * const	name;
+mkdirs(char *name)
 {
 	register char *	cp;
 
@@ -1884,8 +1818,7 @@ char * const	name;
 }
 
 static long
-eitol(i)
-const int	i;
+eitol(int i)
 {
 	long	l;
 

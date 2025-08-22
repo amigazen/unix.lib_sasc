@@ -45,6 +45,24 @@
 #endif
 
 /*
+ * SAVEDS should be used in all function definitions which will be called 
+ * from other tasks than AmiTCP/IP. It restores the global data base pointer
+ * as the first thing in the function body.
+ *
+ * REGARGFUN contains special keywords which should be used when functions
+ * used through shared library are referenced.
+ */
+#ifdef __SASC
+#define SAVEDS __saveds
+#define REGARGFUN __asm
+#define STKARGFUN __stdargs
+#define ALIGNED __aligned
+#define ASM __asm
+#define REG(x) register __##x
+#define COMMON __far
+#endif
+
+/*
  * The __CONCAT macro is used to concatenate parts of symbol names, e.g.
  * with "#define OLD(foo) __CONCAT(old,foo)", OLD(foo) produces oldfoo.
  * The __CONCAT macro is a bit tricky -- make sure you don't put spaces
@@ -55,6 +73,10 @@
 #define	__P(protos)	protos		/* full-blown ANSI C */
 #define	__CONCAT(x,y)	x ## y
 #define	__STRING(x)	#x
+
+#ifdef __SASC
+#define inline		__inline
+#endif
 
 #else	/* !(__STDC__ || __cplusplus) */
 #define	__P(protos)	()		/* traditional C preprocessor */

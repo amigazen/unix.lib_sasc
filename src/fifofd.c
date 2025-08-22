@@ -11,15 +11,17 @@ int _fifo_ok;
 
 void _init_fifo(void)
 {
-  _fifo_base = (int)_us ^ _startup_time * 65537;
-  _fifo_offset = 0;
-  _FifoBase = OpenLibrary("fifo.library", 0);
-  _fifo_sig = AllocSignal(-1);
-  _fifo_ok = _FifoBase != 0 && _fifo_sig >= 0;
+    _fifo_base = (int) _us ^ _startup_time * 65537;
+    _fifo_offset = 0;
+    _FifoBase = OpenLibrary("fifo.library", 0);
+    _fifo_sig = AllocSignal(-1);
+    _fifo_ok = _FifoBase != 0 && _fifo_sig >= 0;
 }
 
 void _cleanup_fifo(void)
 {
-  if (_fifo_sig >= 0) FreeSignal(_fifo_sig);
-  if (_FifoBase) CloseLibrary(_FifoBase);
+    if (_fifo_sig >= 0)
+	FreeSignal(_fifo_sig);
+    if (_FifoBase)
+	CloseLibrary(_FifoBase);
 }

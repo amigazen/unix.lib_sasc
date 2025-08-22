@@ -16,6 +16,7 @@ struct idirect
 {
   struct idirect *next;
   /* Info needed for stat */
+  long handler;
   long numblocks;
   long size;
   struct DateStamp date;

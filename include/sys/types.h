@@ -44,9 +44,22 @@ typedef	unsigned short	ushort;		/* Sys V compatibility */
 
 typedef	char *	caddr_t;		/* core address */
 typedef	long	daddr_t;		/* disk address */
+
+#ifndef _DEV_T
+#define _DEV_T 1
 typedef	long	dev_t;			/* device number */
+#endif
+
+#ifndef _INO_T
+#define _INO_T 1
 typedef	u_long	ino_t;			/* inode number */
+#endif
+
+#ifndef _OFF_T
+#define _OFF_T 1
 typedef	long	off_t;			/* file offset (should be a quad) */
+#endif
+
 typedef	u_short	nlink_t;		/* link count */
 typedef	long	swblk_t;		/* swap offset */
 typedef	long	segsz_t;		/* segment size */
@@ -67,24 +80,55 @@ typedef	long *	qaddr_t;	/* should be typedef quad * qaddr_t; */
 #endif
 
 typedef	long clock_t;
+
+#ifndef _TIME_T
+#define _TIME_T 1
 typedef long time_t;
+#endif
+
 #ifndef _SIZE_T
-#define _SIZE_T
+#define _SIZE_T 1
 typedef	unsigned int size_t;
 #endif
 
 #ifndef _POSIX_SOURCE
+
+#define	NBBY	8			/* number of bits in a byte */
+
 /*
- * My implementation only allows 32 fds in select.
+ * Select uses bit masks of file descriptors in longs.  These macros
+ * manipulate such bit fields (the filesystem macros use chars).
+ * FD_SETSIZE may be defined by the user, but the default here should
+ * be enough for most uses.
+ *
+ * Note: you must #define FD_SETSIZE before including this file and,
+ * if you use the sockets code, also set the external variable _fd_setsize
+ * to the same value, e.g.:
+ *
+ * #define FD_SETSIZE 128
+ * #include <sys/types.h>
+ * long _fd_setsize = FD_SETSIZE;
  */
-#define	FD_SETSIZE	32
+#ifndef FD_SETSIZE
+#define FD_SETSIZE	64
+#endif
 
-typedef	long fd_set;
+typedef long	fd_mask;
+#define NFDBITS	(sizeof(fd_mask) * NBBY) /* bits per mask */
 
-#define	FD_SET(n, p)	(*(p) |= (1 << (n)))
-#define	FD_CLR(n, p)	(*(p) &= ~(1 << (n)))
-#define	FD_ISSET(n, p)	(*(p) & (1 << (n)))
-#define	FD_ZERO(p)	bzero((char *)(p), sizeof(*(p)))
+#ifndef howmany
+#define	howmany(x, y)	(((x)+((y)-1))/(y))
+#endif
+
+typedef	struct fd_set {
+	fd_mask	fds_bits[howmany(FD_SETSIZE, NFDBITS)];
+} fd_set;
+
+#define	FD_SET(n, p)	((p)->fds_bits[(n)/NFDBITS] |= (1 << ((n) % NFDBITS)))
+#define	FD_CLR(n, p)	((p)->fds_bits[(n)/NFDBITS] &= ~(1 << ((n) % NFDBITS)))
+#define	FD_ISSET(n, p)	((p)->fds_bits[(n)/NFDBITS] & (1 << ((n) % NFDBITS)))
+#define FD_COPY(f, t)	memmove(t, f, sizeof(*(f)))
+#define	FD_ZERO(p)	memset((char *)(p), 0, sizeof(*(p)))
 
 #endif /* !_POSIX_SOURCE */
 #endif /* !_TYPES_H_ */

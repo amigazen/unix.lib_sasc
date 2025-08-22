@@ -65,8 +65,7 @@ char *	irealloc __P((char * pointer, int size));
 void	ifree __P((char * pointer));
 
 char *
-imalloc(n)
-const int	n;
+imalloc(int n)
 {
 #ifdef MAL
 	register char *	result;
@@ -79,9 +78,7 @@ const int	n;
 }
 
 char *
-icalloc(nelem, elsize)
-int	nelem;
-int	elsize;
+icalloc(int nelem, int elsize)
 {
 	if (nelem == 0 || elsize == 0)
 		nelem = elsize = 1;
@@ -89,9 +86,7 @@ int	elsize;
 }
 
 char *
-irealloc(pointer, size)
-char * const	pointer;
-const int	size;
+irealloc(char *pointer, int size)
 {
 	if (NULLMAL(pointer))
 		return imalloc(size);
@@ -99,9 +94,7 @@ const int	size;
 }
 
 char *
-icatalloc(old, new)
-char * const		old;
-const char * const	new;
+icatalloc(char *old, const char *new)
 {
 	register char *	result;
 	register	oldsize, newsize;
@@ -119,23 +112,20 @@ const char * const	new;
 }
 
 char *
-icpyalloc(string)
-const char * const	string;
+icpyalloc(const char *string)
 {
 	return icatalloc((char *) NULL, string);
 }
 
 void
-ifree(p)
-char * const	p;
+ifree(char *p)
 {
 	if (!NULLMAL(p))
 		(void) free(p);
 }
 
 void
-icfree(p)
-char * const	p;
+icfree(char * const p)
 {
 	if (!NULLMAL(p))
 		(void) free(p);

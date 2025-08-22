@@ -7,7 +7,7 @@ extern void (*_sig_handlers[NSIG])(int);
 extern long _sig_mask, _sig_pending;
 
 void _sig_dispatch(int sig);
-/* Effect: Do the action associated with signal sig it it isn't masked
+/* Effect: Do the action associated with signal sig if it isn't masked
      Mask it for the duration of the signal exec
 */
 

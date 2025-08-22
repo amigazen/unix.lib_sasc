@@ -1,7 +1,7 @@
 #include "amiga.h"
 #include <string.h>
 
-int bcmp(char *b1, char *b2, int length)
+int bcmp(const void *b1, const void *b2, size_t length)
 {
-  return length == 0 ? 0 : memcmp(b2, b1, length);
+    return length == 0 ? 0 : memcmp(b2, b1, length);
 }

@@ -3,12 +3,11 @@
 
 int ioctl(int fd, int request, caddr_t arg)
 {
-  struct fileinfo *fi;
+    struct fileinfo *fi;
 
-  chkabort();
-  if (fi = _find_fd(fd))
-    {
-      return fi->ioctl(fi->userinfo, request, arg);
+    __chkabort();
+    if (fi = _find_fd(fd)) {
+	return fi->ioctl(fi->userinfo, request, arg);
     }
-  return -1;
+    return -1;
 }

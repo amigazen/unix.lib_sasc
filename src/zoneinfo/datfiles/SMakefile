@@ -46,15 +46,20 @@ TDATA=	${YDATA} ${NDATA} ${SDATA}
 DATA=	${YDATA} ${NDATA} ${SDATA} leapseconds
 USNO=	usno1988 usno1989
 
+CC=sc
+
 all: $(REDO)
 
 posix_only: ${TDATA}
+	    -makedir >nil: ${TZDIR}
 	    /zic -d ${TZDIR} -L nil: ${TDATA}
 
 right_only: leapseconds ${TDATA}
+	    -makedir >nil: ${TZDIR}
 	    /zic -d ${TZDIR} -L leapseconds ${TDATA}
 
 other_two: leapseconds ${TDATA}
+	    -makedir >nil: ${TZDIR}
 	    /zic -d ${TZDIR} -L leapseconds ${TDATA}
 	    /zic -d ${TZDIR} -L nil: ${TDATA}
 

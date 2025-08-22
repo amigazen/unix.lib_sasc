@@ -1,3 +1,6 @@
 #include "amiga.h"
 
-int umask(int mask) { return 0; }
+int umask(int mask)
+{
+    return 0;
+}

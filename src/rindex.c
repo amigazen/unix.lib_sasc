@@ -1,6 +1,6 @@
 #include <string.h>
 
-char *rindex(char *str, int c)
+char *rindex(const char *str, int c)
 {
-  return strrchr(str, c);
+    return strrchr(str, c);
 }

@@ -122,8 +122,9 @@ Zone	GB-Eire		0:00	GB-Eire		%s	1968 Oct 27 1:00s
 Rule	W-Eur	1986	max	-	Mar	lastSun	1:00s	1:00	" DST"
 Rule	W-Eur	1986	max	-	Sep	lastSun	1:00s	0	-
 
+Rule	M-Eur	1986	1995	-	Sep	lastSun	2:00s	0	-
 Rule	M-Eur	1986	max	-	Mar	lastSun	2:00s	1:00	" DST"
-Rule	M-Eur	1986	max	-	Sep	lastSun	2:00s	0	-
+Rule	M-Eur	1996	max	-	Oct	lastSun	2:00s	0	-
 
 Rule	E-Eur	1986	max	-	Mar	lastSun	3:00s	1:00	" DST"
 Rule	E-Eur	1986	max	-	Sep	lastSun	3:00s	0	-

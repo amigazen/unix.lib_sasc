@@ -4,6 +4,6 @@
 
 int getpid(void)
 {
-  chkabort();
-  return _our_pid;
+    __chkabort();
+    return _our_pid;
 }

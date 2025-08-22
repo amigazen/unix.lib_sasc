@@ -2,8 +2,8 @@
 #include "files.h"
 #include <fcntl.h>
 
-int creat(char *file, int prot)
+int __creat(const char *file, int prot)
 {
-  chkabort();
-  return open(file, O_WRONLY | O_CREAT | O_TRUNC, prot);
+    __chkabort();
+    return __open(file, O_WRONLY | O_CREAT | O_TRUNC, prot);
 }

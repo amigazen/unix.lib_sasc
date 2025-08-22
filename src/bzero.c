@@ -1,7 +1,8 @@
+
 #include "amiga.h"
 #include <string.h>
 
-void bzero(char *b, int length)
+void bzero(void *b, size_t length)
 {
-  memset(b, 0, length);
+    memset(b, 0, length);
 }

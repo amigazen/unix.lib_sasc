@@ -3,9 +3,11 @@
 
 extern char *_system_name;
 
-int gethostname(char *buf, int len)
-{
-  strncpy(buf, _system_name, len);
+char *strncpy(char *, const char *, size_t);
 
-  return 0;
+long gethostname(unsigned char *buf, long len)
+{
+    strncpy(buf, _system_name, len);
+
+    return 0;
 }

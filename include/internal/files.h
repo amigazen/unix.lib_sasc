@@ -3,9 +3,10 @@
 
 struct fileinfo {
   int flags;
+  int count;
   void *userinfo;
-  unsigned long (*select_start)(void *userinfo, int rd, int wr);
-  void (*select_poll)(void *userinfo, int *rd, int *wr);
+  unsigned long (*select_start)(void *userinfo, int rd, int wr, int ex);
+  int (*select_poll)(void *userinfo, int *rd, int *wr, int *ex);
   int (*read)(void *userinfo, void *buffer, unsigned int length);
   int (*write)(void *userinfo, void *buffer, unsigned int length);
   int (*lseek)(void *userinfo, long rpos, int mode);
@@ -17,9 +18,11 @@ struct fileinfo {
 #define FI_READ 1
 #define FI_WRITE 2
 
+int _get_free_fd(int *nfd, struct fileinfo ***fpt);
+
 int _alloc_fd(void *userinfo, int flags,
-  unsigned long (*select_start)(void *userinfo, int rd, int wr),
-  void (*select_poll)(void *userinfo, int *rd, int *wr),
+  unsigned long (*select_start)(void *userinfo, int rd, int wr, int ex),
+  int (*select_poll)(void *userinfo, int *rd, int *wr, int *ex),
   int (*read)(void *userinfo, void *buffer, unsigned int length),
   int (*write)(void *userinfo, void *buffer, unsigned int length),
   int (*lseek)(void *userinfo, long rpos, int mode),

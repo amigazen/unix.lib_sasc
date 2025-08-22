@@ -1,26 +1,41 @@
 #include "amiga.h"
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>
+
+int _sprintf(char *, const char *,...);
 
 char *mktemp(char *name)
 {
-  int l;
-  char *change = name + strlen(name) - 6;
-  char letter = 'a';
-  char id[9], *end_id;
+    static unsigned long next = 0;
+    int n = 0, l = strlen(name);
+    char letter = 'A';
+    char *change;
+    char id[9], *end_id;
+    struct stat buf;
 
-  chkabort();
-  _sprintf(id, "%lx", _us);
-  l = strlen(id);
-  end_id = l > 5 ? id + l - 5 : id;
-  _sprintf(change, "a%s", end_id);
+    __chkabort();
+    for(change = name + l - 1; *change == 'X'; --change)
+	++n;
+    ++change;
 
-  while (letter <= 'z')
-    {
-      *change = letter;
-      if (access(name, 0)) return name;
-      letter++;
+    if(!n)
+	return NULL;  /* no trailing Xs */
+
+    _sprintf(id, "%lx", (long)_us + next++);
+    l = strlen(id);
+    end_id = l > n ? id + l - n : id;
+    _sprintf(change, "%s", end_id);
+
+    while (*change) {
+	*change = letter++;
+	if (stat(name, &buf))
+	    return name;
+	if (letter > 'Z') {
+	    letter = 'A';
+	    *change++ = letter;
+	}
     }
-  name[0] = '\0';
-  return name;
+    name[0] = '\0';
+    return(NULL);
 }

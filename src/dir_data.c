@@ -6,10 +6,9 @@ struct idirect *last_entry;
 
 BPTR _get_cd(void)
 {
-  BPTR dir = CurrentDir(0);
-  
-  CurrentDir(dir);
-  
-  return dir;
-}
+    BPTR dir = CurrentDir(0);
 
+    CurrentDir(dir);
+
+    return dir;
+}

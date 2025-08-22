@@ -1,8 +1,10 @@
 #ifndef _SIGNAL_H
 #define _SIGNAL_H
 
-#define NSIG 32			/* We define lots of signals (though most are never
-				   generated) */
+#include <sys/types.h>
+
+#define NSIG 32			/* We define lots of signals (though most are
+				   never generated) */
 
 /* Signal number definitions */
 /* Those which can be generated other than by kill are described with
@@ -15,6 +17,7 @@
 #define SIGILL 4		/* illegal instruction */
 #define SIGTRAP 5		/* trace trap */
 #define SIGIOT 6		/* abort, amiga: abort() called */
+#define SIGABRT SIGIOT		/* compatibility */
 #define SIGEMT 7		/* emulator trap */
 #define SIGFPE 8		/* arithmetic exception, amiga: arith op */
 #define SIGKILL 9		/* kill */
@@ -35,15 +38,37 @@
 #define SIGUSR1 30		/* user-defined signal 1 */
 #define SIGUSR2 31		/* user-defined signal 2 */
 
-#define SIG_IGN (void *)0
-#define SIG_DFL (void *)1
+#if 0
+#define SIG_DFL (void *)0
+#define SIG_IGN (void *)1
+#else
+#define SIG_ERR (void (*)(int)) -1
+#define SIG_DFL (void (*)(int)) 0
+#define SIG_IGN (void (*)(int)) 1
+#endif
 
-void (*signal(int sig,void (*fn)(int)))(int);
-long sigsetmask(long mask);
+/*
+ * Flags for sigprocmask:
+ */
+#define SIG_BLOCK	1	/* block specified signal set */
+#define SIG_UNBLOCK	2	/* unblock specified signal set */
+#define SIG_SETMASK	3	/* set specified signal set */
+
+/*
+ * Macro for converting signal number to a mask
+ */
+#define sigmask(m)	(1UL << (m))
+
+typedef long sigset_t;
+
+extern void (*signal(int sig,void (*fn)(int)))(int);
+extern int raise(int);
+extern long sigsetmask(long mask);
+extern int sigprocmask(int, const sigset_t *, sigset_t *);
 
 /* Only kill(getpid(), sig) works */
 /* Also, getpid() is a unique number for this process */
-int getpid(void);
-int kill(int pid, int sig);
+extern int getpid(void);
+extern int kill(int pid, int sig);
 
 #endif

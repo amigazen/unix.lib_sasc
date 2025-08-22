@@ -1,0 +1,165 @@
+# STRTOLL Implementation for AmigaOS
+
+## Overview
+
+This directory contains a complete implementation of the POSIX `strtoll()` function for AmigaOS using SAS/C. The function properly parses 64-bit integers from strings, unlike the previous version which only wrapped the 32-bit `strtol()` function.
+
+## Key Features
+
+- **True 64-bit parsing**: Parses numbers beyond the 32-bit range
+- **Proper overflow detection**: Correctly handles numbers that exceed 64-bit limits
+- **Base conversion support**: Supports bases 2-36 with auto-detection
+- **POSIX compliant**: Follows the standard `strtoll()` specification
+- **AmigaOS optimized**: Uses the custom `long_long_t` struct for 64-bit arithmetic
+
+## Files
+
+- `strtoll.c` - Main implementation of the `strtoll()` function
+- `longlong.h` - Header file with 64-bit arithmetic function prototypes
+- `longlong.c` - Implementation of 64-bit arithmetic functions
+- `unittests/` - Directory containing test programs
+  - `test_strtoll.c` - Test program to verify functionality
+  - `test_overflow.c` - Test program for overflow detection logic
+  - `Makefile` - Dedicated build configuration for tests
+  - `README.md` - Test documentation
+- `smakefile` - SAS/C build configuration
+
+## Building
+
+To build the library and test programs:
+
+```bash
+# Build everything (library + tests)
+smake
+
+# Build only the library
+smake unix.lib
+
+# Build only the tests
+smake unittests
+```
+
+This will create:
+- `unix.lib` - The main library containing all functions
+- `test_strtoll` - Test program executable
+- `test_overflow` - Overflow test program executable
+
+### Building Tests Independently
+
+You can also build tests from the unittests directory:
+
+```bash
+cd unittests
+make all
+```
+
+## Testing
+
+Run the test program to verify the implementation:
+
+```bash
+test_strtoll
+```
+
+The test program covers:
+1. Basic decimal parsing
+2. Large 32-bit numbers
+3. Numbers beyond 32-bit range
+4. Maximum 64-bit positive number
+5. Negative numbers
+6. Hexadecimal parsing
+7. Auto-base detection
+8. Overflow detection
+9. Invalid base handling
+
+## Implementation Details
+
+### 64-bit Arithmetic
+
+The function uses custom 64-bit arithmetic functions:
+- `long_long_mul()` - Multiplication
+- `long_long_sub()` - Subtraction (used for parsing)
+- `long_long_gt()`, `long_long_lt()`, `long_long_eq()` - Comparisons
+- `long_long_div()` - Division for overflow checking
+
+### Overflow Detection
+
+The critical part of the implementation is the `will_overflow()` function, which:
+1. Calculates the maximum safe value before multiplication
+2. Checks if the current result would overflow when multiplied by the base
+3. Verifies that subtracting the new digit won't cause overflow
+
+**Important**: The function parses all numbers as negative values internally to handle the full range correctly, including the critical case of `LONG_LONG_MIN` (-9223372036854775808).
+
+### Base Handling
+
+- **Base 0**: Auto-detects base from string prefix (0x, 0b, 0)
+- **Base 2-36**: Supports all standard bases with proper digit validation
+- **Invalid base**: Sets `errno = EINVAL` and returns 0
+
+## Example Usage
+
+```c
+#include "longlong.h"
+
+char *endptr;
+long_long_t result;
+
+// Parse a large number
+result = strtoll("3000000000", &endptr, 10);
+// result.hi = 1, result.lo = 0x2D798000
+
+// Parse hexadecimal
+result = strtoll("0x123456789ABCDEF", &endptr, 0);
+// result.hi = 0x12345678, result.lo = 0x9ABCDEF0
+
+// Parse the critical LONG_LONG_MIN case
+result = strtoll("-9223372036854775808", &endptr, 10);
+// result.hi = 0x80000000, result.lo = 0x00000000 (LONG_LONG_MIN)
+
+// Check for errors
+if (errno == ERANGE) {
+    // Number was too large
+} else if (errno == EINVAL) {
+    // Invalid base specified
+}
+```
+
+## Differences from Previous Version
+
+The previous implementation had a fundamental limitation:
+- **Before**: Only parsed 32-bit numbers using `strtol()`, then converted to 64-bit type
+- **After**: Parses true 64-bit numbers using custom arithmetic functions
+
+This means the function can now correctly handle numbers like:
+- `3000000000` (3 billion) - Previously would overflow
+- `9223372036854775807` (64-bit max) - Previously would overflow
+- Large hexadecimal values - Previously limited to 32-bit range
+
+## Critical Bug Fix: LONG_LONG_MIN Handling
+
+The implementation includes a critical fix for handling the most negative 64-bit number:
+
+**The Problem**: The range of 64-bit signed integers is asymmetric:
+- **Positive range**: 0 to +9,223,372,036,854,775,807
+- **Negative range**: -9,223,372,036,854,775,808 to -1
+
+When parsing `"-9223372036854775808"`, the previous approach would:
+1. Parse the positive number `9223372036854775808`
+2. Detect overflow (since it's larger than `LONG_LONG_MAX`)
+3. Return an error for a valid number
+
+**The Solution**: Parse all numbers as negative values internally:
+1. Work with the negative range (which is slightly larger)
+2. Use subtraction instead of addition during parsing
+3. Apply sign conversion at the end
+4. Handle the special case where negating `LONG_LONG_MIN` would overflow
+
+This ensures that `-9223372036854775808` parses correctly while maintaining proper overflow detection for truly invalid numbers.
+
+## Compliance
+
+This implementation follows:
+- POSIX.1-2001 specification for `strtoll()`
+- C89/ANSI C standards (required for SAS/C)
+- AmigaOS coding conventions

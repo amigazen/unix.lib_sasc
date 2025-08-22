@@ -66,6 +66,8 @@ int	 close __P((int));
 char	*cuserid __P((char *));
 int	 dup __P((int));
 int	 dup2 __P((int, int));
+int	 exec __P((char *, char **, int, int, char *, int));
+int	 execf __P((int(*)(void *), void *, int, int, char *, int));
 int	 execl __P((const char *, const char *, ...));
 int	 execle __P((const char *, const char *, ...));
 int	 execlp __P((const char *, const char *, ...));
@@ -102,7 +104,19 @@ pid_t	 tcgetpgrp __P((int));
 int	 tcsetpgrp __P((int, pid_t));
 char	*ttyname __P((int));
 int	 unlink __P((const char *));
-ssize_t	 write __P((int, const void *, size_t));
+ssize_t	 write __P((int, const void *, unsigned int));
+
+#if 1 /* for compatibility with SASC 6.xx */
+off_t	 __lseek __P((int, off_t, int));
+ssize_t	 __read __P((int, void *, size_t));
+ssize_t	 __write __P((int, const void *, unsigned int));
+int	 __close __P((int));
+
+#define lseek __lseek
+#define read __read
+#define write __write
+#define close __close
+#endif
 
 #ifndef	_POSIX_SOURCE
 
@@ -126,9 +140,9 @@ int	 fchown __P((int, int, int));
 int	 fnmatch __P((const char *, const char *, int));
 int	 fsync __P((int));
 int	 ftruncate __P((int, off_t));
-int	 getdtablesize __P((void));
-long	 gethostid __P((void));
-int	 gethostname __P((char *, int));
+long	 getdtablesize __P((void));
+unsigned long	gethostid __P((void));
+long	 gethostname __P((unsigned char *, long));
 mode_t	 getmode __P((const void *, mode_t));
 int	 getpagesize __P((void));
 char	*getpass __P((const char *));

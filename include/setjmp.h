@@ -36,7 +36,7 @@
 #ifndef _SETJMP_H_
 #define _SETJMP_H_
 
-#define _JBLEN 14
+#define _JBLEN 15
 
 typedef int jmp_buf[_JBLEN];
 
@@ -47,6 +47,7 @@ int	setjmp __P((jmp_buf));
 void	longjmp __P((jmp_buf, int));
 
 #if !defined(_ANSI_SOURCE) && !defined(_POSIX_SOURCE)
+int	__setjmp __P((jmp_buf));
 int	_setjmp __P((jmp_buf));
 void	_longjmp __P((jmp_buf, int));
 #endif /* neither ANSI nor POSIX */

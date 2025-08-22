@@ -1,4 +1,7 @@
-/* Avoid problems with conflicting declarations for mkdir */
-#define mkdir __fake_mkdir
+#ifndef _UNIX_STDIO_H
+#define _UNIX_STDIO_H
 #include "include:stdio.h"
-#undef mkdir
+extern int pclose(FILE *);
+extern FILE *popen(const char *, const char *);
+extern char *tempnam(const char *, const char *);
+#endif

@@ -1,0 +1,597 @@
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 _exit.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  for (fd = 0; fd < lfd; fd++) close[33;7m([0mfd);
+_exit.c 12 Warning 100: no prototype declared for function "close"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 _main.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  _fail[33;7m([0m"No memory");
+_main.c 33 Warning 100: no prototype declared for function "_fail"
+
+====================
+  if (!(_amiga_user.pw_name = getenv[33;7m([0m"USER"))) _amiga_user.pw_name =
+_main.c 458 Warning 100: no prototype declared for function "getenv"
+
+====================
+  if (!(_amiga_user.pw_name = getenv("USER")[33;7m)[0m) _amiga_user.pw_name =
+_main.c 458 Warning 225: pointer type mismatch
+                         "char *" does not match "int"
+
+====================
+  if (!(_amiga_user.pw_gecos = getenv("USERNAME")[33;7m)[0m)
+_main.c 459 Warning 225: pointer type mismatch
+                         "char *" does not match "int"
+
+====================
+  if (!(_amiga_user.pw_dir = getenv("HOME")[33;7m)[0m) _amiga_user.pw_dir = "s
+_main.c 461 Warning 225: pointer type mismatch
+                         "char *" does not match "int"
+
+====================
+  if (!(_amiga_user.pw_shell = getenv("SHELL")[33;7m)[0m) _amiga_user.pw_shell
+_main.c 462 Warning 225: pointer type mismatch
+                         "char *" does not match "int"
+
+====================
+  if (!(_system_name = getenv("HOSTNAME")[33;7m)[0m) _system_name = "amiga";
+_main.c 463 Warning 225: pointer type mismatch
+                         "char *" does not match "int"
+_main.c 64 Warning 316: Static function is unreachable "copystr"
+_main.c 221 Warning 304: dead assignment eliminated "res"
+_main.c 239 Warning 304: dead assignment eliminated "res"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 abort.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 access.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 alloca.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+#endif [33;7memacs[0m
+alloca.c 46 Warning 132: extra tokens after valid preprocessor directive
+alloca.c 86 Warning 161: no prototype declared at definition for function "find_stack_direction"
+alloca.c 143 Warning 161: no prototype declared at definition for function "alloca"
+
+====================
+	  free [33;7m([0m(pointer) hp);	/* collect garbage */
+alloca.c 164 Warning 100: no prototype declared for function "free"
+
+====================
+    register pointer	new = malloc [33;7m([0msizeof (header) + size);
+alloca.c 180 Warning 100: no prototype declared for function "malloc"
+alloca.c 192 Warning 315: Static variable is unreachable "SCCSid"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 amigados.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  _fail[33;7m([0m"Failed to initialise I/O");
+amigados.c 298 Warning 100: no prototype declared for function "_fail"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 amigatime.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+      local = localtime(&now.tv_secs[33;7m)[0m;
+amigatime.c 24 Warning 88: argument type incorrect
+                           Expecting "time_t const *", found "unsigned long *"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 bcmp.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 bcopy.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 bzero.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 chmod.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 chown.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 close.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 creat.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 ctime.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+	name = getenv[33;7m([0m"TZ");
+ctime.c 878 Warning 100: no prototype declared for function "getenv"
+
+====================
+	name = getenv("TZ")[33;7m;[0m
+ctime.c 878 Warning 225: pointer type mismatch
+                         "char const *" does not match "int"
+
+====================
+		"Sun"[33;7m,[0m "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
+ctime.c 1141 Warning 74: initializer data truncated
+
+====================
+		"Sun", "Mon"[33;7m,[0m "Tue", "Wed", "Thu", "Fri", "Sat"
+ctime.c 1141 Warning 74: initializer data truncated
+
+====================
+		"Sun", "Mon", "Tue"[33;7m,[0m "Wed", "Thu", "Fri", "Sat"
+ctime.c 1141 Warning 74: initializer data truncated
+
+====================
+		"Sun", "Mon", "Tue", "Wed"[33;7m,[0m "Thu", "Fri", "Sat"
+ctime.c 1141 Warning 74: initializer data truncated
+
+====================
+		"Sun", "Mon", "Tue", "Wed", "Thu"[33;7m,[0m "Fri", "Sat"
+ctime.c 1141 Warning 74: initializer data truncated
+
+====================
+		"Sun", "Mon", "Tue", "Wed", "Thu", "Fri"[33;7m,[0m "Sat"
+ctime.c 1141 Warning 74: initializer data truncated
+
+====================
+	[33;7m}[0m;
+ctime.c 1142 Warning 74: initializer data truncated
+
+====================
+		"Jan"[33;7m,[0m "Feb", "Mar", "Apr", "May", "Jun",
+ctime.c 1144 Warning 74: initializer data truncated
+
+====================
+		"Jan", "Feb"[33;7m,[0m "Mar", "Apr", "May", "Jun",
+ctime.c 1144 Warning 74: initializer data truncated
+
+====================
+		"Jan", "Feb", "Mar"[33;7m,[0m "Apr", "May", "Jun",
+ctime.c 1144 Warning 74: initializer data truncated
+
+====================
+		"Jan", "Feb", "Mar", "Apr"[33;7m,[0m "May", "Jun",
+ctime.c 1144 Warning 74: initializer data truncated
+
+====================
+		"Jan", "Feb", "Mar", "Apr", "May"[33;7m,[0m "Jun",
+ctime.c 1144 Warning 74: initializer data truncated
+
+====================
+		"Jan", "Feb", "Mar", "Apr", "May", "Jun"[33;7m,[0m
+ctime.c 1144 Warning 74: initializer data truncated
+
+====================
+		"Jul"[33;7m,[0m "Aug", "Sep", "Oct", "Nov", "Dec"
+ctime.c 1145 Warning 74: initializer data truncated
+
+====================
+		"Jul", "Aug"[33;7m,[0m "Sep", "Oct", "Nov", "Dec"
+ctime.c 1145 Warning 74: initializer data truncated
+
+====================
+		"Jul", "Aug", "Sep"[33;7m,[0m "Oct", "Nov", "Dec"
+ctime.c 1145 Warning 74: initializer data truncated
+
+====================
+		"Jul", "Aug", "Sep", "Oct"[33;7m,[0m "Nov", "Dec"
+ctime.c 1145 Warning 74: initializer data truncated
+
+====================
+		"Jul", "Aug", "Sep", "Oct", "Nov"[33;7m,[0m "Dec"
+ctime.c 1145 Warning 74: initializer data truncated
+
+====================
+	[33;7m}[0m;
+ctime.c 1146 Warning 74: initializer data truncated
+
+====================
+		(*funcp)[33;7m([0m&t, offset, &mytm);
+ctime.c 1267 Warning 154: no prototype declared for function pointer
+ctime.c 652 Warning 317: possibly uninitialized variable "value"
+ctime.c 858 Warning 317: possibly uninitialized variable "dstname"
+ctime.c 1124 Warning 317: possibly uninitialized variable "yleap"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 devices.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+    if (port) DeletePort[33;7m([0mport);
+devices.c 21 Warning 100: no prototype declared for function "DeletePort"
+devices.c 20 Warning 317: possibly uninitialized variable "ioreq"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 dir.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+#undef struct [33;7mdirent[0m
+dir_data.h 17 Warning 132: extra tokens after valid preprocessor directive
+
+====================
+static iDIR *last_info [33;7m=[0m NULL;
+dir.c 21 Warning 181: "last_info" was declared both static and external
+                      See line 70 file "dir_data.h"
+
+====================
+static struct idirect *last_entry [33;7m=[0m NULL;
+dir.c 22 Warning 181: "last_entry" was declared both static and external
+                      See line 71 file "dir_data.h"
+
+====================
+[33;7m{[0m
+dir.c 26 Warning 181: "_get_cd" was declared both static and external
+                      See line 74 file "dir_data.h"
+
+====================
+      closedir[33;7m([0mnew);
+dir.c 145 Warning 100: no prototype declared for function "closedir"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 dir_data.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+#undef struct [33;7mdirent[0m
+dir_data.h 17 Warning 132: extra tokens after valid preprocessor directive
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 error.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 error_msg.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+error_msg.c 48 Warning 315: Static variable is unreachable "sys_amiga_error"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 exec.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+extern char far _child_startup, [33;7mfar[0m _child_startup_end;
+exec.c 17 Warning 101: redundant keywords in declaration
+
+====================
+  else if (ioctl[33;7m([0minput, _AMIGA_GET_FH, &in) == -1) { in = 0; }
+exec.c 33 Warning 100: no prototype declared for function "ioctl"
+
+====================
+ DOSBase 					      (0UL) )[33;7m;[0m
+exec.c 122 Warning 225: pointer type mismatch
+                        "struct Task *" does not match "struct Process *"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 fchmod.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  return ioctl[33;7m([0mfd, _AMIGA_SETPROTECTION, &amode);
+fchmod.c 9 Warning 100: no prototype declared for function "ioctl"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 fcntl.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 fibstat.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 fifofd.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 files.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 fstat.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  if (ioctl[33;7m([0mfd, _AMIGA_GET_FH, &fh) == -1) return -1;
+fstat.c 15 Warning 100: no prototype declared for function "ioctl"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 ftruncate.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  return ioctl[33;7m([0mfd, _AMIGA_TRUNCATE, &length);
+ftruncate.c 7 Warning 100: no prototype declared for function "ioctl"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 getenv.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 gethostname.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  strncpy[33;7m([0mbuf, _system_name, len);
+gethostname.c 8 Warning 100: no prototype declared for function "strncpy"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 getpid.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 getwd.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  return getcwd[33;7m([0mpathname, MAXPATHLEN);
+getwd.c 7 Warning 100: no prototype declared for function "getcwd"
+
+====================
+  return getcwd(pathname,  1024 )[33;7m;[0m
+getwd.c 7 Warning 85: return value mismatch for function "getwd"
+                      Expecting "char *", found "int"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 gid.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 grp.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 index.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 ioctl.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 isatty.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  if (ioctl[33;7m([0mfd, _AMIGA_INTERACTIVE, &istty) != 0) return 0;
+isatty.c 9 Warning 100: no prototype declared for function "ioctl"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 kill.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+	    Signal(p[33;7m,[0m SIGBREAKF_CTRL_C | SIGBREAKF_CTRL_D);
+kill.c 22 Warning 88: argument type incorrect
+                      Expecting "struct Task *", found "struct Process *"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 link.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 lseek.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 message.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 mkdir.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+mkdir.c 16 Warning 304: dead assignment eliminated "amode"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 mkfifo.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 mktemp.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  _sprintf[33;7m([0mid, "%lx", _us);
+mktemp.c 13 Warning 100: no prototype declared for function "_sprintf"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 open.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+open.c 19 Warning 304: dead assignment eliminated "amode"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 perror.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 pipe.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  NewList[33;7m([0m&port->mp_MsgList);
+pipe.c 24 Warning 100: no prototype declared for function "NewList"
+
+====================
+	_sprintf[33;7m([0mname, "fifo:%s/rwesK%s",
+pipe.c 206 Warning 100: no prototype declared for function "_sprintf"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 processes.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  _sprintf[33;7m([0m_door_name, "door.%lx.%lx", _us, _startup_time);
+processes.c 36 Warning 100: no prototype declared for function "_sprintf"
+
+====================
+  _fail[33;7m([0m"No memory");
+processes.c 40 Warning 100: no prototype declared for function "_fail"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 protection.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 pseudo_c.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 pwd.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 read.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 rename.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 rindex.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 rmdir.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+rmdir.c 6 Warning 304: dead assignment eliminated "fib"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 select.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+select.c 12 Warning 93: no reference to identifier "oefds"
+select.c 12 Warning 304: dead assignment eliminated "oefds"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 setjmp.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 siglist.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 signal.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 signals.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+  if (!(alarm_timer = _alloc_timer())) _fail[33;7m([0m"Failed to create timer"
+signals.c 29 Warning 100: no prototype declared for function "_fail"
+
+====================
+		case  2 : case  3 : _message[33;7m([0m"user interrupt");
+signals.c 128 Warning 100: no prototype declared for function "_message"
+
+====================
+  for (i = 0; i <  32 ; i++) _sig_handlers[i] =  (void *)1 [33;7m;[0m
+signals.c 190 Warning 147: conversion between function and data pointers
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 sigpause.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 sigsetmask.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 sleep.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 stat.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+#undef struct [33;7mdirent[0m
+dir_data.h 17 Warning 132: extra tokens after valid preprocessor directive
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 strftime.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+	if (_fmt[33;7m([0mformat, t)) {
+strftime.c 75 Warning 100: no prototype declared for function "_fmt"
+
+====================
+[33;7m{[0m
+strftime.c 86 Warning 181: "_fmt" was declared both static and external
+                           See line 70 file "strftime.c"
+
+====================
+				if (!_add[33;7m([0mAfmt[t->tm_wday]))
+strftime.c 96 Warning 100: no prototype declared for function "_add"
+
+====================
+				if (!_conv[33;7m([0mt->tm_mday, 2, '0'))
+strftime.c 131 Warning 100: no prototype declared for function "_conv"
+
+====================
+				if (!_secs[33;7m([0mt))
+strftime.c 189 Warning 100: no prototype declared for function "_secs"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 strtol.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 strtoll.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 longlong.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 snprintf.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 time.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 timeconvert.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+timeconvert.c 8 Warning 93: no reference to identifier "local"
+timeconvert.c 9 Warning 93: no reference to identifier "gmt"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 timers.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+      _device_close(timer->io[33;7m)[0m;
+timers.c 26 Warning 88: argument type incorrect
+                        Expecting "struct IORequest *", found "struct timerequest *"
+
+====================
+      AbortIO(timer->io[33;7m)[0m;
+timers.c 35 Warning 88: argument type incorrect
+                        Expecting "struct IORequest *", found "struct timerequest *"
+
+====================
+      WaitIO(timer->io[33;7m)[0m;
+timers.c 36 Warning 88: argument type incorrect
+                        Expecting "struct IORequest *", found "struct timerequest *"
+
+====================
+      SendIO(timer->io[33;7m)[0m;
+timers.c 57 Warning 88: argument type incorrect
+                        Expecting "struct IORequest *", found "struct timerequest *"
+
+====================
+  if (timer->sent && CheckIO(timer->io[33;7m)[0m)
+timers.c 65 Warning 88: argument type incorrect
+                        Expecting "struct IORequest const *", found "struct timerequest *"
+
+====================
+      WaitIO(timer->io[33;7m)[0m;
+timers.c 67 Warning 88: argument type incorrect
+                        Expecting "struct IORequest *", found "struct timerequest *"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 truncate.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 uid.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 umask.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 unlink.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+        if (ioctl[33;7m([0mi, _AMIGA_DELETE_IF_ME, &nlock) == 0)
+unlink.c 22 Warning 100: no prototype declared for function "ioctl"
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 utime.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 vsnprintf.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 wait4.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+	sc INCDIR=include/internal/ INCDIR=include/ INCDIR=include: OPTIMIZE NOICONS UTILLIB IGNORE=84 IGNORE=224 write.c
+SAS/C Amiga Compiler 6.58
+Copyright (c) 1988-1995 SAS Institute Inc.
+
+====================
+    return fi->write(fi->userinfo, buffer[33;7m,[0m length);
+write.c 30 Warning 104: conversion from pointer to const/volatile to pointer to non-const/volatile
+	asm child.asm -o child.o
+SAS/C 680x0 Assembler V6.58 for AmigaDOS
+Copyright 1988-1995 SAS Institute, Inc.  All Rights Reserved
+Options beyond file name ignored
+
+	asm sprintf.asm -o sprintf.o
+SAS/C 680x0 Assembler V6.58 for AmigaDOS
+Copyright 1988-1995 SAS Institute, Inc.  All Rights Reserved
+Options beyond file name ignored
+
+	asm _setjmp.asm -o _setjmp.o
+SAS/C 680x0 Assembler V6.58 for AmigaDOS
+Copyright 1988-1995 SAS Institute, Inc.  All Rights Reserved
+Options beyond file name ignored
+
+	delete >NIL: unix.lib
+	oml unix.lib a _exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o bcmp.o          bcopy.o bzero.o chmod.o chown.o close.o creat.o ctime.o devices.o dir.o          dir_data.o error.o error_msg.o exec.o fchmod.o fcntl.o fibstat.o          fifofd.o files.o fstat.o ftruncate.o getenv.o gethostname.o getpid.o          getwd.o gid.o grp.o index.o ioctl.o isatty.o kill.o link.o lseek.o          message.o mkdir.o mkfifo.o mktemp.o open.o perror.o pipe.o processes.o          protection.o pseudo_c.o pwd.o read.o rename.o rindex.o rmdir.o select.o          setjmp.o siglist.o signal.o signals.o sigpause.o sigsetmask.o sleep.o          stat.o strftime.o strtol.o strtoll.o longlong.o snprintf.o time.o          timeconvert.o timers.o truncate.o uid.o          umask.o unlink.o utime.o vsnprintf.o wait4.o write.o child.o sprintf.o _setjmp.o
+SAS/C Amiga Format Librarian  Version 6.55
+Copyright © 1995  SAS Institute, Inc.

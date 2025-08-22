@@ -170,12 +170,19 @@ struct flock {
 
 __BEGIN_DECLS
 int	open __P((const char *, int, ...));
-int	creat __P((const char *, mode_t));
+int	creat __P((const char *, int));
 int	fcntl __P((int, int, ...));
 #ifndef _POSIX_SOURCE
 int	flock __P((int, int));
 #endif /* !_POSIX_SOURCE */
 __END_DECLS
+
+#if 1 /* for compatibility with SASC 6.xx */
+int	__open __P((const char *, int, ...));
+int	__creat __P((const char *, int));
+#define open __open
+#define creat __creat
+#endif
 #endif
 
 #ifdef AMIGA

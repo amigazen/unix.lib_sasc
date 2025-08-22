@@ -12,11 +12,11 @@
 
 extern struct timeinfo *_odd_timer;
 extern ULONG _odd_sig;
-extern struct Device *TimerBase;
+extern struct Library *TimerBase;
 
 int convert_oserr(int ioerr);
 void _seterr(void);
-void chkabort(void);
+void __regargs __chkabort(void);
 
 #define ERROR do { _seterr(); return -1; } while(0)
 #define AMIGA_UID 1
@@ -24,4 +24,4 @@ void chkabort(void);
 
 int _make_protection(int mode);
 int _make_mode(int protection);
-void _fibstat(struct FileInfoBlock *fib, int isroot, struct stat *sbuf);
+void _fibstat(struct FileInfoBlock *fib, int isroot, struct stat *sbuf, long dev);

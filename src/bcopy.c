@@ -1,8 +1,8 @@
 #include "amiga.h"
 #include <string.h>
 
-void bcopy(char *b1, char *b2, int length)
+void bcopy(const void *b1, void *b2, size_t length)
 {
-  /* Unoptimised version */
-  memmove(b2, b1, length);
+    /* Unoptimised version */
+    memmove(b2, b1, length);
 }

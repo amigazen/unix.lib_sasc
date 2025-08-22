@@ -2,14 +2,13 @@
 #include "files.h"
 #include <fcntl.h>
 
-int lseek(int fd, long rpos, int mode)
+int __lseek(int fd, long rpos, int mode)
 {
-  struct fileinfo *fi;
+    struct fileinfo *fi;
 
-  chkabort();
-  if (fi = _find_fd(fd))
-    {
-      return fi->lseek(fi->userinfo, rpos, mode);
+    __chkabort();
+    if (fi = _find_fd(fd)) {
+	return fi->lseek(fi->userinfo, rpos, mode);
     }
-  return -1;
+    return -1;
 }

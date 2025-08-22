@@ -1,8 +1,8 @@
 #include "amiga.h"
 #include <sys/param.h>
 
-char *getwd (char *pathname)
+char *getwd(char *pathname)
 {
-  chkabort();
-  return getcwd(pathname, MAXPATHLEN);
+    __chkabort();
+    return getcwd(pathname, MAXPATHLEN);
 }
