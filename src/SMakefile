@@ -1,7 +1,7 @@
 #
 #	SMakefile for unix emulation library
 #
-#	Copyright © 1995-96 Enrico Forestieri
+#	Copyright ï¿½ 1995-96 Enrico Forestieri
 #			    All rights reserved.
 #
 
@@ -92,7 +92,7 @@ ALLDNBOBJS = $(DNBOBJS) $(ASMOBJS)
 
 DEFS = DEF AMITCP=1 DEF NO_MACROS=1 DEF __USE_SYSBASE=1
 
-IDIRS = IDIR=/include IDIR=/include/internal IDIR=netinclude:
+IDIRS = IDIR=netinclude: IDIR=include IDIR=include/internal IDIR=include:
 
 SCOPTIONS = NOVER NOICONS CPU=ANY PARMS=BOTH NOSTKCHK IDLEN=100 \
 	    AFP MCCONS STREQ UTILLIB MATH=IEEE OPTTIME OPTSCHED \
@@ -242,11 +242,11 @@ error_msg.o: error_msg.c amiga.h
 exec.o: exec.c processes.h amiga.h
 fchmod.o: fchmod.c amiga.h
 fcntl.o: fcntl.c amiga.h
-fd_setsize.o: fd_setsize.c /include/sys/types.h
+fd_setsize.o: fd_setsize.c include/sys/types.h
 fibstat.o: fibstat.c timeconvert.h amiga.h
 fifofd.o: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.o: files.c amiga.h
-fnmatch.o: fnmatch.c /include/fnmatch.h
+fnmatch.o: fnmatch.c include/fnmatch.h
 fstat.o: fstat.c amiga.h
 ftruncate.o: ftruncate.c amiga.h
 getenv.o: getenv.c amiga.h
@@ -341,11 +341,11 @@ error_msg.nbo: error_msg.c amiga.h
 exec.nbo: exec.c processes.h amiga.h
 fchmod.nbo: fchmod.c amiga.h
 fcntl.nbo: fcntl.c amiga.h
-fd_setsize.nbo: fd_setsize.c /include/sys/types.h
+fd_setsize.nbo: fd_setsize.c include/sys/types.h
 fibstat.nbo: fibstat.c timeconvert.h amiga.h
 fifofd.nbo: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.nbo: files.c amiga.h
-fnmatch.nbo: fnmatch.c /include/fnmatch.h
+fnmatch.nbo: fnmatch.c include/fnmatch.h
 fstat.nbo: fstat.c amiga.h
 ftruncate.nbo: ftruncate.c amiga.h
 getenv.nbo: getenv.c amiga.h
@@ -440,11 +440,11 @@ error_msg.do: error_msg.c amiga.h
 exec.do: exec.c processes.h amiga.h
 fchmod.do: fchmod.c amiga.h
 fcntl.do: fcntl.c amiga.h
-fd_setsize.do: fd_setsize.c /include/sys/types.h
+fd_setsize.do: fd_setsize.c include/sys/types.h
 fibstat.do: fibstat.c timeconvert.h amiga.h
 fifofd.do: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.do: files.c amiga.h
-fnmatch.do: fnmatch.c /include/fnmatch.h
+fnmatch.do: fnmatch.c include/fnmatch.h
 fstat.do: fstat.c amiga.h
 ftruncate.do: ftruncate.c amiga.h
 getenv.do: getenv.c amiga.h
@@ -539,11 +539,11 @@ error_msg.dnbo: error_msg.c amiga.h
 exec.dnbo: exec.c processes.h amiga.h
 fchmod.dnbo: fchmod.c amiga.h
 fcntl.dnbo: fcntl.c amiga.h
-fd_setsize.dnbo: fd_setsize.c /include/sys/types.h
+fd_setsize.dnbo: fd_setsize.c include/sys/types.h
 fibstat.dnbo: fibstat.c timeconvert.h amiga.h
 fifofd.dnbo: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.dnbo: files.c amiga.h
-fnmatch.dnbo: fnmatch.c /include/fnmatch.h
+fnmatch.dnbo: fnmatch.c include/fnmatch.h
 fstat.dnbo: fstat.c amiga.h
 ftruncate.dnbo: ftruncate.c amiga.h
 getenv.dnbo: getenv.c amiga.h

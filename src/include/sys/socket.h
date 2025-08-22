@@ -3,11 +3,13 @@
 
 #ifdef AMITCP
 
+/* Include netinclude headers first to provide proper definitions */
+#include "netinclude:sys/socket.h"
+
 #ifndef _TYPES_H_
 #include <sys/types.h>
 #define SYS_TYPES_H
 #endif
-#include "netinclude:sys/socket.h"
 
 #else
 

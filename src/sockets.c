@@ -1,6 +1,7 @@
 #ifdef AMITCP
 #include "amiga.h"
-#include "files.h"
+#include "include/internal/files.h"
+#include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/cdefs.h>
 #include <amiga/ioctl.h>
@@ -8,7 +9,7 @@
 #include <netdb.h>
 #undef _OPTINLINE
 #include <proto/socket.h>
-#include <amitcp/socketbasetags.h>
+#include <bsdsocket/socketbasetags.h>
 #include <intuition/intuition.h>
 #include <signal.h>
 
@@ -334,7 +335,7 @@ fdCallback(REG(d0) int fd, REG(d1) int action)
 char * 
 inet_ntoa(struct in_addr addr) 
 {
-  return Inet_NtoA(addr.s_addr);
+  return (char *)Inet_NtoA(addr.s_addr);
 }
 
 struct in_addr 
