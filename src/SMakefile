@@ -24,9 +24,10 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	protection.o pseudo_c.o pwd.o raise.o read.o regerror.o regex.o \
 	regexp.o regsub.o rename.o rindex.o rmdir.o select.o setenv.o \
 	setjmp.o siglist.o signal.o signals.o sigpause.o sigprocmask.o \
-	sigsetmask.o sleep.o sockets.o stat.o strcasecmp.o strerror.o \
-	strftime.o symlink.o tempnam.o time.o timeconvert.o timers.o \
-	truncate.o uid.o umask.o unlink.o utime.o wait4.o write.o
+	sigsetmask.o sleep.o sockets.o snprintf.o stat.o strcasecmp.o \
+	strerror.o strftime.o strtol.o strtoll.o longlong.o symlink.o \
+	tempnam.o time.o timeconvert.o timers.o truncate.o uid.o umask.o \
+	unlink.o utime.o vsnprintf.o wait4.o write.o
 
 DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	amigatime.do bcmp.do bcopy.do bzero.do chmod.do chown.do close.do \
@@ -40,10 +41,10 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	protection.do pseudo_c.do pwd.do raise.do read.do regerror.do \
 	regex.do regexp.do regsub.do rename.do rindex.do rmdir.do select.do \
 	setenv.do setjmp.do siglist.do signal.do signals.do sigpause.do \
-	sigprocmask.do sigsetmask.do sleep.do sockets.do stat.do \
-	strcasecmp.do strerror.do strftime.do symlink.do tempnam.do time.do \
-	timeconvert.do timers.do truncate.do uid.do umask.do unlink.do \
-	utime.do wait4.do write.do
+	sigprocmask.do sigsetmask.do sleep.do sockets.do snprintf.do stat.do \
+	strcasecmp.do strerror.do strftime.do strtol.do strtoll.do longlong.do \
+	symlink.do tempnam.do time.do timeconvert.do timers.do truncate.do \
+	uid.do umask.do unlink.do utime.do vsnprintf.do wait4.do write.do
 
 NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	amigatime.nbo bcmp.nbo bcopy.nbo bzero.nbo chmod.nbo chown.nbo \
@@ -59,9 +60,10 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	regex.nbo regexp.nbo regsub.nbo rename.nbo rindex.nbo rmdir.nbo \
 	select.nbo setenv.nbo setjmp.nbo siglist.nbo signal.nbo signals.nbo \
 	sigpause.nbo sigprocmask.nbo sigsetmask.nbo sleep.nbo sockets.nbo \
-	stat.nbo strcasecmp.nbo strerror.nbo strftime.nbo symlink.nbo \
-	tempnam.nbo time.nbo timeconvert.nbo timers.nbo truncate.nbo \
-	uid.nbo umask.nbo unlink.nbo utime.nbo wait4.nbo write.nbo
+	snprintf.nbo stat.nbo strcasecmp.nbo strerror.nbo strftime.nbo \
+	strtol.nbo strtoll.nbo longlong.nbo symlink.nbo tempnam.nbo time.nbo \
+	timeconvert.nbo timers.nbo truncate.nbo uid.nbo umask.nbo unlink.nbo \
+	utime.nbo vsnprintf.nbo wait4.nbo write.nbo
 
 DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	amigados.dnbo amigatime.dnbo bcmp.dnbo bcopy.dnbo bzero.dnbo \
@@ -78,10 +80,11 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	read.dnbo regerror.dnbo regex.dnbo regexp.dnbo regsub.dnbo \
 	rename.dnbo rindex.dnbo rmdir.dnbo select.dnbo setenv.dnbo \
 	setjmp.dnbo siglist.dnbo signal.dnbo signals.dnbo sigpause.dnbo \
-	sigprocmask.dnbo sigsetmask.dnbo sleep.dnbo sockets.dnbo stat.dnbo \
-	strcasecmp.dnbo strerror.dnbo strftime.dnbo symlink.dnbo \
-	tempnam.dnbo time.dnbo timeconvert.dnbo timers.dnbo truncate.dnbo \
-	uid.dnbo umask.dnbo unlink.dnbo utime.dnbo wait4.dnbo write.dnbo
+	sigprocmask.dnbo sigsetmask.dnbo sleep.dnbo sockets.dnbo snprintf.dnbo \
+	stat.dnbo strcasecmp.dnbo strerror.dnbo strftime.dnbo strtol.dnbo \
+	strtoll.dnbo longlong.dnbo symlink.dnbo tempnam.dnbo time.dnbo \
+	timeconvert.dnbo timers.dnbo truncate.dnbo uid.dnbo umask.dnbo \
+	unlink.dnbo utime.dnbo vsnprintf.dnbo wait4.dnbo write.dnbo
 
 ASMOBJS = child.o _sprintf.o _setjmp.o
 
@@ -92,7 +95,7 @@ ALLDNBOBJS = $(DNBOBJS) $(ASMOBJS)
 
 DEFS = DEF AMITCP=1 DEF NO_MACROS=1 DEF __USE_SYSBASE=1
 
-IDIRS = IDIR=netinclude: IDIR=include IDIR=include/internal IDIR=include:
+IDIRS = IDIR=include IDIR=include/internal IDIR=include: IDIR=netinclude: 
 
 SCOPTIONS = NOVER NOICONS CPU=ANY PARMS=BOTH NOSTKCHK IDLEN=100 \
 	    AFP MCCONS STREQ UTILLIB MATH=IEEE OPTTIME OPTSCHED \
@@ -101,8 +104,8 @@ SCOPTIONS = NOVER NOICONS CPU=ANY PARMS=BOTH NOSTKCHK IDLEN=100 \
 OFLAGS = OPTIMIZE
 DFLAGS = NOOPTIMIZE DEBUG=SF
 
-CFLAGS =    GST=amiga.gst DATA=NEAR
-CFLAGS_NB = GST=amiganb.gst DATA=FAR
+CFLAGS =    GST=amiga.gst DATA=NEAR $(IDIRS)
+CFLAGS_NB = GST=amiganb.gst DATA=FAR $(IDIRS)
 
 LIB = unix.lib
 FARLIB = unixnb.lib
