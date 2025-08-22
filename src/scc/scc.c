@@ -62,7 +62,7 @@
 /*
  *   Version string
  */
-#define VSTRING "cc 1.2 (25.8.95)"
+#define VSTRING "cc 1.3 (22.8.25)"
 #define VERSTAG "\0$VER: "VSTRING
 
 char Version[] = VSTRING;
@@ -129,13 +129,15 @@ enum {
     COMPATIBILITYMODE_GCC,
     COMPATIBILITYMODE_SAS,
     COMPATIBILITYMODE_DICE,
+    COMPATIBILITYMODE_VBCC,
 } CompatibilityMode = COMPATIBILITYMODE_GCC;
 
 char *CompatibilityModeNames[] =
 {
     "-gcc",
     "-sas",
-    "-dice"
+    "-dice",
+    "-vbcc"
 };
 
 
@@ -171,6 +173,27 @@ MLIST LinkDirList;
 
 
 /*
+ *   Function declarations
+ */
+void Usage(void);
+void AddLinkDir(char *dir);
+void AddOption(CompilerOption co, char *arg);
+void AddOptionArg(CompilerOption co, int *i, int argc, char *argv[]);
+void SetCompatibilityMode(int mode, int *set);
+void SetCompilerMode(int mode, int *set);
+char *LibPath(char *libname, char *buffer);
+void __asm putch(register __d0 char ch, register __a3 char **outbuf);
+void AddToString(char **strptr, char *format, char *data);
+void ParseArgs(int argc, char *argv[]);
+int CompileGcc(void);
+int CompileSAS(void);
+int CompileDice(void);
+int CompileVBCC(void);
+int CheckSASopt(void);
+char **SplitArgs(char *argstr, int *argcptr);
+
+
+/*
  *   Guess, what this function does? :-)
  */
 
@@ -185,6 +208,7 @@ Where options are:\n\
 -gcc\trun as a front end of gcc (default if named cc)\n\
 -sas\trun as a frontend of SAS/C (default if named scc)\n\
 -dice\trun as a frontend of Dice\n\
+-vbcc\trun as a frontend of VBCC\n\
 \n\
 -v\t\tbe verbose\n\
 -w\t\tno warning messages\n\
@@ -554,13 +578,19 @@ void ParseArgs(int argc,
 		    }
 		    break;
 		case 'v':
-		    switch (argvi[2]) {
-			case '\0':
-			    AddOption(OPTION_VERBOSE, argvi);
-			    break;
-			default:
-			    AddOption(OPTION_UNKNOWN, argvi);
-			    break;
+		    if (strcmp(argvi,
+			       CompatibilityModeNames[COMPATIBILITYMODE_VBCC]) == 0) {
+			SetCompatibilityMode(COMPATIBILITYMODE_VBCC,
+					     &CompatibilityModeIsSet);
+		    } else {
+			switch (argvi[2]) {
+			    case '\0':
+				AddOption(OPTION_VERBOSE, argvi);
+				break;
+			    default:
+				AddOption(OPTION_UNKNOWN, argvi);
+				break;
+			}
 		    }
 		    break;
 		case 'w':
@@ -933,6 +963,90 @@ int CompileDice(void)
 
 
 /*
+ *   This function calls VBCC as a frontend.
+ */
+
+int CompileVBCC(void)
+{
+    CurrentOption *co;
+    char *ptr, *CompileString = NULL;
+    int Verbose = FALSE;
+
+    /* VBCC uses the vc frontend */
+    AddToString(&CompileString, "vc", NULL);
+
+    for (co = (CurrentOption *) OptionList.mlh_Head;
+	 co->mn.mln_Succ != NULL;
+	 co = (CurrentOption *) co->mn.mln_Succ) {
+
+	switch (co->Option) {
+	    case OPTION_UNKNOWN:
+		AddToString(&CompileString, " %s", co->Arg);
+		break;
+	    case OPTION_VERY_VERBOSE:
+		AddToString(&CompileString, " -vv", NULL);
+		/* Fall through to set Verbose flag */
+	    case OPTION_VERBOSE:
+		Verbose = TRUE;
+		break;
+	    case OPTION_NOWARN:
+		/* VBCC doesn't have a direct -w equivalent, but we can use -dontwarn */
+		AddToString(&CompileString, " -dontwarn=-1", NULL);
+		break;
+	    case OPTION_DEFINE:
+		AddToString(&CompileString, " -D%s", co->Arg);
+		break;
+	    case OPTION_UNDEFINE:
+		AddToString(&CompileString, " -U%s", co->Arg);
+		break;
+	    case OPTION_PREPROCESSOR_ONLY:
+		AddToString(&CompileString, " -E", NULL);
+		break;
+	    case OPTION_ASSEMBLER_ONLY:
+		AddToString(&CompileString, " -S", NULL);
+		break;
+	    case OPTION_NOLINK:
+		AddToString(&CompileString, " -c", NULL);
+		break;
+	    case OPTION_INCLUDEDIR:
+		AddToString(&CompileString, " -I%s", co->Arg);
+		break;
+	    case OPTION_LINKDIR:
+		AddToString(&CompileString, " -L%s", co->Arg);
+		break;
+	    case OPTION_OPTIMIZE:
+		if (co->Arg && *co->Arg) {
+		    AddToString(&CompileString, " -O%s", co->Arg);
+		} else {
+		    AddToString(&CompileString, " -O", NULL);
+		}
+		break;
+	    case OPTION_DEBUGGING:
+		AddToString(&CompileString, " -g", NULL);
+		break;
+	    case OPTION_LIBRARY:
+		AddToString(&CompileString, " -l%s", co->Arg);
+		break;
+	    case OPTION_OUTPUT:
+		AddToString(&CompileString, " -o %s", co->Arg);
+		break;
+	}
+    }
+
+    AddToString(&CompileString, "\n", NULL);
+    /* We are calling vc, so let's use the right escape character ... */
+    for (ptr = CompileString; (ptr = strstr(ptr, "*\"")) != NULL; ++ptr)
+	*ptr = '\\';
+    if (Verbose) {
+	PutStr(Version);
+	PutStr("\n");
+	PutStr(CompileString);
+    }
+    return(system(CompileString));
+}
+
+
+/*
  *   This function is used to split a string into arguments.
  *   It returns an array similar to argv.
  *
@@ -1133,6 +1247,9 @@ int main(int argc, char *argv[])
 	    break;
 	case COMPATIBILITYMODE_DICE:
 	    rc = CompileDice();
+	    break;
+	case COMPATIBILITYMODE_VBCC:
+	    rc = CompileVBCC();
 	    break;
     }
 
