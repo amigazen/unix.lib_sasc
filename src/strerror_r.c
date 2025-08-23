@@ -119,13 +119,6 @@ int strerror_r(int errnum, char *buf, size_t buflen)
         case EFTYPE:          msg = "Inappropriate file type or format"; break;
         case EAUTH:           msg = "Authentication error"; break;
         case ENEEDAUTH:       msg = "Need authenticator"; break;
-        case EIDRM:           msg = "Identifier removed"; break;
-        case ENOMSG:          msg = "No message of desired type"; break;
-        case EOVERFLOW:       msg = "Value too large to be stored in data type"; break;
-        case ECANCELED:       msg = "Operation canceled"; break;
-        case EILSEQ:          msg = "Illegal byte sequence"; break;
-        case ENOATTR:         msg = "Attribute not found"; break;
-        case EDOOFUS:         msg = "Programming error"; break;
         default:              msg = "Unknown error"; break;
     }
     

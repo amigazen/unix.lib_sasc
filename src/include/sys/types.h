@@ -98,6 +98,11 @@ typedef long time_t;
 typedef	unsigned int size_t;
 #endif
 
+/* POSIX path limits */
+#ifndef PATH_MAX
+#define PATH_MAX 256
+#endif
+
 
 
 #ifndef _POSIX_SOURCE

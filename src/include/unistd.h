@@ -40,6 +40,15 @@
 #include <sys/types.h>
 #include <sys/unistd.h>
 
+/* POSIX utsname structure for uname() */
+struct utsname {
+    char sysname[65];    /* Operating system name */
+    char nodename[65];   /* Name within "some implementation-defined network" */
+    char release[65];    /* Operating system release */
+    char version[65];    /* Operating system version */
+    char machine[65];    /* Hardware identifier */
+};
+
 #define	 STDIN_FILENO	0	/* standard input file descriptor */
 #define	STDOUT_FILENO	1	/* standard output file descriptor */
 #define	STDERR_FILENO	2	/* standard error file descriptor */
@@ -139,11 +148,11 @@ void	 endusershell __P((void));
 int	 exect __P((const char *, char * const *, char * const *));
 int	 fchdir __P((int));
 int	 fchflags __P((int, long));
-int	 fchown __P((int, int, int));
+int	 fchown __P((int, uid_t, gid_t));
 int	 fnmatch __P((const char *, const char *, int));
 int	 fsync __P((int));
 int	 ftruncate __P((int, off_t));
-long	 getdtablesize __P((void));
+int	 getdtablesize __P((void));
 unsigned long	gethostid __P((void));
 long	 gethostname __P((unsigned char *, long));
 mode_t	 getmode __P((const void *, mode_t));
@@ -164,7 +173,7 @@ int	 rcmd __P((char **, int, const char *,
 		const char *, const char *, int *));
 char	*re_comp __P((const char *));
 int	 re_exec __P((const char *));
-int	 readlink __P((const char *, char *, int));
+ssize_t	 readlink __P((const char *, char *, size_t));
 int	 reboot __P((int));
 int	 revoke __P((const char *));
 int	 rresvport __P((int *));
@@ -191,6 +200,7 @@ void	 sync __P((void));
 int	 syscall __P((int, ...));
 int	 truncate __P((const char *, off_t));
 int	 ttyslot __P((void));
+int	 uname __P((struct utsname *));
 u_int	 ualarm __P((u_int, u_int));
 void	*valloc __P((size_t));			/* obsoleted by malloc() */
 int	 vfork __P((void));
