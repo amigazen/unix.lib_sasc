@@ -5,7 +5,7 @@
 #			    All rights reserved.
 #
 
-DEST = /
+DEST = /SDK/lib/
 
 RM = delete QUIET
 CP = copy CLONE QUIET
@@ -250,6 +250,8 @@ fibstat.o: fibstat.c timeconvert.h amiga.h
 fifofd.o: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.o: files.c amiga.h
 fnmatch.o: fnmatch.c include/fnmatch.h
+basename.o: basename.c include/libgen.h
+dirname.o: dirname.c include/libgen.h
 fstat.o: fstat.c amiga.h
 ftruncate.o: ftruncate.c amiga.h
 getenv.o: getenv.c amiga.h
@@ -302,9 +304,23 @@ sleep.o: sleep.c signals.h amiga.h
 sockets.o: sockets.c amiga.h
 stat.o: stat.c dir_data.h amiga.h
 strcasecmp.o: strcasecmp.c
+strcoll.o: strcoll.c
 strdup.o: strdup.c
 strerror.o: strerror.c
+strlcat.o: strlcat.c
+strlcpy.o: strlcpy.c
+strncat.o: strncat.c
+strncpy.o: strncpy.c
+strnicmp.o: strnicmp.c
+strnlen.o: strnlen.c
+strndup.o: strndup.c
+strsep.o: strsep.c
+stricmp.o: stricmp.c
+strtok_r.o: strtok_r.c
+strerror_r.o: strerror_r.c
 strftime.o: strftime.c
+memccpy.o: memccpy.c
+strxfrm.o: strxfrm.c
 symlink.o: symlink.c amiga.h
 tempnam.o: tempnam.c
 time.o: time.c timeconvert.h amiga.h
@@ -351,6 +367,8 @@ fibstat.nbo: fibstat.c timeconvert.h amiga.h
 fifofd.nbo: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.nbo: files.c amiga.h
 fnmatch.nbo: fnmatch.c include/fnmatch.h
+basename.nbo: basename.c include/libgen.h
+dirname.nbo: dirname.c include/libgen.h
 fstat.nbo: fstat.c amiga.h
 ftruncate.nbo: ftruncate.c amiga.h
 getenv.nbo: getenv.c amiga.h
@@ -403,9 +421,23 @@ sleep.nbo: sleep.c signals.h amiga.h
 sockets.nbo: sockets.c amiga.h
 stat.nbo: stat.c dir_data.h amiga.h
 strcasecmp.nbo: strcasecmp.c
+strcoll.nbo: strcoll.c
 strdup.nbo: strdup.c
 strerror.nbo: strerror.c
+strlcat.nbo: strlcat.c
+strlcpy.nbo: strlcpy.c
+strncat.nbo: strncat.c
+strncpy.nbo: strncpy.c
+strnicmp.nbo: strnicmp.c
+strnlen.nbo: strnlen.c
+strndup.nbo: strndup.c
+strsep.nbo: strsep.c
+stricmp.nbo: stricmp.c
+strtok_r.nbo: strtok_r.c
+strerror_r.nbo: strerror_r.c
 strftime.nbo: strftime.c
+memccpy.nbo: memccpy.c
+strxfrm.nbo: strxfrm.c
 symlink.nbo: symlink.c amiga.h
 tempnam.nbo: tempnam.c
 time.nbo: time.c timeconvert.h amiga.h
@@ -452,6 +484,8 @@ fibstat.do: fibstat.c timeconvert.h amiga.h
 fifofd.do: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.do: files.c amiga.h
 fnmatch.do: fnmatch.c include/fnmatch.h
+basename.do: basename.c include/libgen.h
+dirname.do: dirname.c include/libgen.h
 fstat.do: fstat.c amiga.h
 ftruncate.do: ftruncate.c amiga.h
 getenv.do: getenv.c amiga.h
@@ -504,9 +538,23 @@ sleep.do: sleep.c signals.h amiga.h
 sockets.do: sockets.c amiga.h
 stat.do: stat.c dir_data.h amiga.h
 strcasecmp.do: strcasecmp.c
+strcoll.do: strcoll.c
 strdup.do: strdup.c
 strerror.do: strerror.c
+strlcat.do: strlcat.c
+strlcpy.do: strlcpy.c
+strncat.do: strncat.c
+strncpy.do: strncpy.c
+strnicmp.do: strnicmp.c
+strnlen.do: strnlen.c
+strndup.do: strndup.c
+strsep.do: strsep.c
+stricmp.do: stricmp.c
+strtok_r.do: strtok_r.c
+strerror_r.do: strerror_r.c
 strftime.do: strftime.c
+memccpy.do: memccpy.c
+strxfrm.do: strxfrm.c
 symlink.do: symlink.c amiga.h
 tempnam.do: tempnam.c
 time.do: time.c timeconvert.h amiga.h
@@ -553,6 +601,8 @@ fibstat.dnbo: fibstat.c timeconvert.h amiga.h
 fifofd.dnbo: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.dnbo: files.c amiga.h
 fnmatch.dnbo: fnmatch.c include/fnmatch.h
+basename.dnbo: basename.c include/libgen.h
+dirname.dnbo: dirname.c include/libgen.h
 fstat.dnbo: fstat.c amiga.h
 ftruncate.dnbo: ftruncate.c amiga.h
 getenv.dnbo: getenv.c amiga.h
@@ -605,9 +655,23 @@ sleep.dnbo: sleep.c signals.h amiga.h
 sockets.dnbo: sockets.c amiga.h
 stat.dnbo: stat.c dir_data.h amiga.h
 strcasecmp.dnbo: strcasecmp.c
+strcoll.dnbo: strcoll.c
 strdup.dnbo: strdup.c
 strerror.dnbo: strerror.c
+strlcat.dnbo: strlcat.c
+strlcpy.dnbo: strlcpy.c
+strncat.dnbo: strncat.c
+strncpy.dnbo: strncpy.c
+strnicmp.dnbo: strnicmp.c
+strnlen.dnbo: strnlen.c
+strndup.dnbo: strndup.c
+strsep.dnbo: strsep.c
+stricmp.dnbo: stricmp.c
+strtok_r.dnbo: strtok_r.c
+strerror_r.dnbo: strerror_r.c
 strftime.dnbo: strftime.c
+memccpy.dnbo: memccpy.c
+strxfrm.dnbo: strxfrm.c
 symlink.dnbo: symlink.c amiga.h
 tempnam.dnbo: tempnam.c
 time.dnbo: time.c timeconvert.h amiga.h

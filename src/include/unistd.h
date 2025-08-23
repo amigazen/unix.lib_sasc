@@ -106,6 +106,9 @@ char	*ttyname __P((int));
 int	 unlink __P((const char *));
 ssize_t	 write __P((int, const void *, unsigned int));
 
+/* POSIX functions */
+int	 usleep __P((unsigned int));
+
 #if 1 /* for compatibility with SASC 6.xx */
 off_t	 __lseek __P((int, off_t, int));
 ssize_t	 __read __P((int, void *, size_t));
@@ -189,7 +192,6 @@ int	 syscall __P((int, ...));
 int	 truncate __P((const char *, off_t));
 int	 ttyslot __P((void));
 u_int	 ualarm __P((u_int, u_int));
-void	 usleep __P((u_int));
 void	*valloc __P((size_t));			/* obsoleted by malloc() */
 int	 vfork __P((void));
 
