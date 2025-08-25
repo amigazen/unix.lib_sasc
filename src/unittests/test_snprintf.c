@@ -28,8 +28,9 @@ int tests_run = 0;
 /* Helper function to compare strings and return descriptive error */
 static const char* assert_string_equal(const char* expected, const char* actual, const char* test_name)
 {
+    static char error_msg[512];
+    
     if (strcmp(expected, actual) != 0) {
-        static char error_msg[512];
         snprintf(error_msg, sizeof(error_msg), 
                 "%s: Expected '%s', got '%s'", test_name, expected, actual);
         return error_msg;
@@ -40,8 +41,9 @@ static const char* assert_string_equal(const char* expected, const char* actual,
 /* Helper function to compare return values */
 static const char* assert_return_value(int expected, int actual, const char* test_name)
 {
+    static char error_msg[256];
+    
     if (expected != actual) {
-        static char error_msg[256];
         snprintf(error_msg, sizeof(error_msg), 
                 "%s: Expected return %d, got %d", test_name, expected, actual);
         return error_msg;
@@ -215,7 +217,9 @@ static const char* test_fallback_pointer(void)
 {
     char buffer[TEST_BUFFER_SIZE];
     int result;
-    void *ptr = (void*)0x12345678;
+    void *ptr;
+    
+    ptr = (void*)0x12345678;
     
     /* Test %p - should use fallback implementation */
     result = snprintf(buffer, sizeof(buffer), "%p", ptr);
@@ -365,9 +369,11 @@ static const char* all_tests(void)
 
 int main(void)
 {
+    const char *result;
+    
     printf("Testing snprintf and vsnprintf functions...\n\n");
     
-    const char *result = all_tests();
+    result = all_tests();
     
     if (result != NULL) {
         printf("FAILURE: %s\n", result);
