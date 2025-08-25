@@ -13,7 +13,8 @@ SLINK   = slink
 # Test programs
 LONGLONG_TESTS = test_strtoll test_overflow test_longlong
 SOCKS_TESTS = getaline strchkread streamwrite
-TEST_PROGRAMS = $(LONGLONG_TESTS) $(SOCKS_TESTS)
+SNPRINTF_TESTS = test_snprintf
+TEST_PROGRAMS = $(LONGLONG_TESTS) $(SOCKS_TESTS) $(SNPRINTF_TESTS)
 
 # Compiler flags
 INCS     = IDIR=/include IDIR=/include/internal IDIR=include: IDIR=netinclude: IDIR=/
@@ -38,6 +39,10 @@ test_overflow: test_overflow.o /longlong.o
 test_longlong: test_longlong.o /longlong.o
     $(CC) $(CFLAGS) TO $@ test_longlong.o /longlong.o /strtoll.o /strtol.o
 
+# Build test_snprintf
+test_snprintf: test_snprintf.o /snprintf.o /vsnprintf.o
+    $(CC) $(CFLAGS) TO $@ test_snprintf.o /snprintf.o /vsnprintf.o
+
 # Build socks tests (using existing socks SMakefile)
 socks: 
 	cd socks && smake
@@ -53,7 +58,7 @@ streamwrite: socks/streamwrite
 
 # Clean up test files
 clean:
-	-delete quiet *.o $(LONGLONG_TESTS)
+	-delete quiet *.o $(LONGLONG_TESTS) $(SNPRINTF_TESTS)
 	cd socks && smake clean
 
 # Run all tests
@@ -68,6 +73,9 @@ test: $(TEST_PROGRAMS)
 	echo "Running test_longlong..."
 	test_longlong
 	echo ""
+	echo "Running snprintf tests..."
+	test_snprintf
+	echo ""
 	echo "Running socks tests..."
 	getaline
 	strchkread
@@ -79,6 +87,10 @@ test-longlong: $(LONGLONG_TESTS)
 	test_strtoll
 	test_overflow
 	test_longlong
+
+test-snprintf: $(SNPRINTF_TESTS)
+	echo "Running snprintf tests..."
+	test_snprintf
 
 test-socks: $(SOCKS_TESTS)
 	echo "Running socks tests..."
@@ -103,9 +115,11 @@ help:
 	echo "  test_strtoll  - Build test_strtoll program"
 	echo "  test_overflow - Build test_overflow program"
 	echo "  test_longlong - Build test_longlong program"
+	echo "  test_snprintf - Build test_snprintf program"
 	echo "  socks         - Build socks test programs"
 	echo "  test          - Build and run all tests"
 	echo "  test-longlong - Build and run longlong tests"
+	echo "  test-snprintf - Build and run snprintf tests"
 	echo "  test-socks    - Build and run socks tests"
 	echo "  clean         - Remove all test files"
 	echo "  help          - Show this help message"
@@ -116,11 +130,14 @@ help:
 test_strtoll.o: test_strtoll.c minunit.h
 test_overflow.o: test_overflow.c minunit.h
 test_longlong.o: test_longlong.c minunit.h
+test_snprintf.o: test_snprintf.c minunit.h
 
 # Object files from parent directory
 /longlong.o: /longlong.c
 /strtoll.o: /strtoll.c
 /strtol.o: /strtol.c
+/snprintf.o: /snprintf.c
+/vsnprintf.o: /vsnprintf.c
 
 
 
