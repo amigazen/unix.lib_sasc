@@ -847,373 +847,289 @@
      return 0;
  }
  
- /* Function to parse object file hunks (HUNK_UNIT format) - OBJECT PARSER */
- static int parse_object_file_hunks(FILE *desc, lib_handle_t *handle)
- {
-     int t, hunk_count;
-     int hunk_index;
-     int max_hunks = 50;
-     int name_size = 500;
-     char *name;
-     unsigned long name_len;
-     unsigned char sym_type;
-     unsigned long symbol_value;
-     void *symbol_address;
-     unsigned long ref_count;
-     int new_hunks;
-     int old_count;
-     int start_index;
-     int i;
-     symbol_entry_t *entry;
-     int reloc_count;
-     int max_relocs;
-     ULONG *reloc_data;
-     
-     /* Check if we're appending to existing hunks or starting fresh */
-     if (handle->hunks == NULL) {
-         /* First object - initialize arrays */
-         handle->hunks = (hunk_info_t *)malloc(max_hunks * sizeof(hunk_info_t));
-         if (!handle->hunks) {
-             set_dlerror("Out of memory for hunk structures");
-             return -1;
-         }
-         hunk_index = 0;
-         
-         /* Initialize symbol table */
-         handle->symbol_table = calloc(SYMBOL_TABLE_SIZE, sizeof(symbol_entry_t *));
-         if (!handle->symbol_table) {
-             free(handle->hunks);
-             set_dlerror("Out of memory for symbol table");
-             return -1;
-         }
-         handle->symbol_table_size = SYMBOL_TABLE_SIZE;
-     } else {
-         /* Appending to existing data - start from current count */
-         hunk_index = handle->hunk_count;
-         max_hunks = handle->hunk_count + 50; /* Add space for new hunks */
-         
-         /* Reallocate hunk array if needed */
-         handle->hunks = realloc(handle->hunks, max_hunks * sizeof(hunk_info_t));
-         if (!handle->hunks) {
-             set_dlerror("Out of memory for hunk structures");
-             return -1;
-         }
-     }
-     
-     name = (char *)malloc(name_size);
-     if (!name) {
-         set_dlerror("Out of memory for name buffer");
-         if (handle->hunks == NULL) {
-             free(handle->hunks);
-             free(handle->symbol_table);
-         }
-         return -1;
-     }
-     
-     /* Object files start with HUNK_UNIT, not HUNK_HEADER */
-     t = get_num(desc);
-     printf("[DEBUG] First hunk type: 0x%06X\n", t & 0x00FFFFFF);
-     if ((t & 0x00FFFFFF) != HUNK_UNIT) {
-         set_dlerror("Invalid object file format - expected HUNK_UNIT");
-         free(name);
-         if (handle->hunks == NULL) {
-             free(handle->hunks);
-             free(handle->symbol_table);
-         }
-         return -1;
-     }
-     
-     printf("[DEBUG] Valid HUNK_UNIT found, continuing with parsing...\n");
-     
-     /* Skip the unit name */
-     t = get_num(desc);
-     if (t > 0) {
-         skip(desc, t);
-     }
-     
-     /* Parse hunks until we hit HUNK_END */
-     hunk_count = 0;
-     while (1) {
-         hunk_count++;
-         if (hunk_count > 1000) {
-             printf("[DEBUG] Safety limit reached, stopping parsing\n");
-             break;
-         }
-         
-         t = get_num(desc);
-         printf("[DEBUG] Parsing hunk type: 0x%06X (hunk #%d)\n", t & 0x00FFFFFF, hunk_count);
-         if ((t & 0x00FFFFFF) == HUNK_END) {
-             printf("[DEBUG] Found HUNK_END, parsing complete\n");
-             break;
-         }
-         
-         switch (t & 0x00FFFFFF) {
-             case HUNK_CODE:      /* text */
-                 t = get_num(desc);
-                 if (hunk_index >= max_hunks) {
-                     max_hunks *= 2;
-                     handle->hunks = realloc(handle->hunks, max_hunks * sizeof(hunk_info_t));
-                     if (!handle->hunks) {
-                         set_dlerror("Out of memory for hunk structures");
-                         free(name);
-                         return -1;
-                     }
-                 }
-                 handle->hunks[hunk_index].type = HUNK_CODE;
-                 handle->hunks[hunk_index].size = t;
-                 handle->hunks[hunk_index].data = allocate_hunk_memory(t, 0x80000000); /* MEMF_FAST for executable code */
-                 handle->hunks[hunk_index].hunk_number = hunk_index;
-                 if (!handle->hunks[hunk_index].data) {
-                     set_dlerror("Failed to allocate memory for code hunk");
-                     free(name);
-                     return -1;
-                 }
-                 /* Read the code data */
-                 fread(handle->hunks[hunk_index].data, 1, t * 4, desc);
-                 hunk_index++;
-                 break;
-                 
-             case HUNK_DATA:      /* data */
-                 t = get_num(desc);
-                 if (hunk_index >= max_hunks) {
-                     max_hunks *= 2;
-                     handle->hunks = realloc(handle->hunks, max_hunks * sizeof(hunk_info_t));
-                     if (!handle->hunks) {
-                         set_dlerror("Out of memory for hunk structures");
-                         free(name);
-                         return -1;
-                     }
-                 }
-                 handle->hunks[hunk_index].type = HUNK_DATA;
-                 handle->hunks[hunk_index].size = t;
-                 handle->hunks[hunk_index].data = allocate_hunk_memory(t, 0); /* MEMF_PUBLIC for data */
-                 handle->hunks[hunk_index].hunk_number = hunk_index;
-                 if (!handle->hunks[hunk_index].data) {
-                     set_dlerror("Failed to allocate memory for data hunk");
-                     free(name);
-                     return -1;
-                 }
-                 /* Read the data */
-                 fread(handle->hunks[hunk_index].data, 1, t * 4, desc);
-                 hunk_index++;
-                 break;
-                 
-             case HUNK_BSS:      /* bss */
-                 t = get_num(desc);
-                 if (hunk_index >= max_hunks) {
-                     max_hunks *= 2;
-                     handle->hunks = realloc(handle->hunks, max_hunks * sizeof(hunk_info_t));
-                     if (!handle->hunks) {
-                         set_dlerror("Out of memory for hunk structures");
-                         free(name);
-                         return -1;
-                     }
-                 }
-                 handle->hunks[hunk_index].type = HUNK_BSS;
-                 handle->hunks[hunk_index].size = t;
-                 handle->hunks[hunk_index].data = AllocMem(t * 4, MEMF_PUBLIC | MEMF_CLEAR);
-                 handle->hunks[hunk_index].hunk_number = hunk_index;
-                 if (!handle->hunks[hunk_index].data) {
-                     set_dlerror("Failed to allocate memory for BSS hunk");
-                     free(name);
-                     return -1;
-                 }
-                 hunk_index++;
-                 break;
-                 
-             case HUNK_NAME:      /* name */
-                 t = get_num(desc);
-                 skip(desc, t);
-                 break;
-                 
-             case HUNK_DEBUG:     /* debug */
-                 t = get_num(desc);
-                 skip(desc, t);
-                 break;
-                 
-             case HUNK_RELOC8:    /* reloc8 - OBJECT PARSER */
-             case HUNK_RELOC16:   /* reloc16 - OBJECT PARSER */
-             case HUNK_RELOC32:   /* reloc32 - OBJECT PARSER */
-                 reloc_count = 0;
-                 max_relocs = 100;
-                 
-                 /* Allocate relocation data storage - OBJECT PARSER */
-                 if (hunk_index > 0) {
-                     handle->hunks[hunk_index-1].reloc_data = (ULONG *)malloc(max_relocs * 3 * sizeof(ULONG));
-                     if (handle->hunks[hunk_index-1].reloc_data) {
-                         reloc_data = handle->hunks[hunk_index-1].reloc_data;
-                         
-                         while ((t = get_num(desc)) != 0) {
-                             /* Sanity check: relocation count should be reasonable */
-                             if (t > 10000) {
-                                 printf("[DEBUG] parse_object_file_hunks: Skipping corrupted relocation count: %d\n", t);
-                                 skip(desc, 2); /* Skip offset and target hunk */
-                                 continue;
-                             }
-                             
-                             if (reloc_count < max_relocs) {
-                                 reloc_data[reloc_count * 3] = t;           /* Number of relocations */
-                                 reloc_data[reloc_count * 3 + 1] = get_num(desc); /* Offset in hunk */
-                                 reloc_data[reloc_count * 3 + 2] = get_num(desc); /* Target hunk number */
-                                 reloc_count++;
-                             } else {
-                                 skip(desc, 2); /* Skip offset and target hunk */
-                             }
-                         }
-                         handle->hunks[hunk_index-1].reloc_count = reloc_count;
-                         printf("[DEBUG] parse_object_file_hunks: Added %d relocations to hunk %d\n", 
-                                reloc_count, hunk_index-1);
-                     }
-                 } else {
-                     /* Skip relocations if no hunk to attach them to */
-                     while ((t = get_num(desc)) != 0) {
-                         skip(desc, 2);
-                     }
-                 }
-                 break;
-                 
-             case HUNK_SYMBOL:    /* symbols */
-                 while ((t = get_num(desc)) != 0) {
-                     if (t * 4 > name_size - 1) {
-                         name_size = t * 4 + 1;
-                         name = realloc(name, name_size);
-                         if (!name) {
-                             set_dlerror("Out of memory for symbol name");
-                             return -1;
-                         }
-                     }
-                     fread(name, 1, t * 4, desc);
-                     name[t * 4] = '\0';
-                     
-                     symbol_value = get_num(desc);
-                     
-                     if (hunk_index > 0) {
-                         symbol_address = (void *)((ULONG)handle->hunks[hunk_index-1].data + symbol_value);
-                     } else {
-                         symbol_address = (void *)symbol_value;
-                     }
-                     
-                     add_symbol_to_table(handle, name, symbol_address, EXT_DEF, hunk_index > 0 ? hunk_index-1 : 0);
-                 }
-                 break;
-                 
-             case HUNK_DREL32:    /* SAS/C 32-bit data relocations */
-             case HUNK_DREL16:    /* SAS/C 16-bit data relocations */
-             case HUNK_DREL8:     /* SAS/C 8-bit data relocations */
-                 reloc_count = 0;
-                 max_relocs = 100;
-                 
-                 /* Allocate relocation data storage for SAS/C data relocations */
-                 if (hunk_index > 0) {
-                     handle->hunks[hunk_index-1].reloc_data = (ULONG *)malloc(max_relocs * 3 * sizeof(ULONG));
-                     if (handle->hunks[hunk_index-1].reloc_data) {
-                         reloc_data = handle->hunks[hunk_index-1].reloc_data;
-                         
-                         while ((t = get_num(desc)) != 0) {
-                             /* Sanity check: relocation count should be reasonable */
-                             if (t > 10000) {
-                                 printf("[DEBUG] parse_object_file_hunks: Skipping corrupted SAS/C relocation count: %d\n", t);
-                                 skip(desc, 2); /* Skip offset and target hunk */
-                                 continue;
-                             }
-                             
-                             if (reloc_count < max_relocs) {
-                                 reloc_data[reloc_count * 3] = t; /* Count */
-                                 reloc_data[reloc_count * 3 + 1] = get_num(desc); /* Offset */
-                                 reloc_data[reloc_count * 3 + 2] = get_num(desc); /* Target hunk */
-                                 reloc_count++;
-                             } else {
-                                 /* Skip if we're out of storage space */
-                                 skip(desc, 2);
-                             }
-                         }
-                         handle->hunks[hunk_index-1].reloc_count = reloc_count;
-                         printf("[DEBUG] parse_object_file_hunks: Added %d SAS/C data relocations to hunk %d\n", 
-                                reloc_count, hunk_index-1);
-                     }
-                 } else {
-                     /* Skip relocations if no hunk to attach them to */
-                     while ((t = get_num(desc)) != 0) {
-                         skip(desc, 2); /* Skip offset and target hunk */
-                     }
-                 }
-                 break;
-                 
-             default:
-                 /* Skip unknown hunk types */
-                 printf("[DEBUG] Skipping unknown hunk type 0x%06X\n", t & 0x00FFFFFF);
-                 break;
-         }
-     }
-     
-     free(name);
-     
-     /* Update hunk count - add new hunks to existing count */
-     new_hunks = hunk_index;
-     
-     if (handle->hunk_count == 0) {
-         /* First object */
-         handle->hunk_count = new_hunks;
-     } else {
-         /* Appending to existing hunks */
-         handle->hunk_count += new_hunks;
-     }
-     
-     printf("[DEBUG] parse_object_file_hunks: Added %d hunks, total now %d\n", new_hunks, handle->hunk_count);
-     
-     /* Build hunk address array and set base address */
-     if (handle->hunk_count > 0) {
-         start_index = 0;
-         
-         if (handle->hunk_addresses == NULL) {
-             /* First object - allocate new array */
-             handle->hunk_addresses = (void **)malloc(handle->hunk_count * sizeof(void *));
-         } else {
-             /* Appending to existing array - reallocate */
-             old_count = handle->hunk_count - new_hunks;
-             handle->hunk_addresses = realloc(handle->hunk_addresses, handle->hunk_count * sizeof(void *));
-             start_index = old_count;
-         }
-         
-         if (handle->hunk_addresses) {
-             for (i = start_index; i < handle->hunk_count; i++) {
-                 handle->hunks[i].base_address = handle->hunks[i].data;
-                 handle->hunk_addresses[i] = handle->hunks[i].data;
-             }
-         }
-         
-         /* Set base address to first hunk of this object */
-         if (start_index == 0) {
-             handle->base_addr = handle->hunks[0].data;
-         }
-     }
-     
-     printf("[DEBUG] Parsing complete. Found %d hunks, %d symbols, 0 relocations.\n", 
-            handle->hunk_count, handle->symbol_count);
-     
-     /* Debug: Show what symbols were added */
-     printf("[DEBUG] Symbols added to table:\n");
-     {
-         for (i = 0; i < SYMBOL_TABLE_SIZE; i++) {
-             entry = handle->symbol_table[i];
-             while (entry) {
-                 printf("[DEBUG]   Symbol: '%s' at address %p (type: %d, hunk: %d)\n", 
-                        entry->name, entry->address, entry->type, entry->hunk_number);
-                 entry = entry->next;
-             }
-         }
-     }
-     
-     /* Process relocations for the loaded object - OBJECT PARSER */
-     printf("[DEBUG] parse_object_file_hunks: Processing relocations...\n");
-     if (process_relocations(handle) == 0) {
-         printf("[DEBUG] parse_object_file_hunks: Relocations processed successfully\n");
-     } else {
-         printf("[DEBUG] parse_object_file_hunks: Warning: Relocation processing failed\n");
-     }
-     
-     return 0;
- }
+ /* Function to parse object file hunks (HUNK_UNIT format) */
+static int parse_object_file_hunks(FILE *desc, lib_handle_t *handle)
+{
+    int t, hunk_count;
+    int hunk_index = 0;
+    int max_hunks = 50;
+    int name_size = 500;
+    char *name;
+    unsigned long name_len;
+    unsigned char sym_type;
+    unsigned long symbol_value;
+    void *symbol_address;
+    unsigned long ref_count;
+    
+    /* Initialize hunk arrays */
+    handle->hunks = malloc(max_hunks * sizeof(hunk_info_t));
+    if (!handle->hunks) {
+        set_dlerror("Out of memory for hunk structures");
+        return -1;
+    }
+    
+    /* Initialize symbol table */
+    handle->symbol_table = calloc(SYMBOL_TABLE_SIZE, sizeof(symbol_entry_t *));
+    if (!handle->symbol_table) {
+        free(handle->hunks);
+        set_dlerror("Out of memory for symbol table");
+        return -1;
+    }
+    handle->symbol_table_size = SYMBOL_TABLE_SIZE;
+    
+    name = malloc(name_size);
+    if (!name) {
+        set_dlerror("Out of memory for name buffer");
+        free(handle->hunks);
+        free(handle->symbol_table);
+        return -1;
+    }
+    
+    /* Object files start with HUNK_UNIT, not HUNK_HEADER */
+    t = get_num(desc);
+    printf("[DEBUG] First hunk type: 0x%06X\n", t & 0x00FFFFFF);
+    if ((t & 0x00FFFFFF) != HUNK_UNIT) {
+        set_dlerror("Invalid object file format - expected HUNK_UNIT");
+        free(name);
+        free(handle->hunks);
+        free(handle->symbol_table);
+        return -1;
+    }
+    
+    printf("[DEBUG] Valid HUNK_UNIT found, continuing with parsing...\n");
+    
+    /* Skip the unit name */
+    t = get_num(desc);
+    if (t > 0) {
+        skip(desc, t);
+    }
+    
+    /* Parse hunks until we hit HUNK_END */
+    hunk_count = 0;
+    while (1) {
+        hunk_count++;
+        if (hunk_count > 1000) {
+            printf("[DEBUG] Safety limit reached, stopping parsing\n");
+            break;
+        }
+        
+        t = get_num(desc);
+        printf("[DEBUG] Parsing hunk type: 0x%06X (hunk #%d)\n", t & 0x00FFFFFF, hunk_count);
+        if ((t & 0x00FFFFFF) == HUNK_END) {
+            printf("[DEBUG] Found HUNK_END, parsing complete\n");
+            break;
+        }
+        
+        switch (t & 0x00FFFFFF) {
+            case HUNK_CODE:      /* text */
+                t = get_num(desc);
+                if (hunk_index >= max_hunks) {
+                    max_hunks *= 2;
+                    handle->hunks = realloc(handle->hunks, max_hunks * sizeof(hunk_info_t));
+                    if (!handle->hunks) {
+                        set_dlerror("Out of memory for hunk structures");
+                        free(name);
+                        free(handle->symbol_table);
+                        return -1;
+                    }
+                }
+                handle->hunks[hunk_index].type = HUNK_CODE;
+                handle->hunks[hunk_index].size = t;
+                handle->hunks[hunk_index].data = allocate_hunk_memory(t, 0x80000000); /* MEMF_FAST for executable code */
+                handle->hunks[hunk_index].hunk_number = hunk_index;
+                if (!handle->hunks[hunk_index].data) {
+                    set_dlerror("Failed to allocate memory for code hunk");
+                    free(name);
+                    return -1;
+                }
+                /* Read the code data */
+                fread(handle->hunks[hunk_index].data, 1, t * 4, desc);
+                hunk_index++;
+                break;
+                
+            case HUNK_DATA:      /* data */
+                t = get_num(desc);
+                if (hunk_index >= max_hunks) {
+                    max_hunks *= 2;
+                    handle->hunks = realloc(handle->hunks, max_hunks * sizeof(hunk_info_t));
+                    if (!handle->hunks) {
+                        set_dlerror("Out of memory for hunk structures");
+                        free(name);
+                        free(handle->symbol_table);
+                        return -1;
+                    }
+                }
+                handle->hunks[hunk_index].type = HUNK_DATA;
+                handle->hunks[hunk_index].size = t;
+                handle->hunks[hunk_index].data = allocate_hunk_memory(t, 0); /* MEMF_PUBLIC for data */
+                handle->hunks[hunk_index].hunk_number = hunk_index;
+                if (!handle->hunks[hunk_index].data) {
+                    set_dlerror("Failed to allocate memory for data hunk");
+                    free(name);
+                    return -1;
+                }
+                /* Read the data */
+                fread(handle->hunks[hunk_index].data, 1, t * 4, desc);
+                hunk_index++;
+                break;
+                
+            case HUNK_BSS:      /* bss */
+                t = get_num(desc);
+                if (hunk_index >= max_hunks) {
+                    max_hunks *= 2;
+                    handle->hunks = realloc(handle->hunks, max_hunks * sizeof(hunk_info_t));
+                    if (!handle->hunks) {
+                        set_dlerror("Out of memory for hunk structures");
+                        free(name);
+                        free(handle->symbol_table);
+                        return -1;
+                    }
+                }
+                handle->hunks[hunk_index].type = HUNK_BSS;
+                handle->hunks[hunk_index].size = t;
+                handle->hunks[hunk_index].data = AllocMem(t * 4, MEMF_PUBLIC | MEMF_CLEAR);
+                handle->hunks[hunk_index].hunk_number = hunk_index;
+                if (!handle->hunks[hunk_index].data) {
+                    set_dlerror("Failed to allocate memory for BSS hunk");
+                    free(name);
+                    return -1;
+                }
+                hunk_index++;
+                break;
+                
+            case HUNK_NAME:      /* name */
+                t = get_num(desc);
+                skip(desc, t);
+                break;
+                
+            case HUNK_DEBUG:     /* debug */
+                t = get_num(desc);
+                skip(desc, t);
+                break;
+                
+            case HUNK_RELOC8:    /* reloc8 */
+            case HUNK_RELOC16:   /* reloc16 */
+            case HUNK_RELOC32:   /* reloc32 */
+                while ((t = get_num(desc)) != 0) {
+                    skip(desc, t + 1);
+                }
+                break;
+                
+            case HUNK_EXT:       /* ext */
+                while ((t = get_num(desc)) != 0) {
+                    name_len = t & 0x00FFFFFF;
+                    sym_type = (t >> 24) & 0xFF;
+                    
+                    /* Read symbol name */
+                    if (name_len * 4 > name_size - 1) {
+                        name_size = name_len * 4 + 1;
+                        name = realloc(name, name_size);
+                        if (!name) {
+                            set_dlerror("Out of memory for symbol name");
+                            return -1;
+                        }
+                    }
+                    fread(name, 1, name_len * 4, desc);
+                    name[name_len * 4] = '\0';
+                    
+                    /* Handle different symbol types */
+                    if (sym_type == EXT_DEF || sym_type == EXT_ABS || 
+                        sym_type == SAS_EXT_DEF || sym_type == SAS_EXT_ABS) {
+                        symbol_value = get_num(desc);
+                        
+                        if (sym_type == EXT_DEF || sym_type == SAS_EXT_DEF) {
+                            /* Relocatable definition - calculate address relative to hunk */
+                            if (hunk_index > 0) {
+                                symbol_address = (void *)((ULONG)handle->hunks[hunk_index-1].data + symbol_value);
+                            } else {
+                                symbol_address = (void *)symbol_value;
+                            }
+                        } else {
+                            /* Absolute definition */
+                            symbol_address = (void *)symbol_value;
+                        }
+                        
+                        add_symbol_to_table(handle, name, symbol_address, sym_type, hunk_index > 0 ? hunk_index-1 : 0);
+                    } else if (sym_type == EXT_REF32 || sym_type == EXT_COMMON) {
+                        ref_count = get_num(desc);
+                        skip(desc, ref_count);
+                    } else if (sym_type == EXT_REF16 || sym_type == SAS_EXT_REF16) {
+                        ref_count = get_num(desc);
+                        skip(desc, ref_count * 2);
+                    } else {
+                        /* Skip unknown symbol types */
+                        printf("[DEBUG] Skipping unknown symbol type %d ('%s')\n", sym_type, name);
+                    }
+                }
+                break;
+                
+            case HUNK_SYMBOL:    /* symbols */
+                while ((t = get_num(desc)) != 0) {
+                    if (t * 4 > name_size - 1) {
+                        name_size = t * 4 + 1;
+                        name = realloc(name, name_size);
+                        if (!name) {
+                            set_dlerror("Out of memory for symbol name");
+                            return -1;
+                        }
+                    }
+                    fread(name, 1, t * 4, desc);
+                    name[t * 4] = '\0';
+                    
+                    symbol_value = get_num(desc);
+                    
+                    if (hunk_index > 0) {
+                        symbol_address = (void *)((ULONG)handle->hunks[hunk_index-1].data + symbol_value);
+                    } else {
+                        symbol_address = (void *)symbol_value;
+                    }
+                    
+                    add_symbol_to_table(handle, name, symbol_address, EXT_DEF, hunk_index > 0 ? hunk_index-1 : 0);
+                }
+                break;
+                
+            default:
+                /* Skip unknown hunk types */
+                printf("[DEBUG] Skipping unknown hunk type 0x%06X\n", t & 0x00FFFFFF);
+                break;
+        }
+    }
+    
+    free(name);
+    handle->hunk_count = hunk_index;
+    
+    /* Build hunk address array and set base address */
+    if (handle->hunk_count > 0) {
+        int i;
+        handle->hunk_addresses = malloc(handle->hunk_count * sizeof(void *));
+        if (handle->hunk_addresses) {
+            for (i = 0; i < handle->hunk_count; i++) {
+                handle->hunks[i].base_address = handle->hunks[i].data;
+                handle->hunk_addresses[i] = handle->hunks[i].data;
+            }
+        }
+        handle->base_addr = handle->hunks[0].data;
+    }
+    
+    printf("[DEBUG] Parsing complete. Found %d hunks, %d symbols, 0 relocations.\n", 
+           handle->hunk_count, handle->symbol_count);
+    
+    /* Debug: Show what symbols were added */
+    printf("[DEBUG] Symbols added to table:\n");
+    {
+        int i;
+        for (i = 0; i < SYMBOL_TABLE_SIZE; i++) {
+            symbol_entry_t *entry = handle->symbol_table[i];
+            while (entry) {
+                printf("[DEBUG]   Symbol: '%s' at address %p (type: %d, hunk: %d)\n", 
+                       entry->name, entry->address, entry->type, entry->hunk_number);
+                entry = entry->next;
+            }
+        }
+    }
+    
+    return 0;
+}
  
  /* Function to parse and load an object file into memory */
  static int load_object_file(const char *filename, lib_handle_t *handle)
@@ -2043,6 +1959,12 @@
          
          printf("[DEBUG] resolve_external_symbols: Processing hunk %d with %d external symbols\n", i, hunk->ext_symbol_count);
          
+         /* Safety check: skip if count is unreasonably large */
+         if (hunk->ext_symbol_count > 10000) {
+             printf("[DEBUG] resolve_external_symbols: Skipping hunk %d with unreasonably large external symbol count (%d)\n", i, hunk->ext_symbol_count);
+             continue;
+         }
+         
          for (j = 0; j < hunk->ext_symbol_count; j++) {
              ext_symbol = &hunk->ext_symbols[j];
              
@@ -2237,38 +2159,30 @@
  /* Function removed - not needed with current approach */
  
  static int find_symbol_in_sas_library(const char *symbol_name, lib_handle_t *lib_handle)
- {
-     /* This function searches for a symbol in a SAS/C library and returns the object file index */
-     int i, j;
-     hunk_info_t *hunk;
-     ext_symbol_t *ext_symbol;
-     
-     if (!lib_handle || !lib_handle->hunks) {
-         return -1;
-     }
-     
-     printf("[DEBUG] find_symbol_in_sas_library: Searching for '%s' in library %s\n", 
-            symbol_name, lib_handle->filename);
-     
-     /* Search through the library's hunks for the symbol */
-     for (i = 0; i < lib_handle->hunk_count; i++) {
-         hunk = &lib_handle->hunks[i];
-         
-         /* Check if this hunk has external symbols */
-         if (hunk->ext_symbols && hunk->ext_symbol_count > 0) {
-             for (j = 0; j < hunk->ext_symbol_count; j++) {
-                 ext_symbol = &hunk->ext_symbols[j];
-                 
-                 if (ext_symbol->name && strcmp(ext_symbol->name, symbol_name) == 0) {
-                     printf("[DEBUG] find_symbol_recursive: Found '%s' in hunk %d\n", symbol_name, i);
-                     return i; /* Return the hunk index */
-                 }
-             }
-         }
-     }
-     
-     printf("[DEBUG] find_symbol_in_sas_library: Symbol '%s' not found in library %s\n", 
-            symbol_name, lib_handle->filename);
-     return -1;
- }
+{
+    /* This function searches for a symbol in a SAS/C library and returns the object file index */
+    void *symbol_address;
+    
+    if (!lib_handle) {
+        return -1;
+    }
+    
+    printf("[DEBUG] find_symbol_in_sas_library: Searching for '%s' in library %s\n", 
+           symbol_name, lib_handle->filename);
+    
+    /* Look for the symbol in the library's symbol table */
+    symbol_address = find_symbol(lib_handle, symbol_name);
+    if (symbol_address) {
+        printf("[DEBUG] find_symbol_in_sas_library: Found '%s' in library %s at address %p\n", 
+               symbol_name, lib_handle->filename, symbol_address);
+        
+        /* For now, return hunk 0 since we found the symbol */
+        /* In a full implementation, we'd track which hunk contains each symbol */
+        return 0;
+    }
+    
+    printf("[DEBUG] find_symbol_in_sas_library: Symbol '%s' not found in library %s\n", 
+           symbol_name, lib_handle->filename);
+    return -1;
+}
  
