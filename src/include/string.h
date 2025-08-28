@@ -37,8 +37,6 @@ extern char *strsep(char **, const char *);
 /* POSIX extensions */
 extern size_t strnlen(const char *, size_t);
 extern int strcoll(const char *, const char *);
-
-/* Additional POSIX functions */
 extern char *strndup(const char *, size_t);
 extern char *strtok_r(char *, const char *, char **);
 extern int strerror_r(int, char *, size_t);
@@ -46,6 +44,15 @@ extern int strerror_r(int, char *, size_t);
 /* Final C99 functions */
 extern void *memccpy(void *, const void *, int, size_t);
 extern size_t strxfrm(char *, const char *, size_t);
+
+/* Additional string utility functions */
+extern void strtolower(char *);
+extern char *strupr(char *);
+extern char *strichr(char *, int);
+extern char *stristr(char *, char *);
+extern char *strnchr(char *, int, int);
+extern void strins(char *, char *);
+extern char *strrev(char *);
 
 #endif
 #endif

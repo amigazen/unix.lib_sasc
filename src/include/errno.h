@@ -11,6 +11,7 @@
 
 /* Additional error codes not in the system errno.h */
 #define EOSERR		-1	/* Operating system error */
+#define EOVERFLOW	75	/* Value too large for defined data type */
 
 /* Include the system errno.h for all the standard error codes */
 #include "netinclude:sys/errno.h"

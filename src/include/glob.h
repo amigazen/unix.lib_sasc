@@ -55,6 +55,7 @@ int glob(const char *pattern, int flags,
 void globfree(glob_t *pglob);
 
 
+
 #ifdef __cplusplus
 }
 #endif
