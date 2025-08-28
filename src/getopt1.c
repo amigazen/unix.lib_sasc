@@ -1,178 +1,317 @@
-/* getopt_long and getopt_long_only entry points for GNU getopt.
-   Copyright (C) 1987, 88, 89, 90, 91, 92, 1993, 1994
-	Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the
-   Free Software Foundation; either version 2, or (at your option) any
-   later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+/*
+ * getopt1.c - Extended getopt functions for long option support
+ *
+ * Original Author: Daniel J. Barrett
+ * Copyright (C) 2025 by amigazen project
+ */
 
 #include "getopt.h"
-
-#if !defined (__STDC__) || !__STDC__
-/* This is a separate conditional since some stdc systems
-   reject `defined (const)'.  */
-#ifndef const
-#define const
-#endif
-#endif
-
 #include <stdio.h>
+#include <string.h>
 
-/* Comment out all this code if we are using the GNU C Library, and are not
-   actually compiling the library itself.  This code is part of the GNU C
-   Library, but also included in many other GNU distributions.  Compiling
-   and linking in this code is a waste when using the GNU C library
-   (especially if it is a shared library).  Rather than having every GNU
-   program understand `configure --with-gnu-libc' and omit the object files,
-   it is simpler to just do this in the source for each such file.  */
+/* Function prototypes for internal functions */
+static int handle_long_option(int argc, char *const *argv, const char *shortopts,
+                             const struct option *longopts, int *longind, int long_only);
+static int handle_short_option(int argc, char *const *argv, const char *shortopts);
 
-#if defined (_LIBC) || !defined (__GNU_LIBRARY__)
+/* Internal variables for long option processing */
+static int longopt_index = 0;
+static int longopt_only = 0;
 
-
-/* This needs to come after some library #include
-   to get __GNU_LIBRARY__ defined.  */
-#ifdef __GNU_LIBRARY__
-#include <stdlib.h>
-#else
-extern char *__getenv (const char *);
-extern char *getenv (const char *);
-#define getenv __getenv
-#endif
-
-#ifndef	NULL
-#define NULL 0
-#endif
-
-int
-getopt_long (int argc,
-	     char *const *argv,
-	     const char *options,
-	     const struct option *long_options,
-	     int *opt_index)
+/*
+ * _getopt_internal - Internal function for handling both short and long options
+ * 
+ * This function provides the core logic for getopt_long and getopt_long_only.
+ * It first tries to match long options, then falls back to short options
+ * if long option matching fails.
+ */
+int _getopt_internal(int argc, char *const *argv, const char *shortopts,
+                     const struct option *longopts, int *longind, int long_only)
 {
-  return _getopt_internal (argc, argv, options, long_options, opt_index, 0);
+    static int initialized = 0;
+    static int nextchar = 0;
+    
+    /* Initialize on first call */
+    if (!initialized) {
+        optind = 1;
+        nextchar = 0;
+        initialized = 1;
+    }
+    
+    /* Check if we've processed all arguments */
+    if (optind >= argc) {
+        return EOF;
+    }
+    
+    /* Check if current argument starts with a dash */
+    if (argv[optind][0] != '-') {
+        return EOF;
+    }
+    
+    /* Handle "--" end of options marker */
+    if (argv[optind][1] == '-' && argv[optind][2] == '\0') {
+        optind++;
+        return EOF;
+    }
+    
+    /* Try to handle as long option if it starts with "--" */
+    if (argv[optind][1] == '-') {
+        return handle_long_option(argc, argv, shortopts, longopts, longind, long_only);
+    }
+    
+    /* Handle as short option */
+    return handle_short_option(argc, argv, shortopts);
 }
 
-/* Like getopt_long, but '-' as well as '--' can indicate a long option.
-   If an option that starts with '-' (not '--') doesn't match a long option,
-   but does match a short option, it is parsed as a short option
-   instead.  */
-
-int
-getopt_long_only (int argc,
-		  char *const *argv,
-		  const char *options,
-		  const struct option *long_options,
-		  int *opt_index)
+/*
+ * handle_long_option - Process long options (--option)
+ */
+static int handle_long_option(int argc, char *const *argv, const char *shortopts,
+                             const struct option *longopts, int *longind, int long_only)
 {
-  return _getopt_internal (argc, argv, options, long_options, opt_index, 1);
+    char *option_name = &argv[optind][2]; /* Skip "--" */
+    char *equals_sign = strchr(option_name, '=');
+    int name_len;
+    const struct option *opt;
+    
+    if (equals_sign) {
+        name_len = equals_sign - option_name;
+    } else {
+        name_len = strlen(option_name);
+    }
+    
+    /* Find matching long option */
+    for (opt = longopts; opt->name != NULL; opt++) {
+        if (strncmp(opt->name, option_name, name_len) == 0 && 
+            opt->name[name_len] == '\0') {
+            
+            /* Found matching option */
+            if (longind) {
+                *longind = opt - longopts;
+            }
+            
+            /* Handle argument */
+            if (opt->has_arg == required_argument) {
+                if (equals_sign) {
+                    optarg = equals_sign + 1;
+                } else if (optind + 1 < argc) {
+                    optarg = argv[optind + 1];
+                    optind++;
+                } else {
+                    /* Missing required argument */
+                    if (opterr) {
+                        fprintf(stderr, "%s: option '--%s' requires an argument\n", 
+                                argv[0], opt->name);
+                    }
+                    optopt = 0;
+                    return '?';
+                }
+            } else if (opt->has_arg == optional_argument) {
+                if (equals_sign) {
+                    optarg = equals_sign + 1;
+                } else {
+                    optarg = NULL;
+                }
+            } else {
+                optarg = NULL;
+            }
+            
+            /* Handle flag or return value */
+            if (opt->flag) {
+                *opt->flag = opt->val;
+                optind++;
+                return 0;
+            } else {
+                optind++;
+                return opt->val;
+            }
+        }
+    }
+    
+    /* No matching long option found */
+    if (opterr) {
+        fprintf(stderr, "%s: unrecognized option '--%s'\n", argv[0], option_name);
+    }
+    optopt = 0;
+    optind++;
+    return '?';
 }
 
+/*
+ * handle_short_option - Process short options (-o)
+ */
+static int handle_short_option(int argc, char *const *argv, const char *shortopts)
+{
+    int c = argv[optind][nextchar];
+    
+    if (c == '\0') {
+        optind++;
+        nextchar = 0;
+        return EOF;
+    }
+    
+    /* Find option in option string */
+    char *str = strchr(shortopts, c);
+    if (!str) {
+        if (opterr) {
+            fprintf(stderr, "%s: invalid option -- %c\n", argv[0], c);
+        }
+        optopt = c;
+        nextchar++;
+        if (argv[optind][nextchar] == '\0') {
+            optind++;
+            nextchar = 0;
+        }
+        return '?';
+    }
+    
+    /* Check if option requires argument */
+    if (str[1] == ':') {
+        if (argv[optind][nextchar + 1] != '\0') {
+            /* Argument is in same argv element */
+            optarg = &argv[optind][nextchar + 1];
+        } else if (optind + 1 < argc) {
+            /* Argument is in next argv element */
+            optarg = argv[optind + 1];
+            optind++;
+        } else {
+            /* Missing required argument */
+            if (opterr) {
+                fprintf(stderr, "%s: option requires an argument -- %c\n", argv[0], c);
+            }
+            optopt = c;
+            return '?';
+        }
+        nextchar = 0;
+        optind++;
+    } else {
+        /* No argument required */
+        optarg = NULL;
+        nextchar++;
+        if (argv[optind][nextchar] == '\0') {
+            optind++;
+            nextchar = 0;
+        }
+    }
+    
+    optopt = c;
+    return c;
+}
 
-#endif	/* _LIBC or not __GNU_LIBRARY__.  */
-
+/*
+ * getopt_long - Parse long options in addition to short options
+ * 
+ * This function works like getopt() but also accepts long options
+ * starting with "--". Long options can be abbreviated as long as
+ * the abbreviation is unique.
+ */
+int getopt_long(int argc, char *const *argv, const char *options,
+                const struct option *long_options, int *opt_index)
+{
+    return _getopt_internal(argc, argv, options, long_options, opt_index, 0);
+}
+
+/*
+ * getopt_long_only - Parse long options only
+ * 
+ * This function is like getopt_long(), but '-' as well as '--' can
+ * indicate a long option. If an option that starts with '-' (not '--')
+ * doesn't match a long option, but does match a short option, it is
+ * parsed as a short option instead.
+ */
+int getopt_long_only(int argc, char *const *argv, const char *options,
+                     const struct option *long_options, int *opt_index)
+{
+    return _getopt_internal(argc, argv, options, long_options, opt_index, 1);
+}
+
 #ifdef TEST
-
-#include <stdio.h>
-
-int
-main (int argc, char **argv)
+/*
+ * Test program for extended getopt functionality
+ */
+int main(int argc, char **argv)
 {
-  int c;
-  int digit_optind = 0;
-
-  while (1)
-    {
-      int this_option_optind = optind ? optind : 1;
-      int option_index = 0;
-      static struct option long_options[] =
-      {
-	{"add", 1, 0, 0},
-	{"append", 0, 0, 0},
-	{"delete", 1, 0, 0},
-	{"verbose", 0, 0, 0},
-	{"create", 0, 0, 0},
-	{"file", 1, 0, 0},
-	{0, 0, 0, 0}
-      };
-
-      c = getopt_long (argc, argv, "abc:d:0123456789",
-		       long_options, &option_index);
-      if (c == EOF)
-	break;
-
-      switch (c)
-	{
-	case 0:
-	  printf ("option %s", long_options[option_index].name);
-	  if (optarg)
-	    printf (" with arg %s", optarg);
-	  printf ("\n");
-	  break;
-
-	case '0':
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-	  if (digit_optind != 0 && digit_optind != this_option_optind)
-	    printf ("digits occur in two different argv-elements.\n");
-	  digit_optind = this_option_optind;
-	  printf ("option %c\n", c);
-	  break;
-
-	case 'a':
-	  printf ("option a\n");
-	  break;
-
-	case 'b':
-	  printf ("option b\n");
-	  break;
-
-	case 'c':
-	  printf ("option c with value `%s'\n", optarg);
-	  break;
-
-	case 'd':
-	  printf ("option d with value `%s'\n", optarg);
-	  break;
-
-	case '?':
-	  break;
-
-	default:
-	  printf ("?? getopt returned character code 0%o ??\n", c);
-	}
+    int c;
+    int digit_optind = 0;
+    
+    static struct option long_options[] = {
+        {"add", required_argument, 0, 0},
+        {"append", no_argument, 0, 0},
+        {"delete", required_argument, 0, 0},
+        {"verbose", no_argument, 0, 0},
+        {"create", no_argument, 0, 0},
+        {"file", required_argument, 0, 0},
+        {0, 0, 0, 0}
+    };
+    
+    while (1) {
+        int this_option_optind = optind ? optind : 1;
+        int option_index = 0;
+        
+        c = getopt_long(argc, argv, "abc:d:0123456789",
+                        long_options, &option_index);
+        if (c == EOF) {
+            break;
+        }
+        
+        switch (c) {
+            case 0:
+                printf("option %s", long_options[option_index].name);
+                if (optarg) {
+                    printf(" with arg %s", optarg);
+                }
+                printf("\n");
+                break;
+                
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                if (digit_optind != 0 && digit_optind != this_option_optind) {
+                    printf("digits occur in two different argv-elements.\n");
+                }
+                digit_optind = this_option_optind;
+                printf("option %c\n", c);
+                break;
+                
+            case 'a':
+                printf("option a\n");
+                break;
+                
+            case 'b':
+                printf("option b\n");
+                break;
+                
+            case 'c':
+                printf("option c with value `%s'\n", optarg);
+                break;
+                
+            case 'd':
+                printf("option d with value `%s'\n", optarg);
+                break;
+                
+            case '?':
+                break;
+                
+            default:
+                printf("?? getopt returned character code 0%o ??\n", c);
+        }
     }
-
-  if (optind < argc)
-    {
-      printf ("non-option ARGV-elements: ");
-      while (optind < argc)
-	printf ("%s ", argv[optind++]);
-      printf ("\n");
+    
+    if (optind < argc) {
+        printf("non-option ARGV-elements: ");
+        while (optind < argc) {
+            printf("%s ", argv[optind++]);
+        }
+        printf("\n");
     }
-
-  exit (0);
+    
+    return 0;
 }
-
 #endif /* TEST */

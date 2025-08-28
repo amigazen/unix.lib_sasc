@@ -1,11 +1,8 @@
 /*
- * SPDX-License-Identifier: Public Domain
  * getopt.h - Extended getopt header for POSIX and long option support
  *
- * Original Author: Daniel J. Barrett (barrett@cs.umass.edu)
- * Extended by: amigazen project
- *
- * This code is placed in the Public Domain.
+ * Original Author: Daniel J. Barrett
+ * Copyright (C) 2025 by amigazen project
  */
 
 #ifndef _GETOPT_H
