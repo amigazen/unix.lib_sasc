@@ -32,7 +32,7 @@ static int initialized = 0;      /* Flag to indicate if getopt() has been initia
 static int NextOption(char *argv[], char *optString);
 static int RealOption(char *argv[], char *str, int *skip, int *ind, int opt);
 static int HandleArgument(char *argv[], int *optind, int *skip);
-static void Error(int err, int c);
+static void Error(int err, int c, char *argv[]);
 
 /*
  * getopt() - Main function to parse command line options
@@ -57,6 +57,11 @@ int getopt(int argc, char *argv[], char *optString)
     
     /* Check if current argument starts with a dash */
     if (argv[optind][0] != DASH) {
+        return EOF;
+    }
+    
+    /* Handle single dash '-' - Berkeley compatibility */
+    if (argv[optind][1] == '\0') {
         return EOF;
     }
     
@@ -96,10 +101,19 @@ static int NextOption(char *argv[], char *optString)
         return EOF;
     }
     
+    /* Skip the initial dash for first character */
+    if (nextchar == 0) {
+        nextchar = 1;
+        c = argv[optind][nextchar];
+        if (c == '\0') {
+            return EOF;
+        }
+    }
+    
     /* Find option in option string */
     str = strchr(optString, c);
     if (!str) {
-        Error(ERROR_BAD_OPTION, c);
+        Error(ERROR_BAD_OPTION, c, argv);
         nextchar++;
         if (argv[optind][nextchar] == '\0') {
             optind++;
@@ -137,7 +151,7 @@ static int RealOption(char *argv[], char *str, int *skip, int *ind, int opt)
             /* Argument is in next argv element */
             optarg = argv[*ind + 1];
             if (!optarg) {
-                Error(ERROR_MISSING_ARGUMENT, opt);
+                Error(ERROR_MISSING_ARGUMENT, opt, argv);
                 return -1;
             }
             (*ind)++;
@@ -145,8 +159,13 @@ static int RealOption(char *argv[], char *str, int *skip, int *ind, int opt)
             /* Argument is in same argv element */
             optarg = &argv[*ind][nextchar + 1];
             if (*optarg == '\0') {
-                Error(ERROR_MISSING_ARGUMENT, opt);
-                return -1;
+                /* No argument in same element, try next element */
+                if (*ind + 1 >= argc) {
+                    Error(ERROR_MISSING_ARGUMENT, opt, argv);
+                    return -1;
+                }
+                optarg = argv[*ind + 1];
+                (*ind)++;
             }
         }
         nextchar = 0;
@@ -177,15 +196,27 @@ static int HandleArgument(char *argv[], int *optind, int *skip)
 /*
  * Error() - Print error messages if opterr is set
  */
-static void Error(int err, int c)
+static void Error(int err, int c, char *argv[])
 {
+    char *p;
+    
     if (opterr) {
         switch (err) {
             case ERROR_BAD_OPTION:
-                fprintf(stderr, "%c: Illegal option.\n", c);
+                /* Berkeley-style error message */
+                if (!(p = strrchr(argv[0], '/')))
+                    p = argv[0];
+                else
+                    ++p;
+                fprintf(stderr, "%s: illegal option -- %c\n", p, c);
                 break;
             case ERROR_MISSING_ARGUMENT:
-                fprintf(stderr, "%c: An argument is required, but missing.\n", c);
+                /* Berkeley-style error message */
+                if (!(p = strrchr(argv[0], '/')))
+                    p = argv[0];
+                else
+                    ++p;
+                fprintf(stderr, "%s: option requires an argument -- %c\n", p, c);
                 break;
             default:
                 fprintf(stderr, "%c: Unknown error.\n", c);

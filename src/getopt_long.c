@@ -7,7 +7,6 @@
  * POSIX.1-2001, POSIX.1-2008, 4.3BSD
  */
 
-#include "amiga.h"
 #include "getopt.h"
 #include <string.h>
 #include <stdio.h>
@@ -19,7 +18,8 @@ int getopt_long(int argc, char * const argv[], const char *optstring,
     static int longopt_offset = 0;
     int i, match;
     
-    chkabort();
+    /* Check for abort signal - Amiga compatibility */
+    __chkabort();
     
     if (optind >= argc) {
         return -1;
@@ -56,8 +56,14 @@ int getopt_long(int argc, char * const argv[], const char *optstring,
                             optarg = argv[++optind];
                         } else {
                             if (opterr) {
+                                /* Berkeley-style error message */
+                                char *p;
+                                if (!(p = strrchr(argv[0], '/')))
+                                    p = argv[0];
+                                else
+                                    ++p;
                                 fprintf(stderr, "%s: option '--%s' requires an argument\n",
-                                        argv[0], longopts[match].name);
+                                        p, longopts[match].name);
                             }
                             return '?';
                         }
@@ -77,7 +83,13 @@ int getopt_long(int argc, char * const argv[], const char *optstring,
         
         /* No exact match found */
         if (opterr) {
-            fprintf(stderr, "%s: unrecognized option '--%s'\n", argv[0], arg);
+            /* Berkeley-style error message */
+            char *p;
+            if (!(p = strrchr(argv[0], '/')))
+                p = argv[0];
+            else
+                ++p;
+            fprintf(stderr, "%s: unrecognized option '--%s'\n", p, arg);
         }
         optind++;
         return '?';

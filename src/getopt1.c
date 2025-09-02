@@ -48,6 +48,11 @@ int _getopt_internal(int argc, char *const *argv, const char *shortopts,
         return EOF;
     }
     
+    /* Handle single dash '-' - Berkeley compatibility */
+    if (argv[optind][1] == '\0') {
+        return EOF;
+    }
+    
     /* Handle "--" end of options marker */
     if (argv[optind][1] == '-' && argv[optind][2] == '\0') {
         optind++;
@@ -139,11 +144,20 @@ static int handle_long_option(int argc, char *const *argv, const char *shortopts
 
 /*
  * handle_short_option - Process short options (-o)
+ * Enhanced to match the improved getopt.c logic
  */
 static int handle_short_option(int argc, char *const *argv, const char *shortopts)
 {
-    int c = argv[optind][nextchar];
+    int c;
+    char *str;
+    char *p;
     
+    /* Skip the initial dash for first character */
+    if (nextchar == 0) {
+        nextchar = 1;
+    }
+    
+    c = argv[optind][nextchar];
     if (c == '\0') {
         optind++;
         nextchar = 0;
@@ -151,10 +165,15 @@ static int handle_short_option(int argc, char *const *argv, const char *shortopt
     }
     
     /* Find option in option string */
-    char *str = strchr(shortopts, c);
+    str = strchr(shortopts, c);
     if (!str) {
         if (opterr) {
-            fprintf(stderr, "%s: invalid option -- %c\n", argv[0], c);
+            /* Berkeley-style error message */
+            if (!(p = strrchr(argv[0], '/')))
+                p = argv[0];
+            else
+                ++p;
+            fprintf(stderr, "%s: illegal option -- %c\n", p, c);
         }
         optopt = c;
         nextchar++;
@@ -177,7 +196,12 @@ static int handle_short_option(int argc, char *const *argv, const char *shortopt
         } else {
             /* Missing required argument */
             if (opterr) {
-                fprintf(stderr, "%s: option requires an argument -- %c\n", argv[0], c);
+                /* Berkeley-style error message */
+                if (!(p = strrchr(argv[0], '/')))
+                    p = argv[0];
+                else
+                    ++p;
+                fprintf(stderr, "%s: option requires an argument -- %c\n", p, c);
             }
             optopt = c;
             return '?';
