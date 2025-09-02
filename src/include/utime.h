@@ -1,3 +1,3 @@
 struct utimbuf { time_t actime, modtime; };
 
-int utime(char *path, struct utimbuf *times);
+int utime(const char *path, const struct utimbuf *times);

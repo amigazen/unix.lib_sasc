@@ -7,6 +7,7 @@
 #undef unsetenv
 #ifndef _ANSI_SOURCE
 int setenv(const char *, const char *, int);
+int system(const char *);
 #ifndef _POSIX_SOURCE
 extern	char *optarg;			/* getopt(3) external variables */
 extern	int optind;
