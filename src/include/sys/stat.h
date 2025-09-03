@@ -124,8 +124,8 @@ __BEGIN_DECLS
 mode_t	umask __P((mode_t));
 int	chmod __P((const char *, mode_t));
 int	fstat __P((int, struct stat *));
-int	mkdir __P((char *, mode_t));
-int	mkfifo __P((char *, mode_t));
+int	mkdir __P((const char *, mode_t));
+int	mkfifo __P((const char *, mode_t));
 int	mknod __P((const char *, mode_t, dev_t));
 int	stat __P((const char *, struct stat *));
 #ifndef _POSIX_SOURCE

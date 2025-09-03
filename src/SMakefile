@@ -22,7 +22,7 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	fcntl.o fd_setsize.o fibstat.o fifofd.o files.o fnmatch.o fpathconf.o \
 	fstat.o fsync.o ftruncate.o 	getdtablesize.o getegid.o geteuid.o \
 	getenv.o getgid.o gethostname.o getlogin.o getopt.o getopt1.o \
-	getopt_long.o getpass.o getpid.o gettimeofday.o getuid.o getwd.o \
+	getopt_long.o getpass.o getpid.o getppid.o gettimeofday.o getuid.o getwd.o \
 	gid.o glob.o grp.o hypot.o index.o ioctl.o isatty.o kill.o link.o \
 	longlong.o lseek.o lstat.o memccpy.o memchr.o memcmp.o memcpy.o memset.o message.o mkdir.o mkfifo.o \
 	mkstemp.o mktemp.o nice.o onbreak.o open.o pathconf.o perror.o \
@@ -30,7 +30,7 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	pwd.o pwrite.o raise.o read.o readlink.o realpath.o regerror.o \
 	regex.o regexp.o regsub.o rename.o rindex.o rmdir.o scandir.o \
 	select.o setenv.o setgid.o setjmp.o setpgid.o setsid.o setuid.o \
-	settimeofday.do siglist.o signal.o signals.o sigpause.o sigprocmask.o \
+	settimeofday.o siglist.o signal.o signals.o sigpause.o sigprocmask.o \
 	sigsetmask.o sleep.o snprintf.o sockets.o stat.o 	strcasecmp.o strcat.o strchr.o strcmp.o \
 	strcoll.o strcpy.o strcspn.o strdup.o strerror.o strerror_r.o strftime.o stricmp.o \
 	strlcat.o strlcpy.o strlen.o strncasecmp.o strncat.o strncpy.o strndup.o \
@@ -93,7 +93,7 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	fibstat.do fifofd.do files.do fnmatch.do fpathconf.do fstat.do \
 	fsync.do ftruncate.do getdtablesize.do getegid.do geteuid.do \
 	getenv.do getgid.do gethostname.do getlogin.do getopt.do getopt1.do \
-	getopt_long.do getpass.do getpid.do gettimeofday.do getuid.do getwd.do \
+	getopt_long.do getpass.do getpid.do getppid.do gettimeofday.do getuid.do getwd.do \
 	gid.do glob.do grp.do hypot.do index.do ioctl.do isatty.do kill.do \
 	link.do longlong.do lseek.do lstat.do memccpy.do memchr.do memcmp.do memcpy.do memset.do message.do mkdir.do \
 	mkfifo.do mkstemp.do mktemp.do nice.do onbreak.do open.do pathconf.do \

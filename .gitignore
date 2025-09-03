@@ -1,6 +1,9 @@
 output.txt
 *.uaem
 *.o
+*.do
+*.nbo
+*.dnbo
 *.lib
 *.gst
 *.lnk

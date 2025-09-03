@@ -11,6 +11,7 @@
 #include "amiga.h"
 #include <sys/stat.h>
 #include <errno.h>
+#include <string.h>
 #include <proto/dos.h>
 #include <dos/dostags.h>
 
