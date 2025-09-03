@@ -41,6 +41,13 @@ extern char *strndup(const char *, size_t);
 extern char *strtok_r(char *, const char *, char **);
 extern int strerror_r(int, char *, size_t);
 
+/* Core POSIX string functions */
+extern char *strstr(const char *, const char *);
+extern char *strpbrk(const char *, const char *);
+extern size_t strspn(const char *, const char *);
+extern size_t strcspn(const char *, const char *);
+extern char *strtok(char *, const char *);
+
 /* Final C99 functions */
 extern void *memccpy(void *, const void *, int, size_t);
 extern size_t strxfrm(char *, const char *, size_t);
@@ -51,7 +58,9 @@ extern char *strupr(char *);
 extern char *strichr(char *, int);
 extern char *stristr(char *, char *);
 extern char *strnchr(char *, int, int);
+#ifndef strins
 extern void strins(char *, char *);
+#endif
 extern char *strrev(char *);
 
 #endif
