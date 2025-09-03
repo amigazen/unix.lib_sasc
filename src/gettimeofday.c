@@ -13,9 +13,12 @@
 #include <time.h>
 #include <errno.h>
 
-/* External timezone information */
-extern struct timezone __time_zone;
-extern long __local_to_GMT;
+/* Timezone information - default values for AmigaOS */
+static struct timezone __time_zone = {
+    0,  /* tz_minuteswest: Default to GMT */
+    0   /* tz_dsttime: No daylight saving time */
+};
+static long __local_to_GMT = 0;  /* Default to GMT (no offset) */
 
 int gettimeofday(struct timeval *tp, struct timezone *tzp)
 {

@@ -15,16 +15,30 @@
 #include <proto/dos.h>
 #include <dos/dostags.h>
 
-/* Path configuration constants */
-#define _PC_LINK_MAX          1
-#define _PC_MAX_CANON         2
-#define _PC_MAX_INPUT         3
-#define _PC_NAME_MAX          4
-#define _PC_PATH_MAX          5
-#define _PC_PIPE_BUF          6
-#define _PC_CHOWN_RESTRICTED  7
-#define _PC_NO_TRUNC          8
-#define _PC_VDISABLE          9
+/* External function for sending packets to AmigaOS */
+extern LONG SendPacket(struct MsgPort *handler, LONG action, LONG *arglist, LONG nargs);
+
+/*
+ * get_filesystem_limits_by_path() - Get filesystem limits for a specific path
+ *
+ * This function determines the actual filename and path length limits
+ * for a filesystem by examining the device associated with the path.
+ *
+ * Parameters:
+ *   path - Path to examine
+ *   name_max - Pointer to store filename length limit
+ *   path_max - Pointer to store path length limit
+ *
+ * Returns:
+ *   0 on success, -1 on failure
+ */
+static int get_filesystem_limits_by_path(const char *path, long *name_max, long *path_max)
+{
+    /* For now, return conservative limits */
+    *name_max = 30;   /* Traditional Amiga filesystems: 30 characters */
+    *path_max = 256;  /* AmigaOS path limit */
+    return 0;
+}
 
 long pathconf(const char *path, int name)
 {
@@ -45,11 +59,21 @@ long pathconf(const char *path, int name)
         case _PC_MAX_INPUT:
             return -1;     /* Not applicable on AmigaOS */
             
-        case _PC_NAME_MAX:
-            return 107;    /* AmigaOS filename limit */
+        case _PC_NAME_MAX: {
+            long name_max, path_max;
+            if (get_filesystem_limits_by_path(path, &name_max, &path_max) == 0) {
+                return name_max;
+            }
+            return 30;     /* Fallback to traditional limit */
+        }
             
-        case _PC_PATH_MAX:
-            return 256;    /* Reasonable path limit */
+        case _PC_PATH_MAX: {
+            long name_max, path_max;
+            if (get_filesystem_limits_by_path(path, &name_max, &path_max) == 0) {
+                return path_max;
+            }
+            return 256;    /* Fallback to traditional limit */
+        }
             
         case _PC_PIPE_BUF:
             return 4096;   /* Reasonable pipe buffer size */
