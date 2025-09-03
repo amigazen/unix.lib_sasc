@@ -1,6 +1,6 @@
-# UnixLib3
+# UniLib3
 
-This is UnixLib3, a POSIX and C99 compatible standard C library for SAS/C and DICE compilers on Amiga.
+This is UniLib3, a POSIX and C99 compatible standard C library for SAS/C and DICE compilers on Amiga.
 
 ## [amigazen project](http://www.amigazen.com)
 
@@ -22,29 +22,42 @@ Our philosophy is based on openness:
 
 PRs for all of our projects are gratefully received at [GitHub](https://github.com/amigazen/). While our focus now is on classic 68k software, we do intend that all amigazen project releases can be ported to other Amiga-like systems including AROS and MorphOS where feasible.
 
-## About UnixLib3
+## About UniLib3
 
-UnixLib3 is a comprehensive POSIX and C99 compatible standard C library implementation for Amiga, designed specifically for SAS/C and DICE compilers. This project aims to provide Amiga developers with a modern, standards-compliant C library that bridges the gap between classic Amiga development and contemporary POSIX standards.
+UniLib3 is a comprehensive POSIX and C99 compatible standard C library implementation for Amiga, designed specifically for SAS/C and DICE compilers. This project aims to provide Amiga developers with a modern, standards-compliant C library that bridges the gap between classic Amiga development and contemporary POSIX standards.
 
-### Project History
+### unix.lib History
 
-UnixLib3 represents the third major evolution of Unix compatibility libraries for Amiga:
+UniLib3 represents the third major evolution of Unix-compatibility libraries for Amiga:
 
-**Version 1 (1995)**: The original unix.lib was created and placed into the public domain by David Gay specifically to support his port of GNU Emacs to Amiga. This first version provided essential Unix compatibility functions needed for Emacs to run on Amiga, focusing on the specific requirements of that port.
+**Version 1 (Sometime prior to 1995)**: The original unix.lib was created and placed into the public domain by David Gay specifically to support his port of GNU Emacs to Amiga. This first version provided essential Unix-compatibility functions needed for Emacs to run on Amiga, focusing on the specific requirements of that port.
 
 **Version ?** - A unix.lib of unknown provenance was also included with the Inet225 TCP/IP stack but the source code for this has not been made public. 
 
-**Version 2 (1996)**: A second version was further developed by Enrico Forestieri who expanded the library to support porting various GNU utilities to Amiga. This version added many new functions as well as bsdsocket.library support.
+**Version 2 (1996)**: A second version was further developed by Enrico Forestieri who expanded the library to support porting various x11 programs to Amiga. This version added many new functions as well as bsdsocket.library support.
 
-**UnixLib3 (2025)**: This current version by amigazen project represents a complete refactor and expansion, incorporating not only the lessons learned from previous versions but also significant contributions merged in from Irmen de Jong's Amiga Python 2 implementation. UnixLib3 aims to be a comprehensive, POSIX and C99 standards-compliant solution rather than a limited compatibility layer.
+**UniLib3 (2025)**: This current version by amigazen project represents a complete refactor and expansion, incorporating not only the lessons learned from previous versions but also significant contributions merged in from Irmen de Jong's Amiga Python 2 implementation. UniLib3 aims to be a comprehensive, POSIX and C99 standards-compliant solution rather than a limited compatibility layer.
 
 ### Key Features
 
-- **POSIX Compliance**: Implements core POSIX.1 functionality for file operations, process management, and system interfaces
-- **C99 Support**: Full C99 standard library implementation including stdio, stdlib, string, and math functions
-- **Amiga Integration**: Native AmigaOS integration while maintaining POSIX compatibility
-- **Compiler Support**: Primary support for SAS/C with planned DICE compiler compatibility
-- **Memory Management**: Efficient memory allocation and management optimized for Amiga hardware constraints
+- **POSIX compliance**: Implements core POSIX.1 functionality for file operations, process management, and system interfaces (except _fork()_)
+- **C99 support**: Full C99 standard library implementation including stdio, stdlib, string, and math functions
+- **Amiga Integration**: Uses native Amiga library functions wherever suitable as the underlying implementation including memory pools, utility.library and locale.library, falling back to builtin versions for edge cases not handled by the native implementation e.g. _snprintf()_ supports all format string tokens, using _SNPrintf()_ for most calls but it's own fallback implementation for tokens not supported by _RawDoFmt()_
+- **NOT backwards compatible**: Deliberately does NOT support version 1.x and 2.x operating systems
+- **Latest NDK support**: Built against the latest official NDK
+- **Builds out of the box**: Builds cleanly for anyone using the ToolKit configuration for Amiga development
+- **Compiler support**: Primary support for SAS/C with planned DICE compiler compatibility. Probably also compatible with VBCC (but you can use PosixLib there)
+- **Memory Management**: Efficient memory allocation and management optimized for Amiga hardware constraints utilizing
+- **unix.lib**: Newly expanded and updated POSIX and C99 compliant standard C library originally by David Gay and Enrico Forestieri featuring dozens of new and updated functions including: -
+-- *longlong_t*: A complete 32-bit compatible implementation of the 64-bit longlong_t type
+-- *string functions*: New string functions including memory safe implementations of the snprintf family
+-- *getopts functions*: Complete BSD compatible implementations of getopts 
+-- *Upgraded functions*: POSIX compliant upgrades to many functions including ustat, utime
+-- *Unit tests*: Unit tests for many functions
+- **curses.lib**: Updated version of Simon Raybould's Amiga port of _curses_ now BSD licensed
+- **psockets.lib**: A new BSD licensed Amiga port of _psockets_ wrapping _bsdsocket.library_
+- **Full set of POSIX libraries**: For full POSIX compatibility libdl, libpthread and libiconv are needed... watch this space!
+- **Designed for use with _unsui_**: Used as the standard C library for amigazen project's _unsui_ POSIX runtime for Amiga
 
 ### Development Goals
 
@@ -67,17 +80,14 @@ Each component of **ToolKit** is open source and will have it's own github repo,
 
 UnixLib3 is designed to build against the ToolKit standard. The build process uses SAS/C with smake for Amiga, ensuring compatibility with classic Amiga development workflows.
 
+Detailed build instructions will be available in the [BUILD.md](BUILD.md) file.
+
 ### Prerequisites
 
 - SAS/C compiler (primary target)
 - DICE compiler (planned support)
 - ToolKit development environment
-- AmigaOS 3.2 or compatible
-
-### Build Instructions
-
-Detailed build instructions will be available in the [BUILD.md](BUILD.md) file.
-
+- Amiga operating system 3.1 or higher
 
 ## Contact 
 
@@ -91,13 +101,15 @@ Detailed build instructions will be available in the [BUILD.md](BUILD.md) file.
 
 Unix is probably a trademark of someone somewhere.
 
-UnixLib3 is part of amigazen project's effort to modernize Amiga development tools and libraries.
+UnixLib3 is part of amigazen project's effort to modernize Amiga development tools and libraries. It incorporates works by:
 
-**Historical Acknowledgements:**
 - **David Gay** - Original creator of unix.lib for his GNU Emacs port to Amiga
 - **Enrico Forestieri** - Developer of the second version of unix.lib, expanding Unix compatibility for Amiga
 - **Irmen de Jong** - Creator of Amiga Python 2, whose C library implementation code has been incorporated into UnixLib3
-- **The Regents of the University of California** - Original BSD code contributors (1982, 1986, 1991)
+- **Henry Spencer** - Author of public domain string functions distributed as 'stringlib'
+- **Simon John Raybould** - Author of the curses library implementation for Amiga
+- **Greg Parker** - Author of poll.c used in the _psockets_ implementation
+- **The Regents of the University of California** - Original BSD code contributors
 
 **Current Project:**
 UnixLib3 represents a collaborative effort by amigazen project to create a modern, comprehensive Unix compatibility solution for Amiga, building upon the work of these pioneering developers while adding contemporary standards compliance and expanded functionality.
