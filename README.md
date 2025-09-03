@@ -61,7 +61,7 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 - **curses.lib**: Updated version of Simon Raybould's Amiga port of _curses_ now BSD licensed
 - **psockets.lib**: A brand new Amiga port of _psockets_ wrapping _bsdsocket.library_
 - **pthread.lib**: A brand new Amiga native implementation of _pthread_
-- **Full set of POSIX libraries**: For full POSIX compatibility libdl and libiconv are also needed... watch this space!
+- **Full set of POSIX libraries**: For full POSIX compatibility regex, libdl and libiconv are also needed... watch this space!
 - **Designed for use with _unsui_**: Used as the standard C library for amigazen project's _unsui_ POSIX runtime for Amiga
 
 ### Development Goals
@@ -115,8 +115,3 @@ UniLib3 is part of amigazen project's effort to modernize Amiga development tool
 - **Simon John Raybould** - Author of the curses library implementation for Amiga
 - **Greg Parker** - Author of poll.c used in the _psockets_ implementation
 - **The Regents of the University of California** - Original BSD code contributors
-
-**Current Project:**
-UniLib3 represents a collaborative effort by amigazen project to create a modern, comprehensive Unix compatibility solution for Amiga, building upon the work of these pioneering developers while adding contemporary standards compliance and expanded functionality.
-
-This software is redistributed on terms described in the documentation, particularly the file LICENSE.md
