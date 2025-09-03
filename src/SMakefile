@@ -22,16 +22,17 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	fstat.o fsync.o ftruncate.o 	getdtablesize.o getegid.o geteuid.o \
 	getenv.o getgid.o gethostname.o getlogin.o getopt.o getopt1.o \
 	getopt_long.o getpass.o getpid.o getppid.o gettimeofday.o getuid.o getwd.o \
-	gid.o glob.o grp.o hypot.o index.o ioctl.o isatty.o kill.o link.o \
+	gid.o glob.o grp.o herror.o hypot.o index.o ioctl.o isatty.o kill.o link.o \
 	longlong.o lseek.o lstat.o memccpy.o memchr.o memcmp.o memcpy.o memset.o message.o mkdir.o mkfifo.o \
 	mkstemp.o mktemp.o nice.o onbreak.o open.o pathconf.o perror.o \
 	pipe.o pclose.o popen.o pread.o processes.o protection.o pseudo_c.o \
-	pwd.o pwrite.o raise.o read.o readlink.o realpath.o regerror.o \
+	pwd.o pwrite.o raise.o rcmd.o read.o readlink.o realpath.o regerror.o \
 	regex.o regexp.o regsub.o rename.o rindex.o rmdir.o scandir.o \
 	select.o setenv.o setgid.o setjmp.o setpgid.o setsid.o setuid.o \
 	settimeofday.o siglist.o signal.o signals.o sigpause.o sigprocmask.o \
-	sigsetmask.o sleep.o snprintf.o sockets.o stat.o 	strcasecmp.o strcat.o strchr.o strcmp.o \
+	sigsetmask.o sleep.o snprintf.o sockets.o stat.o strcasecmp.o strcat.o strchr.o strcmp.o \
 	strcoll.o strcpy.o strcspn.o strdup.o strerror.o strerror_r.o strftime.o stricmp.o \
+	syslog.o \
 	strlcat.o strlcpy.o strlen.o strncasecmp.o strncat.o strncpy.o strndup.o \
 	strnicmp.o strnlen.o strncmp.o strpbrk.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o \
 	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o \
@@ -49,10 +50,10 @@ LIBDL_NBOBJS = libdl.nbo
 LIBDL_DNBOBJS = libdl.dnbo
 
 # pthread library objects (separate from unix.lib)
-PTHREAD_OBJS = pthread.o semaphore.o sched.o gettimeofday.o pthread_startup.o
-PTHREAD_DOBJS = pthread.do semaphore.do sched.do gettimeofday.do pthread_startup.o
-PTHREAD_NBOBJS = pthread.nbo semaphore.nbo sched.nbo gettimeofday.nbo pthread_startup.o
-PTHREAD_DNBOBJS = pthread.dnbo semaphore.dnbo sched.dnbo gettimeofday.dnbo pthread_startup.o
+PTHREAD_OBJS = pthread.o pthread_sync.o pthread_startup.o
+PTHREAD_DOBJS = pthread.do pthread_sync.do pthread_startup.o
+PTHREAD_NBOBJS = pthread.nbo pthread_sync.nbo pthread_startup.o
+PTHREAD_DNBOBJS = pthread.dnbo pthread_sync.dnbo pthread_startup.o
 
 # psockets library objects (separate from unix.lib)
 PSOCKETS_OBJS = amigapsockets.o getaddrinfo.o getnameinfo.o inet_aton.o inet_ntop_ipv4.o inet_pton_ipv4.o poll.o resolver_stubs.o
@@ -73,10 +74,10 @@ DLTEST_NBOBJS = unittests/dltest.nbo
 DLTEST_DNBOBJS = unittests/dltest.dnbo
 
 # pthread test program objects (in unittests/pthread folder)
-PTHREADTEST_OBJS = unittests/pthread/test_pthread.o unittests/pthread/test_cancellation.o unittests/pthread/api_compatibility_example.o unittests/pthread/test_cleanup_verification.o
-PTHREADTEST_DOBJS = unittests/pthread/test_pthread.do unittests/pthread/test_cancellation.do unittests/pthread/api_compatibility_example.do unittests/pthread/test_cleanup_verification.do
-PTHREADTEST_NBOBJS = unittests/pthread/test_pthread.nbo unittests/pthread/test_cancellation.nbo unittests/pthread/api_compatibility_example.nbo unittests/pthread/test_cleanup_verification.nbo
-PTHREADTEST_DNBOBJS = unittests/pthread/test_pthread.dnbo unittests/pthread/test_cancellation.dnbo unittests/pthread/api_compatibility_example.dnbo unittests/pthread/test_cleanup_verification.dnbo
+PTHREADTEST_OBJS = unittests/pthread/pthread_test.o
+PTHREADTEST_DOBJS = unittests/pthread/pthread_test.do
+PTHREADTEST_NBOBJS = unittests/pthread/pthread_test.nbo
+PTHREADTEST_DNBOBJS = unittests/pthread/pthread_test.dnbo
 
 # psockets test program objects (in unittests/psockets folder)
 PSOCKETSTEST_OBJS = unittests/psockets/testga.o
@@ -93,16 +94,17 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	fsync.do ftruncate.do getdtablesize.do getegid.do geteuid.do \
 	getenv.do getgid.do gethostname.do getlogin.do getopt.do getopt1.do \
 	getopt_long.do getpass.do getpid.do getppid.do gettimeofday.do getuid.do getwd.do \
-	gid.do glob.do grp.do hypot.do index.do ioctl.do isatty.do kill.do \
+	gid.do glob.do grp.do herror.do hypot.do index.do ioctl.do isatty.do kill.do \
 	link.do longlong.do lseek.do lstat.do memccpy.do memchr.do memcmp.do memcpy.do memset.do message.do mkdir.do \
 	mkfifo.do mkstemp.do mktemp.do nice.do onbreak.do open.do pathconf.do \
 	perror.do pipe.do pclose.do popen.do pread.do processes.do protection.do \
-	pseudo_c.do pwd.do pwrite.do raise.do read.do readlink.do realpath.do \
+	pseudo_c.do 	pwd.do pwrite.do raise.do rcmd.do read.do readlink.do realpath.do \
 	regerror.do regex.do regexp.do regsub.do rename.do rindex.do rmdir.do \
 	scandir.do select.do setenv.do setgid.do setjmp.do setpgid.do setsid.do \
 	setuid.do settimeofday.do siglist.do signal.do signals.do sigpause.do \
 	sigprocmask.do sigsetmask.do sleep.do snprintf.do sockets.do stat.do \
 	strcasecmp.do strcat.do strchr.do strcmp.do strcoll.do strcpy.do strcspn.do strdup.do strerror.do strerror_r.do strftime.do \
+	syslog.do \
 	stricmp.do strlcat.do strlcpy.do strlen.do strncasecmp.do strncat.do strncpy.do \
 	strndup.do strnicmp.do strnlen.do strncmp.do strpbrk.do strrchr.do strsep.do strspn.do strstr.do strtok.do strtok_r.do strtol.do \
 	strtoll.do strxfrm.do symlink.do sysconf.do system.do tempnam.do time.do \
@@ -179,7 +181,7 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	wait.dnbo \
 	wait4.dnbo waitpid.dnbo write.dnbo
 
-ASMOBJS = child.o _sprintf.o _setjmp.o
+ASMOBJS = child.o _sprintf.o _setjmp.o pthread_startup.o
 
 ALLOBJS = $(OBJS) $(ASMOBJS)
 ALLNBOBJS = $(NBOBJS) $(ASMOBJS)
@@ -428,42 +430,42 @@ $(PSOCKETS_DNBOBJS)
 
 # Test programs (output to unittests folder)
 $(DLTEST_PROG): SCOPTIONS $(DLTEST_OBJS) $(LIBDL_LIB)
-	$(CC) $(CFLAGS) $(OFLAGS) -o unittests/$(DLTEST_PROG) $(DLTEST_OBJS) $(LIBDL_LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) TO unittests/$(DLTEST_PROG) FROM $(DLTEST_OBJS) $(LIBDL_LIB)
 
 $(DLTEST_NB_PROG): SCOPTIONS $(DLTEST_NBOBJS) $(LIBDL_FARLIB)
-	$(CC) $(CFLAGS_NB) $(OFLAGS) -o unittests/$(DLTEST_NB_PROG) $(DLTEST_NBOBJS) $(LIBDL_FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) TO unittests/$(DLTEST_NB_PROG) FROM $(DLTEST_NBOBJS) $(LIBDL_FARLIB)
 
 $(DLTEST_D_PROG): SCOPTIONS $(DLTEST_DOBJS) $(LIBDL_DLIB)
-	$(CC) $(CFLAGS) $(DFLAGS) -o unittests/$(DLTEST_D_PROG) $(DLTEST_DOBJS) $(LIBDL_DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) TO unittests/$(DLTEST_D_PROG) FROM $(DLTEST_DOBJS) $(LIBDL_DLIB)
 
 $(DLTEST_DNB_PROG): SCOPTIONS $(DLTEST_DNBOBJS) $(LIBDL_DFARLIB)
-	$(CC) $(CFLAGS_NB) $(DFLAGS) -o unittests/$(DLTEST_DNB_PROG) $(DLTEST_DNBOBJS) $(LIBDL_DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/$(DLTEST_DNB_PROG) FROM $(DLTEST_DNBOBJS) $(LIBDL_DFARLIB)
 
 # pthread test programs (output to unittests/pthread folder)
 $(PTHREADTEST_PROG): SCOPTIONS $(PTHREADTEST_OBJS) $(PTHREAD_LIB)
-	$(CC) $(CFLAGS) $(OFLAGS) -o unittests/pthread/$(PTHREADTEST_PROG) $(PTHREADTEST_OBJS) $(PTHREAD_LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) TO unittests/pthread/$(PTHREADTEST_PROG) FROM $(PTHREADTEST_OBJS) LIB $(PTHREAD_LIB)
 
 $(PTHREADTEST_NB_PROG): SCOPTIONS $(PTHREADTEST_NBOBJS) $(PTHREAD_FARLIB)
-	$(CC) $(CFLAGS_NB) $(OFLAGS) -o unittests/pthread/$(PTHREADTEST_NB_PROG) $(PTHREADTEST_NBOBJS) $(PTHREAD_FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) TO unittests/pthread/$(PTHREADTEST_NB_PROG) FROM $(PTHREADTEST_NBOBJS) LIB $(PTHREAD_FARLIB)
 
 $(PTHREADTEST_D_PROG): SCOPTIONS $(PTHREADTEST_DOBJS) $(PTHREAD_DLIB)
-	$(CC) $(CFLAGS) $(DFLAGS) -o unittests/pthread/$(PTHREADTEST_D_PROG) $(PTHREADTEST_DOBJS) $(PTHREAD_DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) TO unittests/pthread/$(PTHREADTEST_D_PROG) FROM $(PTHREADTEST_DOBJS) LIB $(PTHREAD_DLIB)
 
 $(PTHREADTEST_DNB_PROG): SCOPTIONS $(PTHREADTEST_DNBOBJS) $(PTHREAD_DFARLIB)
-	$(CC) $(CFLAGS_NB) $(DFLAGS) -o unittests/pthread/$(PTHREADTEST_DNB_PROG) $(PTHREADTEST_DNBOBJS) $(PTHREAD_DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/pthread/$(PTHREADTEST_DNB_PROG) FROM $(PTHREADTEST_DNBOBJS) LIB $(PTHREAD_DFARLIB)
 
 # psockets test programs (output to unittests/psockets folder)
 $(PSOCKETSTEST_PROG): SCOPTIONS $(PSOCKETSTEST_OBJS) $(PSOCKETS_LIB)
-	$(CC) $(CFLAGS) $(OFLAGS) -o unittests/psockets/$(PSOCKETSTEST_PROG) $(PSOCKETSTEST_OBJS) $(PSOCKETS_LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) TO unittests/psockets/$(PSOCKETSTEST_PROG) FROM $(PSOCKETSTEST_OBJS) LIB $(PSOCKETS_LIB)
 
 $(PSOCKETSTEST_NB_PROG): SCOPTIONS $(PSOCKETSTEST_NBOBJS) $(PSOCKETS_FARLIB)
-	$(CC) $(CFLAGS_NB) $(OFLAGS) -o unittests/psockets/$(PSOCKETSTEST_NB_PROG) $(PSOCKETSTEST_NBOBJS) $(PSOCKETS_FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) TO unittests/psockets/$(PSOCKETSTEST_NB_PROG) FROM $(PSOCKETSTEST_NBOBJS) LIB $(PSOCKETS_FARLIB)
 
 $(PSOCKETSTEST_D_PROG): SCOPTIONS $(PSOCKETSTEST_DOBJS) $(PSOCKETS_DLIB)
-	$(CC) $(CFLAGS) $(DFLAGS) -o unittests/psockets/$(PSOCKETSTEST_D_PROG) $(PSOCKETSTEST_DOBJS) $(PSOCKETS_DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) TO unittests/psockets/$(PSOCKETSTEST_D_PROG) FROM $(PSOCKETSTEST_DOBJS) LIB $(PSOCKETS_DLIB)
 
 $(PSOCKETSTEST_DNB_PROG): SCOPTIONS $(PSOCKETSTEST_DNBOBJS) $(PSOCKETS_DFARLIB)
-	$(CC) $(CFLAGS_NB) $(DFLAGS) -o unittests/psockets/$(PSOCKETSTEST_DNB_PROG) $(PSOCKETSTEST_DNBOBJS) $(PSOCKETS_DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/psockets/$(PSOCKETSTEST_DNB_PROG) FROM $(PSOCKETSTEST_DNBOBJS) LIB $(PSOCKETS_DFARLIB)
 
 clean:
 	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) SCOPTIONS
@@ -593,6 +595,7 @@ getpid.o: getpid.c processes.h signals.h amiga.h
 getwd.o: getwd.c amiga.h
 gid.o: gid.c amiga.h
 grp.o: grp.c amiga.h
+herror.o: herror.c amiga.h
 index.o: index.c
 ioctl.o: ioctl.c amiga.h
 isatty.o: isatty.c amiga.h
@@ -614,6 +617,7 @@ protection.o: protection.c amiga.h
 pseudo_c.o: pseudo_c.c amiga.h
 pwd.o: pwd.c amiga.h
 raise.o: raise.c signals.h amiga.h
+rcmd.o: rcmd.c amiga.h
 read.o: read.c amiga.h
 regerror.o: regerror.c
 regex.o: regex.c
@@ -639,6 +643,7 @@ strcoll.o: strcoll.c
 strdup.o: strdup.c
 strerror.o: strerror.c
 strlcat.o: strlcat.c
+syslog.o: syslog.c amiga.h
 strlcpy.o: strlcpy.c
 strncat.o: strncat.c
 strncpy.o: strncpy.c
@@ -952,22 +957,17 @@ libdl.nbo: libdl.c amiga.h include/dlfcn.h
 libdl.dnbo: libdl.c amiga.h include/dlfcn.h
 
 # pthread dependencies
-pthread.o: pthread.c include/pthread.h debug.h
-pthread.do: pthread.c include/pthread.h debug.h
-pthread.nbo: pthread.c include/pthread.h debug.h
-pthread.dnbo: pthread.c include/pthread.h debug.h
+pthread.o: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h debug.h
+pthread.do: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h debug.h
+pthread.nbo: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h debug.h
+pthread.dnbo: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h debug.h
 
-pthread_startup.o: pthread_startup.asm
+pthread_sync.o: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h debug.h
+pthread_sync.do: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h debug.h
+pthread_sync.nbo: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h debug.h
+pthread_sync.dnbo: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h debug.h
 
-semaphore.o: semaphore.c include/semaphore.h debug.h
-semaphore.do: semaphore.c include/semaphore.h debug.h
-semaphore.nbo: semaphore.c include/semaphore.h debug.h
-semaphore.dnbo: semaphore.c include/semaphore.h debug.h
-
-sched.o: sched.c include/sched.h debug.h
-sched.do: sched.c include/sched.h debug.h
-sched.nbo: sched.c include/sched.h debug.h
-sched.dnbo: sched.c include/sched.h debug.h
+pthread_startup.o: pthread_startup.s
 
 # Test library dependencies (in unittests folder)
 unittests/testlib.o: unittests/testlib.c
@@ -982,25 +982,12 @@ unittests/dltest.nbo: unittests/dltest.c /include/dlfcn.h
 unittests/dltest.dnbo: unittests/dltest.c /include/dlfcn.h
 
 # pthread test program dependencies (in unittests/pthread folder)
-unittests/pthread/test_pthread.o: unittests/pthread/test_pthread.c include/pthread.h
-unittests/pthread/test_pthread.do: unittests/pthread/test_pthread.c include/pthread.h
-unittests/pthread/test_pthread.nbo: unittests/pthread/test_pthread.c include/pthread.h
-unittests/pthread/test_pthread.dnbo: unittests/pthread/test_pthread.c include/pthread.h
+unittests/pthread/pthread_test.o: unittests/pthread/pthread_test.c include/amigapthread.h include/pthread.h include/semaphore.h
+unittests/pthread/pthread_test.do: unittests/pthread/pthread_test.c include/amigapthread.h include/pthread.h include/semaphore.h
+unittests/pthread/pthread_test.nbo: unittests/pthread/pthread_test.c include/amigapthread.h include/pthread.h include/semaphore.h
+unittests/pthread/pthread_test.dnbo: unittests/pthread/pthread_test.c include/amigapthread.h include/pthread.h include/semaphore.h
 
-unittests/pthread/test_cancellation.o: unittests/pthread/test_cancellation.c include/pthread.h
-unittests/pthread/test_cancellation.do: unittests/pthread/test_cancellation.c include/pthread.h
-unittests/pthread/test_cancellation.nbo: unittests/pthread/test_cancellation.c include/pthread.h
-unittests/pthread/test_cancellation.dnbo: unittests/pthread/test_cancellation.c include/pthread.h
 
-unittests/pthread/api_compatibility_example.o: unittests/pthread/api_compatibility_example.c include/pthread.h
-unittests/pthread/api_compatibility_example.do: unittests/pthread/api_compatibility_example.c include/pthread.h
-unittests/pthread/api_compatibility_example.nbo: unittests/pthread/api_compatibility_example.c include/pthread.h
-unittests/pthread/api_compatibility_example.dnbo: unittests/pthread/api_compatibility_example.c include/pthread.h
-
-unittests/pthread/test_cleanup_verification.o: unittests/pthread/test_cleanup_verification.c include/pthread.h
-unittests/pthread/test_cleanup_verification.do: unittests/pthread/test_cleanup_verification.c include/pthread.h
-unittests/pthread/test_cleanup_verification.nbo: unittests/pthread/test_cleanup_verification.c include/pthread.h
-unittests/pthread/test_cleanup_verification.dnbo: unittests/pthread/test_cleanup_verification.c include/pthread.h
 
 # psockets dependencies
 amigapsockets.o: amigapsockets.c amiga.h
