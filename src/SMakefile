@@ -55,6 +55,12 @@ PTHREAD_DOBJS = pthread.do semaphore.do sched.do gettimeofday.do pthread_startup
 PTHREAD_NBOBJS = pthread.nbo semaphore.nbo sched.nbo gettimeofday.nbo pthread_startup.o
 PTHREAD_DNBOBJS = pthread.dnbo semaphore.dnbo sched.dnbo gettimeofday.dnbo pthread_startup.o
 
+# psockets library objects (separate from unix.lib)
+PSOCKETS_OBJS = amigapsockets.o getaddrinfo.o getnameinfo.o inet_aton.o inet_ntop_ipv4.o inet_pton_ipv4.o poll.o resolver_stubs.o
+PSOCKETS_DOBJS = amigapsockets.do getaddrinfo.do getnameinfo.do inet_aton.do inet_ntop_ipv4.do inet_pton_ipv4.do poll.do resolver_stubs.do
+PSOCKETS_NBOBJS = amigapsockets.nbo getaddrinfo.nbo getnameinfo.nbo inet_aton.nbo inet_ntop_ipv4.nbo inet_pton_ipv4.nbo poll.nbo resolver_stubs.nbo
+PSOCKETS_DNBOBJS = amigapsockets.dnbo getaddrinfo.dnbo getnameinfo.dnbo inet_aton.dnbo inet_ntop_ipv4.dnbo inet_pton_ipv4.dnbo poll.dnbo resolver_stubs.dnbo
+
 # Test library objects (in unittests folder)
 TESTLIB_OBJS = unittests/testlib.o
 TESTLIB_DOBJS = unittests/testlib.do
@@ -72,6 +78,12 @@ PTHREADTEST_OBJS = unittests/pthread/test_pthread.o unittests/pthread/test_cance
 PTHREADTEST_DOBJS = unittests/pthread/test_pthread.do unittests/pthread/test_cancellation.do unittests/pthread/api_compatibility_example.do unittests/pthread/test_cleanup_verification.do
 PTHREADTEST_NBOBJS = unittests/pthread/test_pthread.nbo unittests/pthread/test_cancellation.nbo unittests/pthread/api_compatibility_example.nbo unittests/pthread/test_cleanup_verification.nbo
 PTHREADTEST_DNBOBJS = unittests/pthread/test_pthread.dnbo unittests/pthread/test_cancellation.dnbo unittests/pthread/api_compatibility_example.dnbo unittests/pthread/test_cleanup_verification.dnbo
+
+# psockets test program objects (in unittests/psockets folder)
+PSOCKETSTEST_OBJS = unittests/psockets/testga.o
+PSOCKETSTEST_DOBJS = unittests/psockets/testga.do
+PSOCKETSTEST_NBOBJS = unittests/psockets/testga.nbo
+PSOCKETSTEST_DNBOBJS = unittests/psockets/testga.dnbo
 
 DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	amigatime.do asprintf.do basename.do bcmp.do bcopy.do bzero.do \
@@ -206,7 +218,11 @@ PTHREAD_FARLIB = pthreadnb.lib
 PTHREAD_DLIB = pthreadd.lib
 PTHREAD_DFARLIB = pthreaddnb.lib
 
-
+# psockets library names (following Amiga conventions)
+PSOCKETS_LIB = psockets.lib
+PSOCKETS_FARLIB = psocketsnb.lib
+PSOCKETS_DLIB = psocketsd.lib
+PSOCKETS_DFARLIB = psocketsdnb.lib
 
 # Test library names (in unittests folder)
 TESTLIB_LIB = unittests/testlib.lib
@@ -226,6 +242,12 @@ PTHREADTEST_D_PROG = test_pthreadd
 PTHREADTEST_NB_PROG = test_pthreadnb
 PTHREADTEST_DNB_PROG = test_pthreaddnb
 
+# psockets test program names
+PSOCKETSTEST_PROG = testga
+PSOCKETSTEST_D_PROG = testgad
+PSOCKETSTEST_NB_PROG = testganb
+PSOCKETSTEST_DNB_PROG = testgadnb
+
 .SUFFIXES: .c .a .o .do .nbo .dnbo
 #
 # Generic rules
@@ -243,9 +265,9 @@ PTHREADTEST_DNB_PROG = test_pthreaddnb
 
 normal: SCOPTIONS amiga.gst $(LIB)
 
-all: normal amiganb.gst $(FARLIB) libdl-all pthread-all
+all: normal amiganb.gst $(FARLIB) libdl-all pthread-all psockets-all
 
-debug: SCOPTIONS amiga.gst $(DLIB) amiganb.gst $(DFARLIB) libdl-debug pthread-debug
+debug: SCOPTIONS amiga.gst $(DLIB) amiganb.gst $(DFARLIB) libdl-debug pthread-debug psockets-debug
 
 debug: SCOPTIONS amiga.gst $(DLIB) amiganb.gst $(DFARLIB)
 
@@ -267,6 +289,11 @@ libdl-debug: SCOPTIONS amiga.gst amiganb.gst $(LIBDL_DLIB) $(LIBDL_DFARLIB) $(TE
 pthread-all: SCOPTIONS amiga.gst amiganb.gst $(PTHREAD_LIB) $(PTHREAD_FARLIB) $(PTHREADTEST_PROG) $(PTHREADTEST_NB_PROG)
 
 pthread-debug: SCOPTIONS amiga.gst amiganb.gst $(PTHREAD_DLIB) $(PTHREAD_DFARLIB) $(PTHREADTEST_D_PROG) $(PTHREADTEST_DNB_PROG)
+
+# psockets build targets
+psockets-all: SCOPTIONS amiga.gst amiganb.gst $(PSOCKETS_LIB) $(PSOCKETS_FARLIB) $(PSOCKETSTEST_PROG) $(PSOCKETSTEST_NB_PROG)
+
+psockets-debug: SCOPTIONS amiga.gst amiganb.gst $(PSOCKETS_DLIB) $(PSOCKETS_DFARLIB) $(PSOCKETSTEST_D_PROG) $(PSOCKETSTEST_DNB_PROG)
 
 # libdl libraries
 $(LIBDL_LIB): SCOPTIONS $(LIBDL_OBJS)
@@ -367,6 +394,39 @@ $(PTHREAD_DNBOBJS)
 	$(CP) ram:$(PTHREAD_DFARLIB) ""
 	$(RM) ram:$(PTHREAD_DFARLIB)
 
+# psockets libraries
+$(PSOCKETS_LIB): SCOPTIONS $(PSOCKETS_OBJS)
+	-$(RM) $(PSOCKETS_LIB) ram:$(PSOCKETS_LIB)
+	$(AR) ram:$(PSOCKETS_LIB) r <@<
+$(PSOCKETS_OBJS)
+<
+	$(CP) ram:$(PSOCKETS_LIB) ""
+	$(RM) ram:$(PSOCKETS_LIB)
+
+$(PSOCKETS_FARLIB): SCOPTIONS $(PSOCKETS_NBOBJS)
+	-$(RM) $(PSOCKETS_FARLIB) ram:$(PSOCKETS_FARLIB)
+	$(AR) ram:$(PSOCKETS_FARLIB) r <@<
+$(PSOCKETS_NBOBJS)
+<
+	$(CP) ram:$(PSOCKETS_FARLIB) ""
+	$(RM) ram:$(PSOCKETS_FARLIB)
+
+$(PSOCKETS_DLIB): SCOPTIONS $(PSOCKETS_DOBJS)
+	-$(RM) $(PSOCKETS_DLIB) ram:$(PSOCKETS_DLIB)
+	$(AR) ram:$(PSOCKETS_DLIB) r <@<
+$(PSOCKETS_DOBJS)
+<
+	$(CP) ram:$(PSOCKETS_DLIB) ""
+	$(RM) ram:$(PSOCKETS_DLIB)
+
+$(PSOCKETS_DFARLIB): SCOPTIONS $(PSOCKETS_DNBOBJS)
+	-$(RM) $(PSOCKETS_DFARLIB) ram:$(PSOCKETS_DFARLIB)
+	$(AR) ram:$(PSOCKETS_DFARLIB) r <@<
+$(PSOCKETS_DNBOBJS)
+<
+	$(CP) ram:$(PSOCKETS_DFARLIB) ""
+	$(RM) ram:$(PSOCKETS_DFARLIB)
+
 # Test programs (output to unittests folder)
 $(DLTEST_PROG): SCOPTIONS $(DLTEST_OBJS) $(LIBDL_LIB)
 	$(CC) $(CFLAGS) $(OFLAGS) -o unittests/$(DLTEST_PROG) $(DLTEST_OBJS) $(LIBDL_LIB)
@@ -393,13 +453,28 @@ $(PTHREADTEST_D_PROG): SCOPTIONS $(PTHREADTEST_DOBJS) $(PTHREAD_DLIB)
 $(PTHREADTEST_DNB_PROG): SCOPTIONS $(PTHREADTEST_DNBOBJS) $(PTHREAD_DFARLIB)
 	$(CC) $(CFLAGS_NB) $(DFLAGS) -o unittests/pthread/$(PTHREADTEST_DNB_PROG) $(PTHREADTEST_DNBOBJS) $(PTHREAD_DFARLIB)
 
+# psockets test programs (output to unittests/psockets folder)
+$(PSOCKETSTEST_PROG): SCOPTIONS $(PSOCKETSTEST_OBJS) $(PSOCKETS_LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) -o unittests/psockets/$(PSOCKETSTEST_PROG) $(PSOCKETSTEST_OBJS) $(PSOCKETS_LIB)
+
+$(PSOCKETSTEST_NB_PROG): SCOPTIONS $(PSOCKETSTEST_NBOBJS) $(PSOCKETS_FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) -o unittests/psockets/$(PSOCKETSTEST_NB_PROG) $(PSOCKETSTEST_NBOBJS) $(PSOCKETS_FARLIB)
+
+$(PSOCKETSTEST_D_PROG): SCOPTIONS $(PSOCKETSTEST_DOBJS) $(PSOCKETS_DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) -o unittests/psockets/$(PSOCKETSTEST_D_PROG) $(PSOCKETSTEST_DOBJS) $(PSOCKETS_DLIB)
+
+$(PSOCKETSTEST_DNB_PROG): SCOPTIONS $(PSOCKETSTEST_DNBOBJS) $(PSOCKETS_DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) -o unittests/psockets/$(PSOCKETSTEST_DNB_PROG) $(PSOCKETSTEST_DNBOBJS) $(PSOCKETS_DFARLIB)
+
 clean:
 	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) SCOPTIONS
 	-$(RM) $(LIBDL_LIB) $(LIBDL_FARLIB) $(LIBDL_DLIB) $(LIBDL_DFARLIB)
 	-$(RM) $(PTHREAD_LIB) $(PTHREAD_FARLIB) $(PTHREAD_DLIB) $(PTHREAD_DFARLIB)
+	-$(RM) $(PSOCKETS_LIB) $(PSOCKETS_FARLIB) $(PSOCKETS_DLIB) $(PSOCKETS_DFARLIB)
 	-$(RM) $(TESTLIB_LIB) $(TESTLIB_FARLIB) $(TESTLIB_DLIB) $(TESTLIB_DFARLIB)
 	-$(RM) unittests/$(DLTEST_PROG) unittests/$(DLTEST_D_PROG) unittests/$(DLTEST_NB_PROG) unittests/$(DLTEST_DNB_PROG)
 	-$(RM) unittests/pthread/$(PTHREADTEST_PROG) unittests/pthread/$(PTHREADTEST_D_PROG) unittests/pthread/$(PTHREADTEST_NB_PROG) unittests/pthread/$(PTHREADTEST_DNB_PROG)
+	-$(RM) unittests/psockets/$(PSOCKETSTEST_PROG) unittests/psockets/$(PSOCKETSTEST_D_PROG) unittests/psockets/$(PSOCKETSTEST_NB_PROG) unittests/psockets/$(PSOCKETSTEST_DNB_PROG)
 
 SCOPTIONS: SMakefile
 	copy to $@ <from <
@@ -926,6 +1001,53 @@ unittests/pthread/test_cleanup_verification.o: unittests/pthread/test_cleanup_ve
 unittests/pthread/test_cleanup_verification.do: unittests/pthread/test_cleanup_verification.c include/pthread.h
 unittests/pthread/test_cleanup_verification.nbo: unittests/pthread/test_cleanup_verification.c include/pthread.h
 unittests/pthread/test_cleanup_verification.dnbo: unittests/pthread/test_cleanup_verification.c include/pthread.h
+
+# psockets dependencies
+amigapsockets.o: amigapsockets.c amiga.h
+amigapsockets.do: amigapsockets.c amiga.h
+amigapsockets.nbo: amigapsockets.c amiga.h
+amigapsockets.dnbo: amigapsockets.c amiga.h
+
+getaddrinfo.o: getaddrinfo.c include/internal/resolver_stubs.h
+getaddrinfo.do: getaddrinfo.c include/internal/resolver_stubs.h
+getaddrinfo.nbo: getaddrinfo.c include/internal/resolver_stubs.h
+getaddrinfo.dnbo: getaddrinfo.c include/internal/resolver_stubs.h
+
+getnameinfo.o: getnameinfo.c include/internal/resolver_stubs.h
+getnameinfo.do: getnameinfo.c include/internal/resolver_stubs.h
+getnameinfo.nbo: getnameinfo.c include/internal/resolver_stubs.h
+getnameinfo.dnbo: getnameinfo.c include/internal/resolver_stubs.h
+
+inet_aton.o: inet_aton.c
+inet_aton.do: inet_aton.c
+inet_aton.nbo: inet_aton.c
+inet_aton.dnbo: inet_aton.c
+
+inet_ntop_ipv4.o: inet_ntop_ipv4.c
+inet_ntop_ipv4.do: inet_ntop_ipv4.c
+inet_ntop_ipv4.nbo: inet_ntop_ipv4.c
+inet_ntop_ipv4.dnbo: inet_ntop_ipv4.c
+
+inet_pton_ipv4.o: inet_pton_ipv4.c
+inet_pton_ipv4.do: inet_pton_ipv4.c
+inet_pton_ipv4.nbo: inet_pton_ipv4.c
+inet_pton_ipv4.dnbo: inet_pton_ipv4.c
+
+poll.o: poll.c
+poll.do: poll.c
+poll.nbo: poll.c
+poll.dnbo: poll.c
+
+resolver_stubs.o: resolver_stubs.c include/internal/resolver_stubs.h
+resolver_stubs.do: resolver_stubs.c include/internal/resolver_stubs.h
+resolver_stubs.nbo: resolver_stubs.c include/internal/resolver_stubs.h
+resolver_stubs.dnbo: resolver_stubs.c include/internal/resolver_stubs.h
+
+# psockets test program dependencies (in unittests/psockets folder)
+unittests/psockets/testga.o: unittests/psockets/testga.c
+unittests/psockets/testga.do: unittests/psockets/testga.c
+unittests/psockets/testga.nbo: unittests/psockets/testga.c
+unittests/psockets/testga.dnbo: unittests/psockets/testga.c
 #
 # Debugging FAR objects
 #
