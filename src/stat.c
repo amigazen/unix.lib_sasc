@@ -105,3 +105,5 @@ int stat(const char *name, struct stat *sbuf)
 	FreeDosObject(DOS_FIB, fib);
     return ret;
 }
+
+
