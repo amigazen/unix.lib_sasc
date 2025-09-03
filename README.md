@@ -51,15 +51,17 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 - **Compiler support**: Primary support for SAS/C with planned DICE compiler compatibility. Probably also compatible with VBCC (but you can use PosixLib there)
 - **Memory Management**: Efficient memory allocation and management optimized for Amiga hardware constraints utilizing
 - **unix.lib**: Newly expanded and updated POSIX and C99 compliant standard C library originally by David Gay and Enrico Forestieri featuring dozens of new and updated functions including: -
--- *longlong_t*: A complete 32-bit compatible implementation of the 64-bit longlong_t type
--- *string functions*: New string functions including memory safe implementations of the snprintf family
--- *filesystem permissions*: file permission and ownership functions talk to the FileSystem directly in case it DOES support multiuser features
--- *getopts functions*: Complete BSD compatible implementations of getopts 
--- *Upgraded functions*: POSIX compliant upgrades to many functions including ustat, utime, gettimeofday and many more
--- *Unit tests*: Unit tests for many functions
+- *longlong_t*: A complete 32-bit compatible implementation of the 64-bit longlong_t type
+- *string functions*: New string functions including memory safe implementations of the snprintf family
+- *filesystem permissions*: file permission and ownership functions talk to the FileSystem directly in case it DOES support multiuser features
+- *getopts functions*: Complete BSD compatible implementations of getopts 
+- *Upgraded functions*: POSIX compliant upgrades to many functions including ustat, utime, gettimeofday and many more
+- *Inet225 unix.lib*: Reimplements new versions of the POSIX functions provided by the version of unix.lib that came with Inet225
+- *Unit tests*: Unit tests for many functions
 - **curses.lib**: Updated version of Simon Raybould's Amiga port of _curses_ now BSD licensed
-- **psockets.lib**: A new BSD licensed Amiga port of _psockets_ wrapping _bsdsocket.library_
-- **Full set of POSIX libraries**: For full POSIX compatibility libdl, libpthread and libiconv are needed... watch this space!
+- **psockets.lib**: A brand new Amiga port of _psockets_ wrapping _bsdsocket.library_
+- **pthread.lib**: A brand new Amiga native implementation of _pthread_
+- **Full set of POSIX libraries**: For full POSIX compatibility libdl and libiconv are also needed... watch this space!
 - **Designed for use with _unsui_**: Used as the standard C library for amigazen project's _unsui_ POSIX runtime for Amiga
 
 ### Development Goals
