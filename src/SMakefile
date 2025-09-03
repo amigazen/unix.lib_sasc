@@ -24,17 +24,17 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	getenv.o getgid.o gethostname.o getlogin.o getopt.o getopt1.o \
 	getopt_long.o getpass.o getpid.o gettimeofday.o getuid.o getwd.o \
 	gid.o glob.o grp.o hypot.o index.o ioctl.o isatty.o kill.o link.o \
-	longlong.o lseek.o lstat.o memccpy.o message.o mkdir.o mkfifo.o \
+	longlong.o lseek.o lstat.o memccpy.o memchr.o memcmp.o memcpy.o memset.o message.o mkdir.o mkfifo.o \
 	mkstemp.o mktemp.o nice.o onbreak.o open.o pathconf.o perror.o \
 	pipe.o pclose.o popen.o pread.o processes.o protection.o pseudo_c.o \
 	pwd.o pwrite.o raise.o read.o readlink.o realpath.o regerror.o \
 	regex.o regexp.o regsub.o rename.o rindex.o rmdir.o scandir.o \
 	select.o setenv.o setgid.o setjmp.o setpgid.o setsid.o setuid.o \
 	settimeofday.do siglist.o signal.o signals.o sigpause.o sigprocmask.o \
-	sigsetmask.o sleep.o snprintf.o sockets.o stat.o strcasecmp.o \
-	strcoll.o strcspn.o strdup.o strerror.o strerror_r.o strftime.o stricmp.o \
-	strlcat.o strlcpy.o strncasecmp.o strncat.o strncpy.o strndup.o \
-	strnicmp.o strnlen.o strpbrk.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o \
+	sigsetmask.o sleep.o snprintf.o sockets.o stat.o 	strcasecmp.o strcat.o strchr.o strcmp.o \
+	strcoll.o strcpy.o strcspn.o strdup.o strerror.o strerror_r.o strftime.o stricmp.o \
+	strlcat.o strlcpy.o strlen.o strncasecmp.o strncat.o strncpy.o strndup.o \
+	strnicmp.o strnlen.o strpbrk.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o \
 	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o \
 	timers.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
 	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o \
@@ -83,7 +83,7 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	getenv.do getgid.do gethostname.do getlogin.do getopt.do getopt1.do \
 	getopt_long.do getpass.do getpid.do gettimeofday.do getuid.do getwd.do \
 	gid.do glob.do grp.do hypot.do index.do ioctl.do isatty.do kill.do \
-	link.do longlong.do lseek.do lstat.do memccpy.do message.do mkdir.do \
+	link.do longlong.do lseek.do lstat.do memccpy.do memchr.do memcmp.do memcpy.do memset.do message.do mkdir.do \
 	mkfifo.do mkstemp.do mktemp.do nice.do onbreak.do open.do pathconf.do \
 	perror.do pipe.do pclose.do popen.do pread.do processes.do protection.do \
 	pseudo_c.do pwd.do pwrite.do raise.do read.do readlink.do realpath.do \
@@ -91,9 +91,9 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	scandir.do select.do setenv.do setgid.do setjmp.do setpgid.do setsid.do \
 	setuid.do settimeofday.do siglist.do signal.do signals.do sigpause.do \
 	sigprocmask.do sigsetmask.do sleep.do snprintf.do sockets.do stat.do \
-	strcasecmp.do strcoll.do strcspn.do strdup.do strerror.do strerror_r.do strftime.do \
-	stricmp.do strlcat.do strlcpy.do strncasecmp.do strncat.do strncpy.do \
-	strndup.do strnicmp.do strnlen.do strpbrk.do strsep.do strspn.do strstr.do strtok.do strtok_r.do strtol.do \
+	strcasecmp.do strcat.do strchr.do strcmp.do strcoll.do strcpy.do strcspn.do strdup.do strerror.do strerror_r.do strftime.do \
+	stricmp.do strlcat.do strlcpy.do strlen.do strncasecmp.do strncat.do strncpy.do \
+	strndup.do strnicmp.do strnlen.do strpbrk.do strrchr.do strsep.do strspn.do strstr.do strtok.do strtok_r.do strtol.do \
 	strtoll.do strxfrm.do symlink.do sysconf.do system.do tempnam.do time.do \
 	timeconvert.do timers.do truncate.do tzset.do uid.do umask.do uname.do \
 	unlink.do unsetenv.do usleep.do utime.do utimes.do ustat.do statvfs.do \
@@ -113,7 +113,7 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	getenv.nbo getgid.nbo gethostname.nbo getlogin.nbo getopt.nbo getopt1.nbo \
 	getopt_long.nbo getpass.nbo getpid.nbo gettimeofday.nbo getuid.nbo getwd.nbo \
 	gid.nbo glob.nbo grp.nbo hypot.nbo index.nbo ioctl.nbo isatty.nbo kill.nbo \
-	link.nbo longlong.nbo lseek.nbo lstat.nbo memccpy.nbo message.nbo mkdir.nbo \
+	link.nbo longlong.nbo lseek.nbo lstat.nbo memccpy.nbo memchr.nbo memcmp.nbo memcpy.nbo memset.nbo message.nbo mkdir.nbo \
 	mkfifo.nbo mkstemp.nbo mktemp.nbo nice.nbo onbreak.nbo open.nbo pathconf.nbo \
 	perror.nbo pipe.nbo pclose.nbo popen.nbo pread.nbo processes.nbo protection.nbo \
 	pseudo_c.nbo pwd.nbo pwrite.nbo raise.nbo read.nbo readlink.nbo realpath.nbo \
@@ -121,9 +121,9 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	scandir.nbo select.nbo setenv.nbo setgid.nbo setjmp.nbo setpgid.nbo setsid.nbo \
 	setuid.nbo settimeofday.nbo siglist.nbo signal.nbo signals.nbo sigpause.nbo \
 	sigprocmask.nbo sigsetmask.nbo sleep.nbo snprintf.nbo sockets.nbo stat.nbo \
-	strcasecmp.nbo strcoll.nbo strcspn.nbo strdup.nbo strerror.nbo strerror_r.nbo strftime.nbo \
-	stricmp.nbo strlcat.nbo strlcpy.nbo strncasecmp.nbo strncat.nbo strncpy.nbo \
-	strndup.nbo strnicmp.nbo strnlen.nbo strpbrk.nbo strsep.nbo strspn.nbo strstr.nbo strtok.nbo strtok_r.nbo strtol.nbo \
+	strcasecmp.nbo strcat.nbo strchr.nbo strcmp.nbo strcoll.nbo strcpy.nbo strcspn.nbo strdup.nbo strerror.nbo strerror_r.nbo strftime.nbo \
+	stricmp.nbo strlcat.nbo strlcpy.nbo strlen.nbo strncasecmp.nbo strncat.nbo strncpy.nbo \
+	strndup.nbo strnicmp.nbo strnlen.nbo strpbrk.nbo strrchr.nbo strsep.nbo strspn.nbo strstr.nbo strtok.nbo strtok_r.nbo strtol.nbo \
 	strtoll.nbo strxfrm.nbo symlink.nbo sysconf.nbo system.nbo tempnam.nbo time.nbo \
 	timeconvert.nbo timers.nbo truncate.nbo tzset.nbo uid.nbo umask.nbo uname.nbo \
 	unlink.nbo unsetenv.nbo usleep.nbo utime.nbo utimes.nbo ustat.nbo statvfs.nbo \
@@ -145,7 +145,7 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	getopt1.dnbo getopt_long.dnbo getpass.dnbo getpid.dnbo gettimeofday.dnbo \
 	getuid.dnbo getwd.dnbo gid.dnbo glob.dnbo grp.dnbo hypot.dnbo \
 	index.dnbo ioctl.dnbo isatty.dnbo kill.dnbo link.dnbo longlong.dnbo \
-	lseek.dnbo lstat.dnbo memccpy.dnbo message.dnbo mkdir.dnbo mkfifo.dnbo \
+	lseek.dnbo lstat.dnbo memccpy.dnbo memchr.dnbo memcmp.dnbo memcpy.dnbo memset.dnbo message.dnbo mkdir.dnbo mkfifo.dnbo \
 	mkstemp.dnbo mktemp.dnbo nice.dnbo onbreak.dnbo open.dnbo pathconf.dnbo \
 	perror.dnbo pipe.dnbo pclose.dnbo popen.dnbo pread.dnbo processes.dnbo \
 	protection.dnbo pseudo_c.dnbo pwd.dnbo pwrite.dnbo raise.dnbo \
@@ -154,10 +154,10 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	select.dnbo setenv.dnbo setgid.dnbo setjmp.dnbo setpgid.dnbo setsid.dnbo \
 	setuid.dnbo settimeofday.dnbo siglist.dnbo signal.dnbo signals.dnbo \
 	sigpause.dnbo sigprocmask.dnbo sigsetmask.dnbo sleep.dnbo snprintf.dnbo \
-	sockets.dnbo stat.dnbo 	strcasecmp.dnbo strcoll.dnbo strcspn.dnbo strdup.dnbo \
+	sockets.dnbo stat.dnbo 	strcasecmp.dnbo strcat.dnbo strchr.dnbo strcmp.dnbo strcoll.dnbo strcpy.dnbo strcspn.dnbo strdup.dnbo \
 	strerror.dnbo strerror_r.dnbo strftime.dnbo stricmp.dnbo strlcat.dnbo \
-	strlcpy.dnbo strncasecmp.dnbo strncat.dnbo strncpy.dnbo strndup.dnbo \
-	strnicmp.dnbo strnlen.dnbo strpbrk.dnbo strsep.dnbo strspn.dnbo strstr.dnbo strtok.dnbo strtok_r.dnbo strtol.dnbo \
+	strlcpy.dnbo strlen.dnbo strncasecmp.dnbo strncat.dnbo strncpy.dnbo strndup.dnbo \
+	strnicmp.dnbo strnlen.dnbo strpbrk.dnbo strrchr.dnbo strsep.dnbo strspn.dnbo strstr.dnbo strtok.dnbo strtok_r.dnbo strtol.dnbo \
 	strtoll.dnbo strxfrm.dnbo symlink.dnbo sysconf.dnbo system.dnbo tempnam.dnbo \
 	time.dnbo timeconvert.dnbo timers.dnbo truncate.dnbo tzset.dnbo \
 	uid.dnbo umask.dnbo uname.dnbo unlink.dnbo unsetenv.dnbo usleep.dnbo \
