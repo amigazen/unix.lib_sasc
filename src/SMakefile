@@ -18,8 +18,7 @@ AS = asm
 OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	asprintf.o basename.o bcmp.o bcopy.o bzero.o chmod.o chown.o close.o \
 	creat.o ctime.o devices.o dir.o dir_data.o dirname.o dup.o dup2.o \
-	endpwent.o err.o error.o error_msg.o exec.o fchmod.o fchown.o \
-	fcntl.o fd_setsize.o fibstat.o fifofd.o files.o fnmatch.o fpathconf.o \
+	endpwent.o err.o error.o error_msg.o 	exec.o fcntl.o fd_setsize.o fibstat.o fifofd.o files.o fnmatch.o fpathconf.o \
 	fstat.o fsync.o ftruncate.o 	getdtablesize.o getegid.o geteuid.o \
 	getenv.o getgid.o gethostname.o getlogin.o getopt.o getopt1.o \
 	getopt_long.o getpass.o getpid.o getppid.o gettimeofday.o getuid.o getwd.o \
@@ -89,7 +88,7 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	amigatime.do asprintf.do basename.do bcmp.do bcopy.do bzero.do \
 	chmod.do chown.do close.do creat.do ctime.do devices.do dir.do \
 	dir_data.do dirname.do dup.do dup2.do endpwent.do err.do error.do \
-	error_msg.do exec.do fchmod.do fchown.do fcntl.do fd_setsize.do \
+	error_msg.do exec.do fcntl.do fd_setsize.do \
 	fibstat.do fifofd.do files.do fnmatch.do fpathconf.do fstat.do \
 	fsync.do ftruncate.do getdtablesize.do getegid.do geteuid.do \
 	getenv.do getgid.do gethostname.do getlogin.do getopt.do getopt1.do \

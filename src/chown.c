@@ -10,7 +10,9 @@
 
 #include "amiga.h"
 #include <errno.h>
+#include <string.h>
 #include <unistd.h>
+#include "files.h"
 #include <proto/dos.h>
 #include <proto/exec.h>
 #include <dos/dostags.h>
@@ -301,3 +303,5 @@ int fchown(int fd, uid_t owner, gid_t group)
     
     return 0;  /* Success - ownership "changed" (no-op on AmigaOS) */
 }
+
+
