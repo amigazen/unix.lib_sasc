@@ -9,7 +9,6 @@
  */
 
 #include <string.h>
-#include "include/string.h"
 
 /*
  * strins() - Insert string into another string
@@ -25,7 +24,7 @@
  * Returns:
  *   void (modifies destination string in place)
  */
-void strins(char *to, char *fm)
+void strins(char *to, const char *fm)
 {
     int tolen = strlen(to);
     int fmlen = strlen(fm);

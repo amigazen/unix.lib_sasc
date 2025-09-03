@@ -11,7 +11,18 @@
 extern "C" {
 #endif
 
-#include <sys/types.h>
+#include "types.h"
+
+/* Define filesystem types if not already defined */
+#ifndef _FSBLKCNT_T
+#define _FSBLKCNT_T 1
+typedef unsigned long fsblkcnt_t;  /* Used for filesystem block counts */
+#endif
+
+#ifndef _FSFILCNT_T
+#define _FSFILCNT_T 1
+typedef unsigned long fsfilcnt_t;  /* Used for filesystem file counts */
+#endif
 
 /*
  * POSIX statvfs structure - Filesystem statistics

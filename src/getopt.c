@@ -29,8 +29,8 @@ static int initialized = 0;      /* Flag to indicate if getopt() has been initia
 #define ERROR_MISSING_ARGUMENT  2
 
 /* Function prototypes */
-static int NextOption(char *argv[], char *optString);
-static int RealOption(char *argv[], char *str, int *skip, int *ind, int opt);
+static int NextOption(char *argv[], char *optString, int argc);
+static int RealOption(char *argv[], char *str, int *skip, int *ind, int opt, int argc);
 static int HandleArgument(char *argv[], int *optind, int *skip);
 static void Error(int err, int c, char *argv[]);
 
@@ -72,7 +72,7 @@ int getopt(int argc, char *argv[], char *optString)
     }
     
     /* Get next option */
-    c = NextOption(argv, optString);
+    c = NextOption(argv, optString, argc);
     
     /* Handle argument if needed */
     if (c != EOF && c != UNKNOWN_OPT) {
@@ -89,7 +89,7 @@ int getopt(int argc, char *argv[], char *optString)
 /*
  * NextOption() - Find the next option in the argument list
  */
-static int NextOption(char *argv[], char *optString)
+static int NextOption(char *argv[], char *optString, int argc)
 {
     int c;
     int skip;
@@ -125,12 +125,12 @@ static int NextOption(char *argv[], char *optString)
     /* Check if option requires argument */
     if (str[1] == ARG_COMING) {
         skip = 1;
-        if (RealOption(argv, str, &skip, &optind, c) != 0) {
+        if (RealOption(argv, str, &skip, &optind, c, argc) != 0) {
             return UNKNOWN_OPT;
         }
     } else {
         skip = 0;
-        if (RealOption(argv, str, &skip, &optind, c) != 0) {
+        if (RealOption(argv, str, &skip, &optind, c, argc) != 0) {
             return UNKNOWN_OPT;
         }
     }
@@ -141,10 +141,8 @@ static int NextOption(char *argv[], char *optString)
 /*
  * RealOption() - Process a real option (not a dash)
  */
-static int RealOption(char *argv[], char *str, int *skip, int *ind, int opt)
+static int RealOption(char *argv[], char *str, int *skip, int *ind, int opt, int argc)
 {
-    int result;
-    
     /* Check if option requires argument */
     if (str[1] == ARG_COMING) {
         if (*skip) {

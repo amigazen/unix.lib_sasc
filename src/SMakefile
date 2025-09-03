@@ -1,8 +1,8 @@
 #
 #	SMakefile for unix emulation library
 #
-#	Copyright (c) 1995-96 Enrico Forestieri (actually, released into the public domain)
-#	Copyright (c) 2025 amigazen project (released under BSD license)
+#	Copyright (c) 1995-96 Enrico Forestieri
+#	Copyright (c) 2025 amigazen project
 )
 #			    All rights reserved.
 #
@@ -37,8 +37,8 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	strnicmp.o strnlen.o strsep.o strtok_r.o strtol.o strtoll.o \
 	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o \
 	timers.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
-	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o \ 
-	strichr.o stristr.o strnchr.o strins.o strrev.o crc32_main.o \ 
+	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o \
+	strichr.o stristr.o strnchr.o strins.o strrev.o crc32_main.o \
 	crc32_string.o wildcard_init.o wildcard_elements.o wildcard_pattern.o \
 	vasprintf.o vsnprintf.o wait.o wait4.o waitpid.o write.o \
 	_printf.o _scanf.o fprintf.o sprintf.o scanf.o
@@ -50,10 +50,10 @@ LIBDL_NBOBJS = libdl.nbo
 LIBDL_DNBOBJS = libdl.dnbo
 
 # pthread library objects (separate from unix.lib)
-PTHREAD_OBJS = pthread.o semaphore.o sched.o gettimeofday.o
-PTHREAD_DOBJS = pthread.do semaphore.do sched.do gettimeofday.do
-PTHREAD_NBOBJS = pthread.nbo semaphore.nbo sched.nbo gettimeofday.nbo
-PTHREAD_DNBOBJS = pthread.dnbo semaphore.dnbo sched.dnbo gettimeofday.dnbo
+PTHREAD_OBJS = pthread.o semaphore.o sched.o gettimeofday.o pthread_startup.o
+PTHREAD_DOBJS = pthread.do semaphore.do sched.do gettimeofday.do pthread_startup.o
+PTHREAD_NBOBJS = pthread.nbo semaphore.nbo sched.nbo gettimeofday.nbo pthread_startup.o
+PTHREAD_DNBOBJS = pthread.dnbo semaphore.dnbo sched.dnbo gettimeofday.dnbo pthread_startup.o
 
 # Test library objects (in unittests folder)
 TESTLIB_OBJS = unittests/testlib.o
@@ -93,10 +93,13 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	sigprocmask.do sigsetmask.do sleep.do snprintf.do sockets.do stat.do \
 	strcasecmp.do strcoll.do strdup.do strerror.do strerror_r.do strftime.do \
 	stricmp.do strlcat.do strlcpy.do strncasecmp.do strncat.do strncpy.do \
-	strndup.do 	strnicmp.do strnlen.do strsep.do strtok_r.do strtol.do \
+	strndup.do strnicmp.do strnlen.do strsep.do strtok_r.do strtol.do \
 	strtoll.do strxfrm.do symlink.do sysconf.do system.do tempnam.do time.do \
 	timeconvert.do timers.do truncate.do tzset.do uid.do umask.do uname.do \
-	unlink.do unsetenv.do usleep.do utime.do utimes.do ustat.do statvfs.do strtolower.do strupr.do strichr.do stristr.do strnchr.do strins.do strrev.do crc32_main.do 	crc32_string.do wildcard_init.do wildcard_elements.do wildcard_pattern.do vasprintf.do \
+	unlink.do unsetenv.do usleep.do utime.do utimes.do ustat.do statvfs.do \
+	strtolower.do strupr.do strichr.do stristr.do strnchr.do strins.do \
+	strrev.do crc32_main.do crc32_string.do wildcard_init.do \
+	wildcard_elements.do wildcard_pattern.do vasprintf.do \
 	vsnprintf.do wait.do wait4.do waitpid.do write.do \
 	_printf.do _scanf.do fprintf.do sprintf.do scanf.do
 
@@ -123,7 +126,10 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	strndup.nbo strnicmp.nbo strnlen.nbo strsep.nbo strtok_r.nbo strtol.nbo \
 	strtoll.nbo strxfrm.nbo symlink.nbo sysconf.nbo system.nbo tempnam.nbo time.nbo \
 	timeconvert.nbo timers.nbo truncate.nbo tzset.nbo uid.nbo umask.nbo uname.nbo \
-	unlink.nbo unsetenv.nbo usleep.nbo utime.nbo utimes.nbo ustat.nbo statvfs.nbo strtolower.nbo strupr.nbo strichr.do stristr.do strnchr.do strins.do strrev.do crc32_main.nbo 	crc32_string.nbo wildcard_init.nbo wildcard_elements.nbo wildcard_pattern.nbo vasprintf.nbo \
+	unlink.nbo unsetenv.nbo usleep.nbo utime.nbo utimes.nbo ustat.nbo statvfs.nbo \
+	strtolower.nbo strupr.nbo strichr.nbo stristr.nbo strnchr.nbo strins.nbo \
+	strrev.nbo crc32_main.nbo crc32_string.nbo wildcard_init.nbo \
+	wildcard_elements.nbo wildcard_pattern.nbo vasprintf.nbo \
 	vsnprintf.nbo wait.nbo wait4.nbo waitpid.nbo write.nbo \
 	_printf.nbo _scanf.nbo fprintf.nbo sprintf.nbo scanf.nbo
 
@@ -155,7 +161,11 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	strtoll.dnbo strxfrm.dnbo symlink.dnbo sysconf.dnbo system.dnbo tempnam.dnbo \
 	time.dnbo timeconvert.dnbo timers.dnbo truncate.dnbo tzset.dnbo \
 	uid.dnbo umask.dnbo uname.dnbo unlink.dnbo unsetenv.dnbo usleep.dnbo \
-	utime.dnbo utimes.dnbo ustat.dnbo statvfs.dnbo strtolower.dnbo strupr.dnbo strichr.dnbo stristr.dnbo strnchr.dnbo strins.dnbo strrev.dnbo crc32_main.dnbo crc32_string.dnbo wildcard_init.dnbo wildcard_elements.dnbo wildcard_pattern.dnbo vasprintf.dnbo vsnprintf.dnbo wait.dnbo \
+	utime.dnbo utimes.dnbo ustat.dnbo statvfs.dnbo strtolower.dnbo strupr.dnbo \
+	strichr.dnbo stristr.dnbo strnchr.dnbo strins.dnbo strrev.dnbo \
+	crc32_main.dnbo crc32_string.dnbo wildcard_init.dnbo \
+	wildcard_elements.dnbo wildcard_pattern.dnbo vasprintf.dnbo vsnprintf.dnbo \
+	wait.dnbo \
 	wait4.dnbo waitpid.dnbo write.dnbo
 
 ASMOBJS = child.o _sprintf.o _setjmp.o
@@ -871,6 +881,8 @@ pthread.o: pthread.c include/pthread.h debug.h
 pthread.do: pthread.c include/pthread.h debug.h
 pthread.nbo: pthread.c include/pthread.h debug.h
 pthread.dnbo: pthread.c include/pthread.h debug.h
+
+pthread_startup.o: pthread_startup.asm
 
 semaphore.o: semaphore.c include/semaphore.h debug.h
 semaphore.do: semaphore.c include/semaphore.h debug.h

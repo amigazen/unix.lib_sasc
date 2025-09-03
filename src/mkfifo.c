@@ -14,15 +14,35 @@
 #include <proto/dos.h>
 #include <dos/dostags.h>
 
-/* AmigaOS file type constants */
+/* AmigaOS file type constants - only define if not already defined */
+#ifndef ST_FILE
 #define ST_FILE     0       /* Regular file */
+#endif
+#ifndef ST_CDEVICE
 #define ST_CDEVICE  1       /* Character device */
+#endif
+#ifndef ST_BDEVICE
 #define ST_BDEVICE  2       /* Block device */
+#endif
+#ifndef ST_PIPEFILE
 #define ST_PIPEFILE 3       /* Named pipe (FIFO) */
+#endif
+#ifndef ST_WHITEOUT
 #define ST_WHITEOUT 4       /* Whiteout file */
+#endif
 
 /* AmigaOS action constants */
+#ifndef ACTION_CREATE_OBJECT
 #define ACTION_CREATE_OBJECT 2002
+#endif
+#ifndef ACTION_SET_PERMS
+#define ACTION_SET_PERMS 2003
+#endif
+
+/* Define CTOB macro if not available */
+#ifndef CTOB
+#define CTOB(ptr) ((long)(ptr) >> 2)
+#endif
 
 /* Internal function to create special files */
 static int create_special_file(const char *path, int type, int device, int mode)

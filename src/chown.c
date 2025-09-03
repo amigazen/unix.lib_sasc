@@ -16,7 +16,14 @@
 #include <dos/dostags.h>
 
 /* Define ACTION constants locally since they're not available in unix.lib2 */
+#ifndef ACTION_SET_OWNER
 #define ACTION_SET_OWNER 2005
+#endif
+
+/* Define CTOB macro if not available */
+#ifndef CTOB
+#define CTOB(ptr) ((long)(ptr) >> 2)
+#endif
 
 /* Define FileInfoBlock_3_t structure locally */
 typedef struct FileInfoBlock_3 {
@@ -78,7 +85,7 @@ static int GetOwner(const char *name, unsigned long *owner)
 }
 
 /*
- * SetOwner() - Set file ownership information
+ * SetFileOwner() - Set file ownership information
  *
  * This function sets the ownership information for a file using
  * AmigaOS message passing for enhanced filesystem integration.
@@ -89,7 +96,7 @@ static int GetOwner(const char *name, unsigned long *owner)
  *
  * Returns: 0 on success, -1 on error
  */
-static int SetOwner(const char *name, unsigned long owner)
+static int SetFileOwner(const char *name, unsigned long owner)
 {
     int err = 0;
     struct MsgPort *msgport;
@@ -224,15 +231,15 @@ int chown(const char *path, uid_t owner, gid_t group)
         new_owner = ((owner & 0xFFFF) << 16) | (group & 0xFFFF);
     }
 
-    /* Try to set the new ownership using enhanced SetOwner() */
-    result = SetOwner(path, new_owner);
+    /* Try to set the new ownership using enhanced SetFileOwner() */
+    result = SetFileOwner(path, new_owner);
     if (result == 0) {
         return 0;  /* Success */
     }
 
-    /* If enhanced SetOwner() fails, fall back to no-op behavior
+    /* If enhanced SetFileOwner() fails, fall back to no-op behavior
      * for compatibility with filesystems that don't support ownership */
-    errno = 0;  /* Clear any error from SetOwner() */
+    errno = 0;  /* Clear any error from SetFileOwner() */
     return 0;   /* Success - ownership "changed" (no-op fallback) */
 }
 
@@ -283,12 +290,12 @@ int fchown(int fd, uid_t owner, gid_t group)
     }
     
     /* Note: fchown() operates on file descriptors, but our enhanced
-     * GetOwner/SetOwner functions work with pathnames. For now, we
+     * GetOwner/SetFileOwner functions work with pathnames. For now, we
      * implement fchown() as a no-op that maintains POSIX compliance.
      * 
      * A more sophisticated implementation could:
      * 1. Get the pathname from the file descriptor
-     * 2. Use the enhanced GetOwner/SetOwner functions
+     * 2. Use the enhanced GetOwner/SetFileOwner functions
      * 3. Handle the case where the file descriptor doesn't have a pathname
      */
     

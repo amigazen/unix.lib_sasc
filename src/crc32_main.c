@@ -98,10 +98,12 @@ uint32_t crc32(const void *data, size_t len)
 {
     const uint8_t *bytes = (const uint8_t *)data;
     uint32_t crc = 0xFFFFFFFF;
+    size_t i;
+    uint8_t table_index;
     
     /* Process each byte */
-    for (size_t i = 0; i < len; i++) {
-        uint8_t table_index = (crc ^ bytes[i]) & 0xFF;
+    for (i = 0; i < len; i++) {
+        table_index = (crc ^ bytes[i]) & 0xFF;
         crc = (crc >> 8) ^ crc32_table[table_index];
     }
     

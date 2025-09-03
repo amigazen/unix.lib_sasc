@@ -15,8 +15,7 @@ static int handle_long_option(int argc, char *const *argv, const char *shortopts
 static int handle_short_option(int argc, char *const *argv, const char *shortopts);
 
 /* Internal variables for long option processing */
-static int longopt_index = 0;
-static int longopt_only = 0;
+static int nextchar = 0;  /* Index of next character to process in argv[optind] */
 
 /*
  * _getopt_internal - Internal function for handling both short and long options
@@ -29,7 +28,6 @@ int _getopt_internal(int argc, char *const *argv, const char *shortopts,
                      const struct option *longopts, int *longind, int long_only)
 {
     static int initialized = 0;
-    static int nextchar = 0;
     
     /* Initialize on first call */
     if (!initialized) {
