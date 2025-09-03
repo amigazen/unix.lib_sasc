@@ -16,7 +16,7 @@ AR = oml
 AS = asm
 
 OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
-	asprintf.o basename.o bcmp.o bcopy.o bzero.o chmod.o chown.o close.o \
+	asprintf.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o close.o \
 	creat.o ctime.o devices.o dir.o dir_data.o dirname.o dup.o dup2.o \
 	endpwent.o err.o error.o error_msg.o 	exec.o fcntl.o fd_setsize.o fibstat.o fifofd.o files.o fnmatch.o fpathconf.o \
 	fstat.o fsync.o ftruncate.o 	getdtablesize.o getegid.o geteuid.o \
@@ -86,7 +86,7 @@ PSOCKETSTEST_DNBOBJS = unittests/psockets/testga.dnbo
 
 DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	amigatime.do asprintf.do basename.do bcmp.do bcopy.do bzero.do \
-	chmod.do chown.do close.do creat.do ctime.do devices.do dir.do \
+	chdir.do chmod.do chown.do close.do creat.do ctime.do devices.do dir.do \
 	dir_data.do dirname.do dup.do dup2.do endpwent.do err.do error.do \
 	error_msg.do exec.do fcntl.do fd_setsize.do \
 	fibstat.do fifofd.do files.do fnmatch.do fpathconf.do fstat.do \
@@ -554,6 +554,7 @@ _exit.o: _exit.c fifo_pragmas.h fifo.h fifofd.h signals.h amiga.h
 _main.o: _main.c fifo_pragmas.h fifo.h amigados.h fifofd.h signals.h amiga.h
 abort.o: abort.c amiga.h
 access.o: access.c amiga.h
+chdir.o: chdir.c amiga.h
 alloca.o: alloca.c
 amigados.o: amigados.c signals.h amiga.h
 amigatime.o: amigatime.c timeconvert.h amiga.h
