@@ -1,0 +1,94 @@
+# SMakefile for APipe Handler
+# Based on Per Bojsen's APipe system
+
+# The architecture flags allow you to specify optimizations for the
+# processor type you want. Uncomment the one you have, or leave all
+# commented if you want a generic APipe-Handler that can run on any
+# processor.
+#
+# 68000 and up:
+
+TARGET_ARCH = DEF=MC68000
+ARCH_OPTIMIZE = CPU=68000
+
+#
+# 68010 and up:
+
+#TARGET_ARCH = DEF=MC68010
+#ARCH_OPTIMIZE = CPU=68010
+
+#
+# 68020 and up:
+
+#TARGET_ARCH = DEF=MC68020
+#ARCH_OPTIMIZE = CPU=68020
+
+#
+# 68030 and up:
+
+#TARGET_ARCH = DEF=MC68030
+#ARCH_OPTIMIZE = CPU=68030
+
+#
+# 68040 and up:
+
+#TARGET_ARCH = DEF=MC68040
+#ARCH_OPTIMIZE = CPU=68040
+
+#
+# 68060 and up:
+
+#TARGET_ARCH = DEF=MC68060
+#ARCH_OPTIMIZE = CPU=68060
+
+
+
+#MATH_ARCH = $(MATH_ARCH) DEF=MC68881
+#MATH_OPTIMIZE = MATH=68881
+
+#MATH_ARCH = $(MATH_ARCH) DEF=MC68882
+#MATH_OPTIMIZE = MATH=68882
+
+MACH = $(TARGET_ARCH) $(MATH_ARCH) $(ARCH_OPTIMIZE) $(MATH_OPTIMIZE)
+
+OPTIMIZE = OPT OPTINLINE OPTINLOCAL OPTCOMP=6 OPTDEP=6 OPTRDEP=6
+
+CC = sc
+
+CPP = cpp -D__SASC
+
+CFLAGS = NOSTKCHK DATA=FAR $(DEFS) $(DEBUGFLAGS) $(MACH)
+
+AS = asm
+
+AFLAGS = -iINCLUDE:
+
+AR = oml
+ARCMDS = r
+
+INSTDIR = //SDK/L/
+
+LIBS = LIB:small.lib LIB:scnb.lib
+
+OBJECTS = pgmpipe.o child.o
+
+all: APipe-Handler
+
+install:
+	copy APipe-Handler $(INSTDIR) clone
+	copy Mountlist //SDK/Devs/DOSDrivers/APIPE clone
+
+clean:
+	@delete >NIL: $(OBJECTS) APipe-Handler
+
+APipe-Handler: $(OBJECTS) $(BLIB)
+	slink <WITH <(T:ppipe.link)
+	FROM $(OBJECTS)
+	LIB $(LIBS)
+	TO $@
+	ND SD SC VERBOSE
+<
+
+pgmpipe.o: pgmpipe.c
+
+child.o: child.asm

@@ -1,0 +1,14 @@
+VERSION		EQU	37
+REVISION	EQU	7
+DATE	MACRO
+		dc.b	'18.12.94'
+	ENDM
+VERS	MACRO
+		dc.b	'APipe-Handler 37.7'
+	ENDM
+VSTRING	MACRO
+		dc.b	'APipe-Handler 37.7 (18.12.94)',13,10,0
+	ENDM
+VERSTAG	MACRO
+		dc.b	0,'$VER: APipe-Handler 37.7 (18.12.94)',0
+	ENDM

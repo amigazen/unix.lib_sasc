@@ -1,0 +1,176 @@
+################################################################################
+#
+#   APipe-Handler for AmigaDOS 2.04 or higher.
+#
+#   Copyright (C) 1991-1994 by Per Bojsen.  All Rights Reserved.
+#
+#   Permission is granted to any individual or institution to use, copy,
+#   modify, and distribute this software, provided that this complete
+#   copyright and permission notice is maintained, intact, in all copies
+#   and supporting documentation.
+#
+#   This software is provided on an "as is" basis without express or
+#   implied warranty.
+#
+
+NOTE: See the CAVEAT section (3) for some important information on the
+      implementation of the APipe-Handler.
+NOTE: Update information is included at the end of this file.
+
+This archive contains the source for the APipe-Handler.  The archive should
+include the following files:
+
+        child.asm
+        pgmpipe.c
+        APipe-Handler
+        APipe-Handler_rev.h
+        APipe-Handler_rev.i
+        APipe-Handler_rev.rev
+        Makefile
+        Mountlist
+        README
+
+APipe-Handler is a pre-made generic (no CPU specific optimizations)
+APipe-Handler for your convenience.
+
+
+1) Introduction
+
+Some weeks ago I got a strange idea for a new kind of pipe handler.  Let's
+call it `APipe-Handler' and its DOS device name `APIPE:'.  The special
+thing about this handler is that it interprets the name after the prefix
+`APIPE:' as a command line to be executed.  If the `APIPE:<command line>'
+file is opened as MODE_OLDFILE the standard output from the command will be
+available for reading; if the file is opened as MODE_NEWFILE the command will
+get its standard input from the data written to the file.
+
+Here's some examples on the usage of this pipe handler:
+
+    1> search APIPE:alias list ; print the aliases containing list
+
+    2> sort "APIPE:list nohead" CONSOLE: ; sorted list
+
+    3> comm -12 "APIPE:grep list APIPE:alias" "APIPE:grep nohead APIPE:alias"
+
+    4> status >"APIPE:grep uucico" ; does not work with SAS grep: use GNU!
+
+    5> grep uucico APIPE:status
+
+The first two examples show things that could be done in a shell that
+supported anonymous pipes `|' *if* the standard AmigaDOS utilities had the
+ability to read from their standard input.
+
+The third example shows something that is impossible to do with `|' command
+line pipes, and requires several lines (or shells) with PIPE: (comm is a
+program from the GNU text utilities that prints line in common between to
+sorted files).
+
+Example four and five should produce equivalent results.
+
+Other possible uses of APIPE: is as a file to save to from an editor,
+i.e., you could prepare some script or data file and save it directly to
+the command/program from your editor.  Or you could insert the output
+from a command into the file you're editing.  The editor you're using does
+not need any special support for this besides the ability to save and
+load files :-)
+
+One nice thing about this handler is that it allows for a really simple
+implememtation of the UNIX popen()/pclose() functions: just append the
+command line to `APIPE:' and call fopen() on this string;  pclose() is
+simply a wrapper around fclose().  This was the main reason I came up with
+the idea, by the way.
+
+
+2) How to build APipe-Handler
+
+The build instructions assume you have SAS/C 6.51.
+
+Edit the Makefile to reflect your installation.  You may choose to
+activate the machine architecture macros if you have a faster processor.
+Alternatively, specify the macros you want to activate on the command
+line when invoking make.
+
+After you have customized the Makefile, run your make program to build
+the handler.
+
+
+3) Installation
+
+Install the APipe-Handler in the directory where you keep third-party
+handlers or in L: if you prefer to do so.  Following that, either
+edit the system wide Mountlist file in SYS:Devs to include the mountlist
+entry in the Mountlist file distributed with APipe-Handler, or place
+the Mountlist file somewhere where you like to keep third-party mountlist
+files/entries.  Add the command to mount APIPE: to your S:User-Startup.
+
+Note that the `Handler' line in the mountlist entry specifies the file
+name of the handler relative to the current directory of any process
+invoking APIPE: unless the file name is specified with an absolute path,
+e.g., `L:APipe-Handler' rather than simply `APipe-Handler'.  Since
+APipe-Handler is loaded on demand, the system does not actually check
+whether the APipe-Handler is loadable at mount time.  Thus, it is possible
+to mount APIPE: even if the handler file cannot be loaded.
+
+Unfortunately, earlier versions of APipe-Handler included a mountlist
+entry which did not specify an absolute path for APipe-Handler, and this
+turned out to cause a lot of confusion.  I apologize for this, and I
+have included a fixed mountlist entry as of version 37.6.
+
+
+4) CAVEAT
+
+The APipe-Handler needs to copy the environment of the requester process
+for the child process which runs the specified command line.  The enviroment
+includes the path, IO, current directory, shell variables, and aliases.
+
+Unfortunately, there's currently no way to copy this environment safely
+which is safe under all circumstances.  The handler may fail if the process
+opening a file on the handler messes with its environment (like changing
+its path, changing shell variables, etc.) while the ACTION_FINDINPUT or
+ACTION_FINDOUTPUT packet is still pending.  Furthermore, the process
+must run with a higher or same priority than the handler process which
+normally runs at priority 5.
+
+Since most programs seems to use the dos.library call Open() to open
+their files the caveat above is probably not a big problem in practice.
+
+If you know of any program that might fall into the category covered by
+the caveat, please let me know.  I will try to convince Commodore to
+add some features to new versions of the OS that will make it possible
+to implement the APipe-Handler in a completely safe way.  This will be
+easier if many people use/need the APipe-Handler, so if you like the
+concept then give your friends a copy of it!
+
+5) Send bug reports (and praise/support) to one of
+
+        bojsen@moria.home.id.dtu.dk
+        bojsen@id.dtu.dk
+        pb@delta.dk
+
+   Snail mail:
+
+        Per Bojsen
+        Maglegaards Alle 51 st. th.
+        DK-2860 Soeborg
+        Denmark
+
+   Phone:
+
+        +45 39 66 31 86
+
+6) Release notes.
+
+   37.2  First publically released version.
+   37.3  Now uses the UserShell when starting programs.
+   37.4  Fixed bug in handling multiple outstanding read packets at
+         EOF.  The bug caused the handler to wait forever.
+   37.5  Improved cloning of filehandles so that >> redirection and
+         mixed reading/writing between parent and child process work
+         better.
+   37.6  Updated source and Makefile to SAS/C 6.
+   37.7  Bumped version number to avoid confusion with `unauthorized'
+         37.6 release.
+
+                                    --**--
+
+End of README.
