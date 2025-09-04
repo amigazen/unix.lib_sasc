@@ -433,6 +433,115 @@ static void test_locale_character_validation(void)
     }
 }
 
+/* Test enhanced multibyte functionality using SAS/C functions */
+static void test_enhanced_multibyte(void)
+{
+    iconv_t cd;
+    const char *input;
+    char output[256];
+    const char *inptr;
+    char *outptr;
+    size_t inleft, outleft;
+    size_t result;
+    
+    printf("\n=== Testing Enhanced Multibyte Functionality ===\n");
+    
+    /* Test UTF-8 to Latin-1 with enhanced multibyte handling */
+    cd = iconv_open("ISO-8859-1", "UTF-8");
+    TEST_ASSERT(cd != (iconv_t)-1, "iconv_open UTF-8->ISO-8859-1 for enhanced test");
+    
+    if (cd != (iconv_t)-1) {
+        /* Test with various UTF-8 sequences */
+        const char *test_cases[] = {
+            "Hello",           /* ASCII only */
+            "Café",            /* 2-byte UTF-8 sequence */
+            "naïve",           /* 2-byte UTF-8 sequence */
+            "résumé",          /* 2-byte UTF-8 sequence */
+            NULL
+        };
+        
+        int i;
+        for (i = 0; test_cases[i] != NULL; i++) {
+            input = test_cases[i];
+            memset(output, 0, sizeof(output));
+            inptr = input;
+            outptr = output;
+            inleft = strlen(input);
+            outleft = sizeof(output) - 1;
+            
+            result = iconv(cd, &inptr, &inleft, &outptr, &outleft);
+            if (result == (size_t)-1) {
+                printf("  Conversion failed for '%s': %s\n", input, strerror(errno));
+            } else {
+                *outptr = '\0';  /* Null terminate */
+                printf("  '%s' -> '%s' (converted %zu characters)\n", 
+                       input, output, result);
+            }
+        }
+        
+        iconv_close(cd);
+    }
+    
+    /* Test Latin-1 to UTF-8 with enhanced multibyte handling */
+    cd = iconv_open("UTF-8", "ISO-8859-1");
+    TEST_ASSERT(cd != (iconv_t)-1, "iconv_open ISO-8859-1->UTF-8 for enhanced test");
+    
+    if (cd != (iconv_t)-1) {
+        /* Test with Latin-1 characters */
+        const char *test_cases[] = {
+            "Hello",           /* ASCII only */
+            "Caf\xe9",         /* Latin-1 é */
+            "na\xefve",        /* Latin-1 ï */
+            "r\xe9sum\xe9",    /* Latin-1 résumé */
+            NULL
+        };
+        
+        int i;
+        for (i = 0; test_cases[i] != NULL; i++) {
+            input = test_cases[i];
+            memset(output, 0, sizeof(output));
+            inptr = input;
+            outptr = output;
+            inleft = strlen(input);
+            outleft = sizeof(output) - 1;
+            
+            result = iconv(cd, &inptr, &inleft, &outptr, &outleft);
+            if (result == (size_t)-1) {
+                printf("  Conversion failed for Latin-1 string: %s\n", strerror(errno));
+            } else {
+                *outptr = '\0';  /* Null terminate */
+                printf("  Latin-1 string -> UTF-8 (converted %zu characters)\n", result);
+            }
+        }
+        
+        iconv_close(cd);
+    }
+    
+    /* Test LOCALE conversions with enhanced multibyte handling */
+    cd = iconv_open("UTF-8", "LOCALE");
+    TEST_ASSERT(cd != (iconv_t)-1, "iconv_open LOCALE->UTF-8 for enhanced test");
+    
+    if (cd != (iconv_t)-1) {
+        input = "Test with locale";
+        memset(output, 0, sizeof(output));
+        inptr = input;
+        outptr = output;
+        inleft = strlen(input);
+        outleft = sizeof(output) - 1;
+        
+        result = iconv(cd, &inptr, &inleft, &outptr, &outleft);
+        if (result == (size_t)-1) {
+            printf("  LOCALE->UTF-8 conversion failed: %s\n", strerror(errno));
+        } else {
+            *outptr = '\0';
+            printf("  LOCALE->UTF-8: '%s' -> '%s' (converted %zu characters)\n", 
+                   input, output, result);
+        }
+        
+        iconv_close(cd);
+    }
+}
+
 int main(void)
 {
     printf("iconv Implementation Test Suite\n");
@@ -447,6 +556,7 @@ int main(void)
     test_buffer_overflow();
     test_locale_conversions();
     test_locale_character_validation();
+    test_enhanced_multibyte();
     
     printf("\n=== Test Results ===\n");
     printf("Tests run: %d\n", tests_run);
