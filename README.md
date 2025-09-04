@@ -49,7 +49,7 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 - **Latest NDK support**: Built against the latest official NDK
 - **Builds out of the box**: Builds cleanly for anyone using the ToolKit configuration for Amiga development
 - **Compiler support**: Primary support for SAS/C with planned DICE compiler compatibility. Probably also compatible with VBCC (but you can use PosixLib there)
-- **Memory Management**: Efficient memory allocation and management optimized for Amiga hardware constraints utilizing
+- **Memory Management**: Efficient memory allocation and management optimized for Amiga hardware constraints utilizing native memory management features such as memory pools
 - **unix.lib**: Newly expanded and updated POSIX and C99 compliant standard C library originally by David Gay and Enrico Forestieri featuring dozens of new and updated functions including: -
 - *longlong_t*: A complete 32-bit compatible implementation of the 64-bit longlong_t type
 - *string functions*: New string functions including memory safe implementations of the snprintf family
@@ -57,6 +57,7 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 - *getopts functions*: Complete BSD compatible implementations of getopts 
 - *Upgraded functions*: POSIX compliant upgrades to many functions including ustat, utime, gettimeofday and many more
 - *Inet225 unix.lib*: Reimplements new versions of the POSIX functions provided by the version of unix.lib that came with Inet225
+- *AmiTCP netlib*: Reimplements new versions of the POSIX functions provided by AmiTCP's netlib - rcmd(), herror() and the syslog API wrapping _bsdsocket.library_
 - *Unit tests*: Unit tests for many functions
 - **curses.lib**: Updated version of Simon Raybould's Amiga port of _curses_ now BSD licensed
 - **psockets.lib**: A brand new Amiga port of _psockets_ wrapping _bsdsocket.library_
