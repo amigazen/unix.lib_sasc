@@ -180,8 +180,8 @@ static int get_mb_char_length(const char *mb_str)
         return 1;
     }
     
-    /* Use SAS/C's mblen function */
-    return mblen(mb_str, MB_CUR_MAX);
+    /* Use SAS/C's mblen function with fixed maximum length */
+    return mblen(mb_str, 4);  /* Maximum UTF-8 sequence length */
 }
 
 /* Convert single multibyte character to wide character using SAS/C */
@@ -193,8 +193,8 @@ static int convert_mb_char_to_wc(const char *mb_char, wchar_t *wc_char)
         return 1;
     }
     
-    /* Use SAS/C's mbtowc function */
-    return mbtowc(wc_char, mb_char, MB_CUR_MAX);
+    /* Use SAS/C's mbtowc function with fixed maximum length */
+    return mbtowc(wc_char, mb_char, 4);  /* Maximum UTF-8 sequence length */
 }
 
 /* Convert single wide character to multibyte character using SAS/C */
@@ -407,30 +407,36 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
             
         case CONV_LATIN1_TO_UTF8:
             /* ISO-8859-1 to UTF-8: convert to UTF-8 encoding using SAS/C multibyte functions */
-            while (inleft > 0 && outleft > 0) {
-                unsigned char c = (unsigned char)*inptr;
-                wchar_t wc = (wchar_t)c;
+            {
+                unsigned char c;
+                wchar_t wc;
+                char mb_buf[4];  /* Fixed size buffer for multibyte character */
+                int mb_len;
                 
-                /* Convert wide character to multibyte (UTF-8) */
-                char mb_buf[MB_CUR_MAX];
-                int mb_len = convert_wc_char_to_mb(mb_buf, wc);
-                if (mb_len <= 0) {
-                    errno = EILSEQ;
-                    return (size_t)-1;
+                while (inleft > 0 && outleft > 0) {
+                    c = (unsigned char)*inptr;
+                    wc = (wchar_t)c;
+                    
+                    /* Convert wide character to multibyte (UTF-8) */
+                    mb_len = convert_wc_char_to_mb(mb_buf, wc);
+                    if (mb_len <= 0) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
+                    
+                    if (outleft < mb_len) {
+                        errno = E2BIG;
+                        break;  /* Convert as much as possible before stopping */
+                    }
+                    
+                    /* Copy the multibyte character to output */
+                    memcpy(outptr, mb_buf, mb_len);
+                    inptr++;
+                    outptr += mb_len;
+                    inleft--;
+                    outleft -= mb_len;
+                    converted++;
                 }
-                
-                if (outleft < mb_len) {
-                    errno = E2BIG;
-                    break;  /* Convert as much as possible before stopping */
-                }
-                
-                /* Copy the multibyte character to output */
-                memcpy(outptr, mb_buf, mb_len);
-                inptr++;
-                outptr += mb_len;
-                inleft--;
-                outleft -= mb_len;
-                converted++;
             }
             break;
             
@@ -439,40 +445,45 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
              * UTF-8 to ISO-8859-1: convert from UTF-8 encoding
              * Enhanced to use SAS/C multibyte functions for better UTF-8 handling
              */
-            while (inleft > 0 && outleft > 0) {
-                /* Get length of current multibyte character */
-                int mb_len = get_mb_char_length(inptr);
-                if (mb_len <= 0) {
-                    errno = EILSEQ;
-                    return (size_t)-1;
-                }
-                
-                if (inleft < mb_len) {
-                    errno = EINVAL;
-                    return (size_t)-1;
-                }
-                
-                /* Convert multibyte character to wide character */
+            {
+                int mb_len;
                 wchar_t wc;
-                int wc_len = convert_mb_char_to_wc(inptr, &wc);
-                if (wc_len <= 0) {
-                    errno = EILSEQ;
-                    return (size_t)-1;
-                }
+                int wc_len;
                 
-                /* Check if wide character fits in Latin-1 range */
-                if (wc > 0xFF) {
-                    errno = EILSEQ;
-                    return (size_t)-1;
+                while (inleft > 0 && outleft > 0) {
+                    /* Get length of current multibyte character */
+                    mb_len = get_mb_char_length(inptr);
+                    if (mb_len <= 0) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
+                    
+                    if (inleft < mb_len) {
+                        errno = EINVAL;
+                        return (size_t)-1;
+                    }
+                    
+                    /* Convert multibyte character to wide character */
+                    wc_len = convert_mb_char_to_wc(inptr, &wc);
+                    if (wc_len <= 0) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
+                    
+                    /* Check if wide character fits in Latin-1 range */
+                    if (wc > 0xFF) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
+                    
+                    /* Output the Latin-1 character */
+                    *outptr = (char)wc;
+                    inptr += mb_len;
+                    outptr++;
+                    inleft -= mb_len;
+                    outleft--;
+                    converted++;
                 }
-                
-                /* Output the Latin-1 character */
-                *outptr = (char)wc;
-                inptr += mb_len;
-                outptr++;
-                inleft -= mb_len;
-                outleft--;
-                converted++;
             }
             break;
             
@@ -522,38 +533,45 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
              * This implementation uses locale.library for character validation
              * and SAS/C multibyte functions for UTF-8 conversion.
              */
-            while (inleft > 0 && outleft > 0) {
-                unsigned char c = (unsigned char)*inptr;
-                ULONG locale_char = c;
+            {
+                unsigned char c;
+                ULONG locale_char;
+                wchar_t wc;
+                char mb_buf[4];  /* Fixed size buffer for multibyte character */
+                int mb_len;
                 
-                /* Use locale.library to validate character */
-                if (desc->locale && !is_valid_locale_char(desc->locale, locale_char)) {
-                    /* Invalid character for this locale */
-                    errno = EILSEQ;
-                    return (size_t)-1;
+                while (inleft > 0 && outleft > 0) {
+                    c = (unsigned char)*inptr;
+                    locale_char = c;
+                    
+                    /* Use locale.library to validate character */
+                    if (desc->locale && !is_valid_locale_char(desc->locale, locale_char)) {
+                        /* Invalid character for this locale */
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
+                    
+                    /* Convert to wide character and then to multibyte (UTF-8) */
+                    wc = (wchar_t)c;
+                    mb_len = convert_wc_char_to_mb(mb_buf, wc);
+                    if (mb_len <= 0) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
+                    
+                    if (outleft < mb_len) {
+                        errno = E2BIG;
+                        break;  /* Convert as much as possible before stopping */
+                    }
+                    
+                    /* Copy the multibyte character to output */
+                    memcpy(outptr, mb_buf, mb_len);
+                    inptr++;
+                    outptr += mb_len;
+                    inleft--;
+                    outleft -= mb_len;
+                    converted++;
                 }
-                
-                /* Convert to wide character and then to multibyte (UTF-8) */
-                wchar_t wc = (wchar_t)c;
-                char mb_buf[MB_CUR_MAX];
-                int mb_len = convert_wc_char_to_mb(mb_buf, wc);
-                if (mb_len <= 0) {
-                    errno = EILSEQ;
-                    return (size_t)-1;
-                }
-                
-                if (outleft < mb_len) {
-                    errno = E2BIG;
-                    break;  /* Convert as much as possible before stopping */
-                }
-                
-                /* Copy the multibyte character to output */
-                memcpy(outptr, mb_buf, mb_len);
-                inptr++;
-                outptr += mb_len;
-                inleft--;
-                outleft -= mb_len;
-                converted++;
             }
             break;
             
@@ -562,47 +580,53 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
              * UTF-8 to locale charset using SAS/C multibyte functions and locale.library
              * Enhanced to use SAS/C multibyte functions for better UTF-8 handling
              */
-            while (inleft > 0 && outleft > 0) {
-                /* Get length of current multibyte character */
-                int mb_len = get_mb_char_length(inptr);
-                if (mb_len <= 0) {
-                    errno = EILSEQ;
-                    return (size_t)-1;
-                }
-                
-                if (inleft < mb_len) {
-                    errno = EINVAL;
-                    return (size_t)-1;
-                }
-                
-                /* Convert multibyte character to wide character */
+            {
+                int mb_len;
                 wchar_t wc;
-                int wc_len = convert_mb_char_to_wc(inptr, &wc);
-                if (wc_len <= 0) {
-                    errno = EILSEQ;
-                    return (size_t)-1;
-                }
+                int wc_len;
+                ULONG locale_char;
                 
-                /* Check if wide character fits in 8-bit range */
-                if (wc > 0xFF) {
-                    errno = EILSEQ;
-                    return (size_t)-1;
+                while (inleft > 0 && outleft > 0) {
+                    /* Get length of current multibyte character */
+                    mb_len = get_mb_char_length(inptr);
+                    if (mb_len <= 0) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
+                    
+                    if (inleft < mb_len) {
+                        errno = EINVAL;
+                        return (size_t)-1;
+                    }
+                    
+                    /* Convert multibyte character to wide character */
+                    wc_len = convert_mb_char_to_wc(inptr, &wc);
+                    if (wc_len <= 0) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
+                    
+                    /* Check if wide character fits in 8-bit range */
+                    if (wc > 0xFF) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
+                    
+                    /* Validate character with locale.library */
+                    locale_char = (ULONG)wc;
+                    if (desc->locale && !is_valid_locale_char(desc->locale, locale_char)) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
+                    
+                    /* Output the locale character */
+                    *outptr = (char)wc;
+                    inptr += mb_len;
+                    outptr++;
+                    inleft -= mb_len;
+                    outleft--;
+                    converted++;
                 }
-                
-                /* Validate character with locale.library */
-                ULONG locale_char = (ULONG)wc;
-                if (desc->locale && !is_valid_locale_char(desc->locale, locale_char)) {
-                    errno = EILSEQ;
-                    return (size_t)-1;
-                }
-                
-                /* Output the locale character */
-                *outptr = (char)wc;
-                inptr += mb_len;
-                outptr++;
-                inleft -= mb_len;
-                outleft--;
-                converted++;
             }
             break;
             

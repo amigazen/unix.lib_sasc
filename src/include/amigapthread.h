@@ -10,6 +10,7 @@
 #define _AMIGAPTHREAD_H
 
 /* Standard C includes */
+#include "amiga.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
