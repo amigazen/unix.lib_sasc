@@ -89,6 +89,46 @@ static const char *get_locale_charset(struct Locale *locale)
     }
 }
 
+/* Helper function to convert character using locale.library */
+static ULONG convert_char_with_locale(struct Locale *locale, ULONG character, int to_upper)
+{
+    if (!locale) {
+        return character;  /* No conversion if no locale */
+    }
+    
+    if (to_upper) {
+        return ConvToUpper(locale, character);
+    } else {
+        return ConvToLower(locale, character);
+    }
+}
+
+/* Helper function to check if character is valid in locale */
+static int is_valid_locale_char(struct Locale *locale, ULONG character)
+{
+    if (!locale) {
+        /* Without locale, assume all 8-bit characters are valid */
+        return (character <= 0xFF) ? 1 : 0;
+    }
+    
+    /* Use locale.library character classification functions */
+    /* Check if character is printable (not control character) */
+    return IsPrint(locale, character) ? 1 : 0;
+}
+
+/* Helper function to convert string case using locale.library */
+static void convert_string_case(struct Locale *locale, const char *input, char *output, 
+                               size_t input_len, int to_upper)
+{
+    size_t i;
+    
+    for (i = 0; i < input_len; i++) {
+        ULONG input_char = (unsigned char)input[i];
+        ULONG converted_char = convert_char_with_locale(locale, input_char, to_upper);
+        output[i] = (char)(converted_char & 0xFF);
+    }
+}
+
 /* Helper function to determine conversion type */
 static int get_conversion_type(const char *from, const char *to)
 {
@@ -406,13 +446,20 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
         case CONV_LOCALE_TO_UTF8:
             /* 
              * Locale charset to UTF-8 using locale.library
-             * NOTE: Amiga's locale.library does not provide direct charset
-             * conversion functions. For this barebones implementation, we
-             * assume the system locale is ISO-8859-1, which is a safe
-             * default for classic AmigaOS.
+             * This implementation uses locale.library for character validation
+             * and case conversion, then converts to UTF-8.
              */
             while (inleft > 0 && outleft > 0) {
                 unsigned char c = (unsigned char)*inptr;
+                ULONG locale_char = c;
+                
+                /* Use locale.library to validate character */
+                if (desc->locale && !is_valid_locale_char(desc->locale, locale_char)) {
+                    /* Invalid character for this locale */
+                    errno = EILSEQ;
+                    return (size_t)-1;
+                }
+                
                 if (c < 0x80) {
                     /* ASCII character - direct copy */
                     *outptr = c;
@@ -450,7 +497,12 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
             while (inleft > 0 && outleft > 0) {
                 unsigned char c = (unsigned char)*inptr;
                 if (c < 0x80) {
-                    /* ASCII character - direct copy */
+                    /* ASCII character - validate with locale and copy */
+                    ULONG locale_char = c;
+                    if (desc->locale && !is_valid_locale_char(desc->locale, locale_char)) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
+                    }
                     *outptr = c;
                     inptr++;
                     outptr++;
@@ -469,14 +521,14 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
                         return (size_t)-1;
                     }
                     unsigned char latin1 = ((c & 0x1F) << 6) | (c2 & 0x3F);
-                    if (desc->locale && desc->locale_base) {
-                        /* Use locale.library for character conversion */
-                        /* For now, treat as UTF-8 to Latin-1 conversion */
-                        *outptr = (char)latin1;
-                    } else {
-                        /* Fallback to Latin-1 */
-                        *outptr = (char)latin1;
+                    
+                    /* Validate character with locale.library */
+                    if (desc->locale && !is_valid_locale_char(desc->locale, latin1)) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
                     }
+                    
+                    *outptr = (char)latin1;
                     inptr += 2;
                     outptr++;
                     inleft -= 2;
@@ -494,6 +546,14 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
             /* Locale charset to ASCII using locale.library */
             while (inleft > 0 && outleft > 0) {
                 unsigned char c = (unsigned char)*inptr;
+                ULONG locale_char = c;
+                
+                /* Use locale.library to validate character */
+                if (desc->locale && !is_valid_locale_char(desc->locale, locale_char)) {
+                    errno = EILSEQ;
+                    return (size_t)-1;
+                }
+                
                 if (c < 0x80) {
                     /* Valid ASCII character */
                     *outptr = c;
@@ -502,16 +562,14 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
                     inleft--;
                     outleft--;
                     converted++;
-                } else if (desc->locale && desc->locale_base) {
-                    /* Use locale.library for character conversion */
-                    /* For now, treat as Latin-1 to ASCII (drop non-ASCII) */
-                    inptr++;
-                    inleft--;
-                    /* Skip non-ASCII characters */
                 } else {
-                    /* Fallback: skip non-ASCII characters */
+                    /* Non-ASCII character - convert to '?' or similar */
+                    *outptr = '?';
                     inptr++;
+                    outptr++;
                     inleft--;
+                    outleft--;
+                    converted++;
                 }
             }
             break;
@@ -521,15 +579,13 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
             while (inleft > 0 && outleft > 0) {
                 unsigned char c = (unsigned char)*inptr;
                 if (c < 0x80) {
-                    /* Valid ASCII character */
-                    if (desc->locale && desc->locale_base) {
-                        /* Use locale.library for character conversion */
-                        /* For now, direct copy (ASCII is subset of most charsets) */
-                        *outptr = c;
-                    } else {
-                        /* Fallback: direct copy */
-                        *outptr = c;
+                    /* Valid ASCII character - validate with locale */
+                    ULONG locale_char = c;
+                    if (desc->locale && !is_valid_locale_char(desc->locale, locale_char)) {
+                        errno = EILSEQ;
+                        return (size_t)-1;
                     }
+                    *outptr = c;
                     inptr++;
                     outptr++;
                     inleft--;

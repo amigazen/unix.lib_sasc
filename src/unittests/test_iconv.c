@@ -377,6 +377,62 @@ static void test_locale_conversions(void)
     }
 }
 
+/* Test locale.library character validation */
+static void test_locale_character_validation(void)
+{
+    iconv_t cd;
+    const char *input = "Hello\x80";  /* Contains non-ASCII character */
+    char output[256];
+    const char *inptr;
+    char *outptr;
+    size_t inleft, outleft;
+    size_t result;
+    
+    printf("\n=== Testing Locale Character Validation ===\n");
+    
+    /* Test LOCALE to UTF-8 with potentially invalid character */
+    cd = iconv_open("UTF-8", "LOCALE");
+    TEST_ASSERT(cd != (iconv_t)-1, "iconv_open LOCALE->UTF-8 for validation test");
+    
+    if (cd != (iconv_t)-1) {
+        memset(output, 0, sizeof(output));
+        inptr = input;
+        outptr = output;
+        inleft = strlen(input);
+        outleft = sizeof(output) - 1;
+        
+        result = iconv(cd, &inptr, &inleft, &outptr, &outleft);
+        /* This should either succeed (if locale accepts 0x80) or fail with EILSEQ */
+        /* The exact behavior depends on the system's locale configuration */
+        if (result == (size_t)-1) {
+            TEST_ASSERT(errno == EILSEQ, "Invalid character properly rejected with EILSEQ");
+        } else {
+            TEST_ASSERT(result != (size_t)-1, "Character accepted by locale");
+        }
+        
+        iconv_close(cd);
+    }
+    
+    /* Test ASCII to LOCALE with invalid character */
+    cd = iconv_open("LOCALE", "ASCII");
+    TEST_ASSERT(cd != (iconv_t)-1, "iconv_open ASCII->LOCALE for validation test");
+    
+    if (cd != (iconv_t)-1) {
+        memset(output, 0, sizeof(output));
+        inptr = input;
+        outptr = output;
+        inleft = strlen(input);
+        outleft = sizeof(output) - 1;
+        
+        result = iconv(cd, &inptr, &inleft, &outptr, &outleft);
+        /* Should fail when it hits the non-ASCII character */
+        TEST_ASSERT(result == (size_t)-1, "Non-ASCII character properly rejected");
+        TEST_ASSERT(errno == EILSEQ, "errno set to EILSEQ for non-ASCII character");
+        
+        iconv_close(cd);
+    }
+}
+
 int main(void)
 {
     printf("iconv Implementation Test Suite\n");
@@ -390,6 +446,7 @@ int main(void)
     test_error_handling();
     test_buffer_overflow();
     test_locale_conversions();
+    test_locale_character_validation();
     
     printf("\n=== Test Results ===\n");
     printf("Tests run: %d\n", tests_run);
