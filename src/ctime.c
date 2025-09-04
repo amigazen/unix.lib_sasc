@@ -54,6 +54,7 @@ static char sccsid[] = "@(#)ctime.c	5.26 (Berkeley) 2/23/91";
 #include <ctype.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "amigalocale.h"
 
 #ifdef __STDC__
 #include <stdlib.h>
@@ -184,6 +185,11 @@ static time_t transtime P((time_t janfirst, int year,
 static int tzload P((const char *name, struct state * sp));
 static int tzparse P((const char *name, struct state * sp,
 		      int lastditch));
+
+#ifdef _AMIGA
+/* AmigaOS locale.library-based tzset implementation */
+void tzset_amiga(void);
+#endif
 
 #ifdef ALL_STATE
 static struct state *lclptr;
@@ -853,7 +859,13 @@ void tzset(void)
 {
     register const char *name;
     void tzsetwall(void);
+    void tzset_amiga(void);
 
+#ifdef _AMIGA
+    /* On AmigaOS, use locale.library-based implementation */
+    tzset_amiga();
+    return;
+#else
     name = getenv("TZ");
     if (name == NULL) {
 	tzsetwall();
@@ -882,6 +894,7 @@ void tzset(void)
 	if (name[0] == ':' || tzparse(name, lclptr, FALSE) != 0)
 	    (void) gmtload(lclptr);
     settzname();
+#endif
 }
 
 void tzsetwall(void)
@@ -1111,10 +1124,21 @@ char *
 	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     };
     static char result[26];
+    const char *day_str;
+    const char *mon_str;
+
+    /* Try to get localized names from locale.library */
+    if (locale_is_available()) {
+	day_str = locale_get_day_name(timeptr->tm_wday, 1);
+	mon_str = locale_get_month_name(timeptr->tm_mon, 1);
+    } else {
+	day_str = wday_name[timeptr->tm_wday];
+	mon_str = mon_name[timeptr->tm_mon];
+    }
 
     (void) sprintf(result, "%.3s %.3s%3d %02.2d:%02.2d:%02.2d %d\n",
-		   wday_name[timeptr->tm_wday],
-		   mon_name[timeptr->tm_mon],
+		   day_str,
+		   mon_str,
 		   timeptr->tm_mday, timeptr->tm_hour,
 		   timeptr->tm_min, timeptr->tm_sec,
 		   TM_YEAR_BASE + timeptr->tm_year);

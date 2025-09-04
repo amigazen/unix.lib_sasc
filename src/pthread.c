@@ -3,7 +3,7 @@
  * 
  * Copyright (c) 2025 amigazen project
  *
- * Hybrid pthread implementation for Amiga
+ * pthread implementation for Amiga
  */
 
 #include "include/amigapthread.h"

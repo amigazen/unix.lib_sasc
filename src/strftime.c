@@ -39,7 +39,9 @@ static char sccsid[] = "@(#)strftime.c	5.11 (Berkeley) 2/24/91";
 #include <sys/time.h>
 #include <tzfile.h>
 #include <string.h>
+#include "amigalocale.h"
 
+/* Fallback English arrays for when locale.library is not available */
 static char *afmt[] =
 {
     "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
@@ -91,35 +93,61 @@ static size_t
 		case 'A':
 		    if (t->tm_wday < 0 || t->tm_wday > 6)
 			return (0);
-		    if (!_add(Afmt[t->tm_wday]))
-			return (0);
+		    if (locale_is_available()) {
+			if (!_add((char *)locale_get_day_name(t->tm_wday, 0)))
+			    return (0);
+		    } else {
+			if (!_add(Afmt[t->tm_wday]))
+			    return (0);
+		    }
 		    continue;
 		case 'a':
 		    if (t->tm_wday < 0 || t->tm_wday > 6)
 			return (0);
-		    if (!_add(afmt[t->tm_wday]))
-			return (0);
+		    if (locale_is_available()) {
+			if (!_add((char *)locale_get_day_name(t->tm_wday, 1)))
+			    return (0);
+		    } else {
+			if (!_add(afmt[t->tm_wday]))
+			    return (0);
+		    }
 		    continue;
 		case 'B':
 		    if (t->tm_mon < 0 || t->tm_mon > 11)
 			return (0);
-		    if (!_add(Bfmt[t->tm_mon]))
-			return (0);
+		    if (locale_is_available()) {
+			if (!_add((char *)locale_get_month_name(t->tm_mon, 0)))
+			    return (0);
+		    } else {
+			if (!_add(Bfmt[t->tm_mon]))
+			    return (0);
+		    }
 		    continue;
 		case 'b':
 		case 'h':
 		    if (t->tm_mon < 0 || t->tm_mon > 11)
 			return (0);
-		    if (!_add(bfmt[t->tm_mon]))
-			return (0);
+		    if (locale_is_available()) {
+			if (!_add((char *)locale_get_month_name(t->tm_mon, 1)))
+			    return (0);
+		    } else {
+			if (!_add(bfmt[t->tm_mon]))
+			    return (0);
+		    }
 		    continue;
 		case 'C':
 		    if (!_fmt("%a %b %e %H:%M:%S %Y", t))
 			return (0);
 		    continue;
 		case 'c':
-		    if (!_fmt("%m/%d/%y %H:%M:%S", t))
-			return (0);
+		    if (locale_is_available()) {
+			/* Use locale-specific date/time format */
+			if (!_fmt(locale_get_datetime_format(), t))
+			    return (0);
+		    } else {
+			if (!_fmt("%m/%d/%y %H:%M:%S", t))
+			    return (0);
+		    }
 		    continue;
 		case 'D':
 		    if (!_fmt("%m/%d/%y", t))
@@ -168,8 +196,13 @@ static size_t
 			return (0);
 		    continue;
 		case 'p':
-		    if (!_add(t->tm_hour >= 12 ? "PM" : "AM"))
-			return (0);
+		    if (locale_is_available()) {
+			if (!_add((char *)locale_get_ampm(t->tm_hour >= 12)))
+			    return (0);
+		    } else {
+			if (!_add(t->tm_hour >= 12 ? "PM" : "AM"))
+			    return (0);
+		    }
 		    continue;
 		case 'R':
 		    if (!_fmt("%H:%M", t))
@@ -188,9 +221,18 @@ static size_t
 			return (0);
 		    continue;
 		case 'T':
-		case 'X':
 		    if (!_fmt("%H:%M:%S", t))
 			return (0);
+		    continue;
+		case 'X':
+		    if (locale_is_available()) {
+			/* Use locale-specific time format */
+			if (!_fmt(locale_get_time_format(), t))
+			    return (0);
+		    } else {
+			if (!_fmt("%H:%M:%S", t))
+			    return (0);
+		    }
 		    continue;
 		case 't':
 		    if (!_add("\t"))
@@ -212,8 +254,14 @@ static size_t
 			return (0);
 		    continue;
 		case 'x':
-		    if (!_fmt("%m/%d/%y", t))
-			return (0);
+		    if (locale_is_available()) {
+			/* Use locale-specific date format */
+			if (!_fmt(locale_get_date_format(), t))
+			    return (0);
+		    } else {
+			if (!_fmt("%m/%d/%y", t))
+			    return (0);
+		    }
 		    continue;
 		case 'y':
 		    if (!_conv((t->tm_year + TM_YEAR_BASE)
