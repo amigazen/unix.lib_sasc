@@ -10,23 +10,23 @@ This is UniLib3, a POSIX and C99 compatible standard C library for SAS/C and DIC
 
 *Minds awaken, free*
 
-**amigazen project** uses modern software development tools and methods to update and rerelease classic Amiga open source software. Our releases include a new AWeb, this new Amiga Python 2, and the ToolKit project - a universal SDK for Amiga.
+**amigazen project** uses modern software development tools and methods to update and rerelease classic Amiga open source software. Releases include a new AWeb, this new Amiga Python 2, and the ToolKit project - a universal SDK for Amiga.
 
-Key to our approach is ensuring every project can be built with the same common set of development tools and configurations, so we created the ToolKit project to provide a standard configuration for Amiga development. All *amigazen project* releases will be guaranteed to build against the ToolKit standard so that anyone can download and begin contributing straightaway without having to tailor the toolchain for their own setup.
+Key to the amigazen project approach is ensuring every project can be built with the same common set of development tools and configurations, so the ToolKit project was created to provide a standard configuration for Amiga development. All *amigazen project* releases will be guaranteed to build against the ToolKit standard so that anyone can download and begin contributing straightaway without having to tailor the toolchain for their own setup.
 
-The original authors of the *unix.lib* software are not affiliated with the amigazen project. This software is redistributed on terms described in the documentation, particularly the file LICENSE.md
-
-Our philosophy is based on openness:
+The amigazen project philosophy is based on openness:
 
 *Open* to anyone and everyone	- *Open* source and free for all	- *Open* your mind and create!
 
-PRs for all of our projects are gratefully received at [GitHub](https://github.com/amigazen/). While our focus now is on classic 68k software, we do intend that all amigazen project releases can be ported to other Amiga-like systems including AROS and MorphOS where feasible.
+PRs for all of amigazen projects are gratefully received at [GitHub](https://github.com/amigazen/). While the focus now is on classic 68k software, it is intended that all amigazen project releases can be ported to other Amiga-like systems including AROS and MorphOS where feasible.
+
+The original authors of the *unix.lib* software are not affiliated with the amigazen project. This software is redistributed on terms described in the documentation, particularly the file LICENSE.md
 
 ## About UniLib3
 
-UniLib3 is a comprehensive POSIX and C99 compatible standard C library implementation for Amiga, designed specifically for SAS/C and DICE compilers. This project aims to provide Amiga developers with a modern, standards-compliant C library that bridges the gap between classic Amiga development and contemporary POSIX standards.
+UniLib3 is a comprehensive POSIX and C99 compatible standard C library implementation for Amiga, designed specifically for SAS/C and DICE compilers. This project aims to provide Amiga developers with a modern, standards-compliant C library that bridges the gap between classic Amiga development and contemporary POSIX, and thus code portability, standards.
 
-The name UniLib3 reflects the fact this is a universal set of libraries incorporating not just an updated unix.lib but also psockets.lib, curses.lib and more to come, whilst the version '3' indicates that this is the third version of unix.lib after David and Enrico's versions but also makes it clear this library is intended for version 3 of the Amiga operating system.
+The name UniLib3 reflects the fact this is a universal set of libraries incorporating not just an updated unix.lib but also psockets.lib, curses.lib and more to come, whilst the version '3' indicates that this is the third version of unix.lib after David and Enrico's versions (see unix.lib History below) but also makes it clear this library is intended for version 3 of the Amiga operating system.
 
 ### unix.lib History
 
@@ -43,7 +43,7 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 ### Key Features
 
 - **POSIX compliance**: Implements core POSIX.1 functionality for file operations, process management, and system interfaces (except _fork()_)
-- **C99 support**: Full C99 standard library implementation including stdio, stdlib, string, and math functions
+- **C99 support**: Full C99 standard library implementation including stdio, stdlib, string, and (soon) math functions
 - **Amiga Integration**: Uses native Amiga library functions wherever suitable as the underlying implementation including memory pools, utility.library and locale.library, falling back to builtin versions for edge cases not handled by the native implementation e.g. _snprintf()_ supports all format string tokens, using _SNPrintf()_ for most calls but it's own fallback implementation for tokens not supported by _RawDoFmt()_
 - **NOT backwards compatible**: Deliberately does NOT support version 1.x and 2.x operating systems
 - **Latest NDK support**: Built against the latest official NDK
