@@ -41,8 +41,7 @@ static const char *normalize_encoding(const char *encoding)
         return NULL;
     }
     
-    /* Convert to lowercase for comparison */
-    /* For now, just return as-is since we don't have tolower() */
+    /* Return as-is - we'll use stricmp for case-insensitive comparison */
     return encoding;
 }
 
@@ -100,44 +99,44 @@ static int get_conversion_type(const char *from, const char *to)
         return -1;
     }
     
-    /* Check for identity conversion */
-    if (strcmp(from_norm, to_norm) == 0) {
+    /* Check for identity conversion - case insensitive */
+    if (stricmp(from_norm, to_norm) == 0) {
         return CONV_IDENTITY;
     }
     
-    /* ASCII conversions */
-    if (strcmp(from_norm, "ASCII") == 0 && strcmp(to_norm, "UTF-8") == 0) {
+    /* ASCII conversions - case insensitive */
+    if (stricmp(from_norm, "ASCII") == 0 && stricmp(to_norm, "UTF-8") == 0) {
         return CONV_ASCII_TO_UTF8;
     }
-    if (strcmp(from_norm, "UTF-8") == 0 && strcmp(to_norm, "ASCII") == 0) {
+    if (stricmp(from_norm, "UTF-8") == 0 && stricmp(to_norm, "ASCII") == 0) {
         return CONV_UTF8_TO_ASCII;
     }
-    if (strcmp(from_norm, "ASCII") == 0 && strcmp(to_norm, "ISO-8859-1") == 0) {
+    if (stricmp(from_norm, "ASCII") == 0 && stricmp(to_norm, "ISO-8859-1") == 0) {
         return CONV_ASCII_TO_LATIN1;
     }
-    if (strcmp(from_norm, "ISO-8859-1") == 0 && strcmp(to_norm, "ASCII") == 0) {
+    if (stricmp(from_norm, "ISO-8859-1") == 0 && stricmp(to_norm, "ASCII") == 0) {
         return CONV_LATIN1_TO_ASCII;
     }
     
-    /* UTF-8 conversions */
-    if (strcmp(from_norm, "ISO-8859-1") == 0 && strcmp(to_norm, "UTF-8") == 0) {
+    /* UTF-8 conversions - case insensitive */
+    if (stricmp(from_norm, "ISO-8859-1") == 0 && stricmp(to_norm, "UTF-8") == 0) {
         return CONV_LATIN1_TO_UTF8;
     }
-    if (strcmp(from_norm, "UTF-8") == 0 && strcmp(to_norm, "ISO-8859-1") == 0) {
+    if (stricmp(from_norm, "UTF-8") == 0 && stricmp(to_norm, "ISO-8859-1") == 0) {
         return CONV_UTF8_TO_LATIN1;
     }
     
-    /* Locale-aware conversions */
-    if (strcmp(from_norm, "LOCALE") == 0 && strcmp(to_norm, "UTF-8") == 0) {
+    /* Locale-aware conversions - case insensitive */
+    if (stricmp(from_norm, "LOCALE") == 0 && stricmp(to_norm, "UTF-8") == 0) {
         return CONV_LOCALE_TO_UTF8;
     }
-    if (strcmp(from_norm, "UTF-8") == 0 && strcmp(to_norm, "LOCALE") == 0) {
+    if (stricmp(from_norm, "UTF-8") == 0 && stricmp(to_norm, "LOCALE") == 0) {
         return CONV_UTF8_TO_LOCALE;
     }
-    if (strcmp(from_norm, "LOCALE") == 0 && strcmp(to_norm, "ASCII") == 0) {
+    if (stricmp(from_norm, "LOCALE") == 0 && stricmp(to_norm, "ASCII") == 0) {
         return CONV_LOCALE_TO_ASCII;
     }
-    if (strcmp(from_norm, "ASCII") == 0 && strcmp(to_norm, "LOCALE") == 0) {
+    if (stricmp(from_norm, "ASCII") == 0 && stricmp(to_norm, "LOCALE") == 0) {
         return CONV_ASCII_TO_LOCALE;
     }
     
@@ -297,11 +296,11 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
                     inleft--;
                     outleft--;
                     converted++;
-                } else if (c < 0xC0) {
-                    /* Latin-1 character - convert to 2-byte UTF-8 */
+                } else {
+                    /* Latin-1 character (0x80-0xFF) - convert to 2-byte UTF-8 */
                     if (outleft < 2) {
                         errno = E2BIG;
-                        return (size_t)-1;
+                        break;  /* Convert as much as possible before stopping */
                     }
                     *outptr = (char)(0xC0 | (c >> 6));
                     outptr++;
@@ -311,16 +310,19 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
                     inleft--;
                     outleft -= 2;
                     converted++;
-                } else {
-                    /* Invalid Latin-1 character */
-                    errno = EILSEQ;
-                    return (size_t)-1;
                 }
             }
             break;
             
         case CONV_UTF8_TO_LATIN1:
-            /* UTF-8 to ISO-8859-1: convert from UTF-8 encoding */
+            /* 
+             * UTF-8 to ISO-8859-1: convert from UTF-8 encoding
+             * LIMITATION: This implementation only handles 1-byte (ASCII) and
+             * 2-byte UTF-8 sequences (U+0080 to U+07FF). Characters outside
+             * this range (e.g., Euro sign € which is U+20AC, a 3-byte sequence)
+             * will cause EILSEQ errors. This is a reasonable limitation for
+             * a barebones implementation targeting ISO-8859-1.
+             */
             while (inleft > 0 && outleft > 0) {
                 unsigned char c = (unsigned char)*inptr;
                 if (c < 0x80) {
@@ -332,7 +334,7 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
                     outleft--;
                     converted++;
                 } else if ((c & 0xE0) == 0xC0) {
-                    /* 2-byte UTF-8 sequence */
+                    /* 2-byte UTF-8 sequence (U+0080 to U+07FF) */
                     if (inleft < 2) {
                         errno = EINVAL;
                         return (size_t)-1;
@@ -354,7 +356,7 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
                     outleft--;
                     converted++;
                 } else {
-                    /* Invalid UTF-8 sequence for Latin-1 */
+                    /* Invalid UTF-8 sequence for Latin-1 (3+ byte sequences) */
                     errno = EILSEQ;
                     return (size_t)-1;
                 }
@@ -402,7 +404,13 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
             break;
             
         case CONV_LOCALE_TO_UTF8:
-            /* Locale charset to UTF-8 using locale.library */
+            /* 
+             * Locale charset to UTF-8 using locale.library
+             * NOTE: Amiga's locale.library does not provide direct charset
+             * conversion functions. For this barebones implementation, we
+             * assume the system locale is ISO-8859-1, which is a safe
+             * default for classic AmigaOS.
+             */
             while (inleft > 0 && outleft > 0) {
                 unsigned char c = (unsigned char)*inptr;
                 if (c < 0x80) {
@@ -413,26 +421,11 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
                     inleft--;
                     outleft--;
                     converted++;
-                } else if (desc->locale && desc->locale_base) {
-                    /* Use locale.library for character conversion */
-                    /* For now, treat as Latin-1 to UTF-8 conversion */
-                    if (outleft < 2) {
-                        errno = E2BIG;
-                        return (size_t)-1;
-                    }
-                    *outptr = (char)(0xC0 | (c >> 6));
-                    outptr++;
-                    *outptr = (char)(0x80 | (c & 0x3F));
-                    outptr++;
-                    inptr++;
-                    inleft--;
-                    outleft -= 2;
-                    converted++;
                 } else {
-                    /* Fallback to Latin-1 */
+                    /* Locale character (0x80-0xFF) - convert to 2-byte UTF-8 */
                     if (outleft < 2) {
                         errno = E2BIG;
-                        return (size_t)-1;
+                        break;  /* Convert as much as possible before stopping */
                     }
                     *outptr = (char)(0xC0 | (c >> 6));
                     outptr++;
@@ -447,7 +440,13 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
             break;
             
         case CONV_UTF8_TO_LOCALE:
-            /* UTF-8 to locale charset using locale.library */
+            /* 
+             * UTF-8 to locale charset using locale.library
+             * LIMITATION: This implementation only handles 1-byte (ASCII) and
+             * 2-byte UTF-8 sequences (U+0080 to U+07FF). Characters outside
+             * this range will cause EILSEQ errors. This is a reasonable
+             * limitation for a barebones implementation.
+             */
             while (inleft > 0 && outleft > 0) {
                 unsigned char c = (unsigned char)*inptr;
                 if (c < 0x80) {
@@ -459,7 +458,7 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
                     outleft--;
                     converted++;
                 } else if ((c & 0xE0) == 0xC0) {
-                    /* 2-byte UTF-8 sequence */
+                    /* 2-byte UTF-8 sequence (U+0080 to U+07FF) */
                     if (inleft < 2) {
                         errno = EINVAL;
                         return (size_t)-1;
@@ -484,7 +483,7 @@ size_t iconv(iconv_t cd, const char **inbuf, size_t *inbytesleft,
                     outleft--;
                     converted++;
                 } else {
-                    /* Invalid UTF-8 sequence for locale charset */
+                    /* Invalid UTF-8 sequence for locale charset (3+ byte sequences) */
                     errno = EILSEQ;
                     return (size_t)-1;
                 }
