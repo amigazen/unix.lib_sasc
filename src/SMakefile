@@ -18,7 +18,7 @@ AS = asm
 OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	amigalocale.o asprintf.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o \
 	clock.o clock_getcpuclockid.o close.o \
-	creat.o ctime.o devices.o difftime.o dir.o dir_data.o dirname.o dup.o dup2.o \
+	creat.o crypt.o ctime.o devices.o difftime.o dir.o dir_data.o dirname.o dup.o dup2.o \
 	dprintf.o endpwent.o err.o error.o error_msg.o 	exec.o fcntl.o fd_setsize.o fibstat.o files.o fnmatch.o fpathconf.o \
 	fstat.o fsync.o ftruncate.o 	getdtablesize.o getegid.o geteuid.o \
 	getenv.o getgid.o gethostname.o getlogin.o getopt.o getopt1.o \
@@ -38,7 +38,7 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	strnicmp.o strnlen.o strncmp.o strpbrk.o strptime.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o \
 	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o \
 	amigatimer.o timers.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
-	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o \
+	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o util.o \
 	strichr.o stristr.o strnchr.o strins.o strrev.o crc32_main.o \
 	crc32_string.o wildcard_init.o wildcard_elements.o wildcard_pattern.o \
 	vasprintf.o vsnprintf.o wait.o wait4.o waitpid.o wcscat.o wcscmp.o \
