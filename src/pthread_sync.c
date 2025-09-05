@@ -10,6 +10,13 @@
 #include "include/pthread.h"
 #include "include/semaphore.h"
 
+/* Forward declaration for condition variable waiters */
+typedef struct CondWaiter {
+    struct Node node;
+    struct Task *task;
+    ULONG sigmask;
+} CondWaiter;
+
 /*
  * Initialize a mutex
  */
@@ -578,4 +585,258 @@ int sem_getvalue(sem_t *sem, int *sval)
     *sval = -1;  /* Indicate unsupported */
     
     return 0;
+}
+
+/*
+ * Lock a mutex with timeout
+ */
+int pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timespec *abstime)
+{
+    struct MsgPort *timermp;
+    struct TimeRequest *timerio;
+    BYTE timersignal;
+    ULONG timer_sig, break_sigs, signals;
+    struct Task *task;
+    CondWaiter waiter;
+    int result;
+    
+    /* Initialize variables */
+    timermp = NULL;
+    timerio = NULL;
+    result = 0;
+    
+    /* Check for user abort */
+    chkabort();
+    
+    if (mutex == NULL || abstime == NULL) {
+        return EINVAL;
+    }
+    
+    task = FindTask(NULL);
+    
+    /* Try to acquire the mutex immediately first */
+    if (AttemptSemaphore(&mutex->semaphore) == TRUE) {
+        return 0;
+    }
+    
+    /* Set up timer for timeout */
+    timermp = AllocVec(sizeof(struct MsgPort), MEMF_CLEAR | MEMF_PUBLIC);
+    timerio = AllocVec(sizeof(struct TimeRequest), MEMF_CLEAR | MEMF_PUBLIC);
+    timersignal = AllocSignal(-1);
+    
+    if (!timermp || !timerio || timersignal == -1) {
+        if (timersignal != -1) FreeSignal(timersignal);
+        if (timerio) FreeVec(timerio);
+        if (timermp) FreeVec(timermp);
+        return EAGAIN;
+    }
+    
+    /* Initialize timer message port */
+    timermp->mp_Node.ln_Type = NT_MSGPORT;
+    timermp->mp_Flags = PA_SIGNAL;
+    timermp->mp_SigBit = timersignal;
+    timermp->mp_SigTask = task;
+    
+    /* Initialize timer request */
+    timerio->tr_node.io_Message.mn_Node.ln_Type = NT_MESSAGE;
+    timerio->tr_node.io_Message.mn_ReplyPort = timermp;
+    
+    /* Open timer device */
+    if (OpenDevice((STRPTR)TIMERNAME, UNIT_MICROHZ, (struct IORequest *)timerio, 0) != 0) {
+        FreeSignal(timersignal);
+        FreeVec(timerio);
+        FreeVec(timermp);
+        return EINVAL;
+    }
+    
+    /* Set up timer request */
+    timerio->tr_node.io_Command = TR_ADDREQUEST;
+    timerio->tr_time.tv_secs = abstime->tv_sec;
+    timerio->tr_time.tv_micro = abstime->tv_nsec / 1000;
+    
+    /* Set up waiter for mutex availability notification */
+    waiter.task = task;
+    waiter.sigmask = 1L << AllocSignal(-1);
+    if (waiter.sigmask == 0) {
+        CloseDevice((struct IORequest *)timerio);
+        FreeSignal(timersignal);
+        FreeVec(timerio);
+        FreeVec(timermp);
+        return EAGAIN;
+    }
+    
+    /* Add ourselves to the mutex waiters list */
+    ObtainSemaphore(&mutex->semaphore);
+    AddTail((struct List *)&mutex->waiters, (struct Node *)&waiter);
+    ReleaseSemaphore(&mutex->semaphore);
+    
+    /* Set up signals */
+    timer_sig = 1L << timersignal;
+    break_sigs = SIGBREAKF_CTRL_C | SIGBREAKF_CTRL_D;
+    signals = waiter.sigmask | timer_sig | break_sigs;
+    
+    /* Start timer and wait */
+    SendIO((struct IORequest *)timerio);
+    signals = Wait(signals);
+    
+    /* Remove ourselves from the waiters list */
+    ObtainSemaphore(&mutex->semaphore);
+    Remove((struct Node *)&waiter);
+    ReleaseSemaphore(&mutex->semaphore);
+    
+    FreeSignal(waiter.sigmask >> 1); /* Convert back to signal number */
+    
+    /* Check for user abort */
+    if (signals & break_sigs) {
+        chkabort();
+    }
+    
+    /* Check if timer expired */
+    if (signals & timer_sig) {
+        result = ETIMEDOUT;
+    } else {
+        /* Try to acquire the mutex one more time */
+        if (AttemptSemaphore(&mutex->semaphore) == FALSE) {
+            result = ETIMEDOUT; /* Should not happen, but be safe */
+        }
+    }
+    
+    /* Clean up timer resources */
+    if (!CheckIO((struct IORequest *)timerio)) {
+        AbortIO((struct IORequest *)timerio);
+    }
+    WaitIO((struct IORequest *)timerio);
+    CloseDevice((struct IORequest *)timerio);
+    FreeSignal(timersignal);
+    FreeVec(timerio);
+    FreeVec(timermp);
+    
+    return result;
+}
+
+/*
+ * Wait on condition variable with timeout
+ */
+int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime)
+{
+    struct MsgPort *timermp;
+    struct TimeRequest *timerio;
+    BYTE timersignal;
+    ULONG timer_sig, break_sigs, signals;
+    struct Task *task;
+    CondWaiter waiter;
+    int result;
+    
+    /* Initialize variables */
+    timermp = NULL;
+    timerio = NULL;
+    result = 0;
+    
+    /* Check for user abort */
+    chkabort();
+    
+    if (cond == NULL || mutex == NULL || abstime == NULL) {
+        return EINVAL;
+    }
+    
+    task = FindTask(NULL);
+    
+    /* Set up timer for timeout */
+    timermp = AllocVec(sizeof(struct MsgPort), MEMF_CLEAR | MEMF_PUBLIC);
+    timerio = AllocVec(sizeof(struct TimeRequest), MEMF_CLEAR | MEMF_PUBLIC);
+    timersignal = AllocSignal(-1);
+    
+    if (!timermp || !timerio || timersignal == -1) {
+        if (timersignal != -1) FreeSignal(timersignal);
+        if (timerio) FreeVec(timerio);
+        if (timermp) FreeVec(timermp);
+        return EAGAIN;
+    }
+    
+    /* Initialize timer message port */
+    timermp->mp_Node.ln_Type = NT_MSGPORT;
+    timermp->mp_Flags = PA_SIGNAL;
+    timermp->mp_SigBit = timersignal;
+    timermp->mp_SigTask = task;
+    
+    /* Initialize timer request */
+    timerio->tr_node.io_Message.mn_Node.ln_Type = NT_MESSAGE;
+    timerio->tr_node.io_Message.mn_ReplyPort = timermp;
+    
+    /* Open timer device */
+    if (OpenDevice((STRPTR)TIMERNAME, UNIT_MICROHZ, (struct IORequest *)timerio, 0) != 0) {
+        FreeSignal(timersignal);
+        FreeVec(timerio);
+        FreeVec(timermp);
+        return EINVAL;
+    }
+    
+    /* Set up timer request */
+    timerio->tr_node.io_Command = TR_ADDREQUEST;
+    timerio->tr_time.tv_secs = abstime->tv_sec;
+    timerio->tr_time.tv_micro = abstime->tv_nsec / 1000;
+    
+    /* Set up waiter for condition variable notification */
+    waiter.task = task;
+    waiter.sigmask = 1L << AllocSignal(-1);
+    if (waiter.sigmask == 0) {
+        CloseDevice((struct IORequest *)timerio);
+        FreeSignal(timersignal);
+        FreeVec(timerio);
+        FreeVec(timermp);
+        return EAGAIN;
+    }
+    
+    /* Add ourselves to the condition variable waiters list */
+    ObtainSemaphore(&cond->semaphore);
+    AddTail((struct List *)&cond->waiters, (struct Node *)&waiter);
+    ReleaseSemaphore(&cond->semaphore);
+    
+    /* Mark mutex as being used in condition wait */
+    mutex->incond++;
+    
+    /* Unlock the mutex */
+    ReleaseSemaphore(&mutex->semaphore);
+    
+    /* Set up signals */
+    timer_sig = 1L << timersignal;
+    break_sigs = SIGBREAKF_CTRL_C | SIGBREAKF_CTRL_D;
+    signals = waiter.sigmask | timer_sig | break_sigs;
+    
+    /* Start timer and wait */
+    SendIO((struct IORequest *)timerio);
+    signals = Wait(signals);
+    
+    /* Remove ourselves from the waiters list */
+    ObtainSemaphore(&cond->semaphore);
+    Remove((struct Node *)&waiter);
+    ReleaseSemaphore(&cond->semaphore);
+    
+    FreeSignal(waiter.sigmask >> 1); /* Convert back to signal number */
+    
+    /* Re-lock the mutex */
+    ObtainSemaphore(&mutex->semaphore);
+    mutex->incond--;
+    
+    /* Check for user abort */
+    if (signals & break_sigs) {
+        chkabort();
+    }
+    
+    /* Check if timer expired */
+    if (signals & timer_sig) {
+        result = ETIMEDOUT;
+    }
+    
+    /* Clean up timer resources */
+    if (!CheckIO((struct IORequest *)timerio)) {
+        AbortIO((struct IORequest *)timerio);
+    }
+    WaitIO((struct IORequest *)timerio);
+    CloseDevice((struct IORequest *)timerio);
+    FreeSignal(timersignal);
+    FreeVec(timerio);
+    FreeVec(timermp);
+    
+    return result;
 }

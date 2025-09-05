@@ -39,6 +39,8 @@ typedef struct ThreadPair {
     pthread_cancel_state_t tp_CancelStateMachine;
     struct SignalSemaphore tp_CancelSem;
     BOOL tp_CancelInitialized;
+    /* Thread-specific storage */
+    void *tp_TLSValues[PTHREAD_KEYS_MAX];
 } ThreadPair;
 
 /* Function declarations */

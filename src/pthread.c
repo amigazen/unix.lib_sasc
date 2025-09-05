@@ -86,6 +86,15 @@ struct SignalSemaphore ThreadListSem;
 /* Thread counter */
 static pthread_t NextThreadId = 1;
 
+/* Thread-specific storage key management */
+typedef struct {
+    void (*destructor)(void *);
+    BOOL used;
+} TLSKey;
+
+static TLSKey tls_keys[PTHREAD_KEYS_MAX];
+static struct SignalSemaphore tls_semaphore;
+
 /*
  * Library constructor - initialize thread management
  */
@@ -98,6 +107,10 @@ int pthread_library_init(void)
         }
         NewList(ThreadList);
         InitSemaphore(&ThreadListSem);
+        
+        /* Initialize TLS system */
+        InitSemaphore(&tls_semaphore);
+        memset(tls_keys, 0, sizeof(tls_keys));
     }
     return 0;
 }
@@ -708,6 +721,112 @@ int pthread_attr_setschedparam(pthread_attr_t *attr, const struct sched_param *p
     }
     
     attr->schedparam = *param;
+    return 0;
+}
+
+/*
+ * Thread-specific storage functions
+ */
+int pthread_key_create(pthread_key_t *key, void (*destructor)(void *))
+{
+    int i;
+    
+    if (key == NULL) {
+        return EINVAL;
+    }
+    
+    ObtainSemaphore(&tls_semaphore);
+    
+    for (i = 0; i < PTHREAD_KEYS_MAX; i++) {
+        if (!tls_keys[i].used) {
+            tls_keys[i].used = TRUE;
+            tls_keys[i].destructor = destructor;
+            *key = i;
+            ReleaseSemaphore(&tls_semaphore);
+            return 0;
+        }
+    }
+    
+    ReleaseSemaphore(&tls_semaphore);
+    return EAGAIN;
+}
+
+int pthread_key_delete(pthread_key_t key)
+{
+    if (key >= PTHREAD_KEYS_MAX) {
+        return EINVAL;
+    }
+    
+    ObtainSemaphore(&tls_semaphore);
+    
+    if (!tls_keys[key].used) {
+        ReleaseSemaphore(&tls_semaphore);
+        return EINVAL;
+    }
+    
+    tls_keys[key].used = FALSE;
+    tls_keys[key].destructor = NULL;
+    
+    ReleaseSemaphore(&tls_semaphore);
+    return 0;
+}
+
+int pthread_setspecific(pthread_key_t key, const void *value)
+{
+    struct Process *proc = (struct Process *)FindTask(NULL);
+    struct ThreadPair *tp;
+    
+    if (key >= PTHREAD_KEYS_MAX) {
+        return EINVAL;
+    }
+    
+    tp = (struct ThreadPair *)proc->pr_Task.tc_UserData;
+    if (tp == NULL) {
+        return EINVAL;
+    }
+    
+    tp->tp_TLSValues[key] = (void *)value;
+    return 0;
+}
+
+void *pthread_getspecific(pthread_key_t key)
+{
+    struct Process *proc = (struct Process *)FindTask(NULL);
+    struct ThreadPair *tp;
+    
+    if (key >= PTHREAD_KEYS_MAX) {
+        return NULL;
+    }
+    
+    tp = (struct ThreadPair *)proc->pr_Task.tc_UserData;
+    if (tp == NULL) {
+        return NULL;
+    }
+    
+    return tp->tp_TLSValues[key];
+}
+
+/*
+ * Once control function
+ */
+int pthread_once(pthread_once_t *once_control, void (*init_routine)(void))
+{
+    if (once_control == NULL || init_routine == NULL) {
+        return EINVAL;
+    }
+    
+    if (once_control->done) {
+        return 0;
+    }
+    
+    ObtainSemaphore(&once_control->semaphore);
+    
+    if (!once_control->done) {
+        init_routine();
+        once_control->done = 1;
+    }
+    
+    ReleaseSemaphore(&once_control->semaphore);
     return 0;
 }
 
