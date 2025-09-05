@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include <sys/stat.h>
+#include "fibex.h"
 
 void 
 _fibstat(struct FileInfoBlock *fib, int isroot, struct stat *sbuf, long dev)
@@ -11,8 +12,15 @@ _fibstat(struct FileInfoBlock *fib, int isroot, struct stat *sbuf, long dev)
 
     sbuf->st_dev = dev;
     sbuf->st_rdev = 0;
-    sbuf->st_uid = AMIGA_UID;
-    sbuf->st_gid = AMIGA_GID;
+    /* Use OwnerUID and OwnerGID from FileInfoBlock if available, otherwise fall back to defaults */
+    if (fib->fib_OwnerUID != 0 || fib->fib_OwnerGID != 0) {
+        sbuf->st_uid = fib->fib_OwnerUID;
+        sbuf->st_gid = fib->fib_OwnerGID;
+    } else {
+        /* Fallback to default values for filesystems that don't support ownership */
+        sbuf->st_uid = AMIGA_UID;
+        sbuf->st_gid = AMIGA_GID;
+    }
     sbuf->st_blksize = 512;
     sbuf->st_nlink = 1;
     sbuf->st_blocks = fib->fib_NumBlocks;

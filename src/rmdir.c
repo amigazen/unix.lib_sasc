@@ -1,4 +1,5 @@
 #include "amiga.h"
+#include "fibex.h"
 #include <utility/tagitem.h>
 
 int rmdir(char *name)

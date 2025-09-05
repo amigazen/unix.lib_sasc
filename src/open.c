@@ -1,6 +1,7 @@
 #include "amiga.h"
 #include "files.h"
 #include "amigados.h"
+#include "fibex.h"
 #include <utility/tagitem.h>
 #include <stdarg.h>
 #include <fcntl.h>

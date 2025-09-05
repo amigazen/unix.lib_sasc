@@ -1,5 +1,6 @@
 
 #include "amiga.h"
+#include "fibex.h"
 #include <utility/tagitem.h>
 #include <sys/types.h>
 #include <sys/stat.h>

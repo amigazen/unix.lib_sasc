@@ -9,6 +9,7 @@
  */
 
 #include "amiga.h"
+#include "fibex.h"
 #include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>

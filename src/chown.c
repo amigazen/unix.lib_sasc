@@ -13,6 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "files.h"
+#include "fibex.h"
 #include <proto/dos.h>
 #include <proto/exec.h>
 #include <dos/dostags.h>
@@ -27,13 +28,8 @@
 #define CTOB(ptr) ((long)(ptr) >> 2)
 #endif
 
-/* Define FileInfoBlock_3_t structure locally */
-typedef struct FileInfoBlock_3 {
-    struct FileInfoBlock fib;
-    ULONG fib_DiskKey;
-    ULONG fib_OwnerUID;
-    ULONG fib_OwnerGID;
-} FileInfoBlock_3_t;
+/* Use the extended FileInfoBlock from fibex.h */
+typedef struct FileInfoBlock FileInfoBlock_3_t;
 
 /*
  * GetOwner() - Get file ownership information
