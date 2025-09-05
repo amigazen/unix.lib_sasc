@@ -230,7 +230,6 @@ int pthread_rwlock_trywrlock(pthread_rwlock_t *lock);
 /* void *pthread_getspecific(pthread_key_t key); */
 
 /* Cancellation */
-/* TODO: Implement cancellation (currently returns ENOSYS) */
 int pthread_cancel(pthread_t thread);
 void pthread_testcancel(void);
 int pthread_setcancelstate(int state, int *oldstate);
