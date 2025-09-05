@@ -43,7 +43,7 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 ### Key Features
 
 - **POSIX compliance**: Implements core POSIX.1 functionality for file operations, process management, and system interfaces (except _fork()_)
-- **C99 support**: Full C99 standard library implementation including stdio, stdlib, string, and (soon) math functions
+- **C99 support**: Full C99 standard library implementation including stdio, stdlib, string, wchar, and (soon) math functions
 - **Amiga Integration**: Uses native Amiga library functions wherever suitable as the underlying implementation including memory pools, _utility.library_ and _locale.library_, falling back to builtin versions for edge cases not handled by the native implementation e.g. _snprintf()_ supports all format string tokens, using _SNPrintf()_ for most calls but its own fallback implementation for tokens not supported by _RawDoFmt()_
 - **NOT backwards compatible**: Deliberately does NOT support version 1.x and 2.x operating systems
 - **Latest NDK support**: Built against the latest official NDK
@@ -55,8 +55,7 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 - *String functions*: New string functions including memory safe implementations of the snprintf family
 - *Filesystem permissions*: file permission and ownership functions talk to the FileSystem directly in case it DOES support multiuser features
 - *getopts functions*: Complete BSD compatible implementations of getopts 
-- *POSIX compliant*: 
-- *New functions*: Amiga native versions of many new POSIX functions including alloca(), ustat(), utime(), gettimeofday() and many more
+- *New functions*: New Amiga native versions of POSIX functions including alloca(), ustat(), utime(), gettimeofday() and many more
 - *Inet225 unix.lib*: Reimplements new versions of the POSIX functions provided by the version of unix.lib that came with Inet225
 - *AmiTCP netlib*: Reimplements new versions of the POSIX functions provided by AmiTCP's netlib - rcmd(), herror() and the syslog API wrapping _bsdsocket.library_
 - *librt APIs*: A brand new implementation of librt functions starting with POSIX mq_* message queues built on top of message ports, realtime.library and timer.device
