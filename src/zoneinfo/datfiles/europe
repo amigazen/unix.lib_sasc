@@ -119,21 +119,34 @@ Zone	GB-Eire		0:00	GB-Eire		%s	1968 Oct 27 1:00s
 
 # The use of 1986 as starting years below is conservative.
 
-Rule	W-Eur	1986	max	-	Mar	lastSun	1:00s	1:00	" DST"
-Rule	W-Eur	1986	max	-	Sep	lastSun	1:00s	0	-
+# EU standardized DST rules from 1996 onwards
+Rule	W-Eur	1986	1995	-	Mar	lastSun	1:00s	1:00	" DST"
+Rule	W-Eur	1986	1995	-	Sep	lastSun	1:00s	0	-
+Rule	W-Eur	1996	max	-	Mar	lastSun	1:00s	1:00	" DST"
+Rule	W-Eur	1996	max	-	Oct	lastSun	1:00s	0	-
 
+Rule	M-Eur	1986	1995	-	Mar	lastSun	2:00s	1:00	" DST"
 Rule	M-Eur	1986	1995	-	Sep	lastSun	2:00s	0	-
-Rule	M-Eur	1986	max	-	Mar	lastSun	2:00s	1:00	" DST"
+Rule	M-Eur	1996	max	-	Mar	lastSun	2:00s	1:00	" DST"
 Rule	M-Eur	1996	max	-	Oct	lastSun	2:00s	0	-
 
-Rule	E-Eur	1986	max	-	Mar	lastSun	3:00s	1:00	" DST"
-Rule	E-Eur	1986	max	-	Sep	lastSun	3:00s	0	-
+Rule	E-Eur	1986	1995	-	Mar	lastSun	3:00s	1:00	" DST"
+Rule	E-Eur	1986	1995	-	Sep	lastSun	3:00s	0	-
+Rule	E-Eur	1996	max	-	Mar	lastSun	3:00s	1:00	" DST"
+Rule	E-Eur	1996	max	-	Oct	lastSun	3:00s	0	-
 
-Rule	Turkey	1986	max	-	Mar	lastSun	1:00	1:00	" DST"
-Rule	Turkey	1986	max	-	Sep	lastSun	1:00	0	-
+Rule	Turkey	1986	2006	-	Mar	lastSun	1:00	1:00	" DST"
+Rule	Turkey	1986	2006	-	Sep	lastSun	1:00	0	-
+# Turkey adopted EU DST rules starting in 2007
+Rule	Turkey	2007	max	-	Mar	lastSun	3:00s	1:00	" DST"
+Rule	Turkey	2007	max	-	Oct	lastSun	3:00s	0	-
 
-Rule	W-SU	1986	max	-	Mar	lastSun	2:00s	1:00	" DST"
-Rule	W-SU	1986	max	-	Sep	lastSun	2:00s	0	-
+# Western Soviet Union rules (pre-1991)
+Rule	W-SU	1986	1990	-	Mar	lastSun	2:00s	1:00	" DST"
+Rule	W-SU	1986	1990	-	Sep	lastSun	2:00s	0	-
+# Post-Soviet states generally follow EU rules
+Rule	W-SU	1991	max	-	Mar	lastSun	2:00s	1:00	" DST"
+Rule	W-SU	1991	max	-	Oct	lastSun	2:00s	0	-
 
 # Zone	NAME		GMTOFF	RULES/SAVE	FORMAT	[UNTIL]
 Zone	WET		0:00	W-Eur		WET%s

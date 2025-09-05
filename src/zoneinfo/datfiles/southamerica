@@ -44,14 +44,19 @@
 # BRAZIL              3 H  BEHIND UTC    FOR MOST MAJOR AIRPORTS.
 
 # Rule	NAME	FROM	TO	TYPE	IN	ON	AT	SAVE	LETTER/S
-Rule	Brazil	1987	max	-	Feb	Sat<=14	2:00	0	S
-Rule	Brazil	1987	max	-	Oct	Sat<=28	2:00	1:00	D
+Rule	Brazil	1987	2019	-	Feb	Sat<=14	2:00	0	S
+Rule	Brazil	1987	2019	-	Oct	Sat<=28	2:00	1:00	D
+# Brazil suspended DST from 2020 onwards
 
 # Zone	NAME			GMTOFF	RULES/SAVE	FORMAT	[UNTIL]
-Zone	Brazil/East		-3:00	Brazil		E%sT
-Zone	Brazil/West		-4:00	Brazil		W%sT
-Zone	Brazil/Acre		-5:00	Brazil		A%sT
-Zone	Brazil/DeNoronha	-2:00	Brazil		F%sT
+Zone	Brazil/East		-3:00	Brazil		E%sT	2020
+			-3:00	-		BRT
+Zone	Brazil/West		-4:00	Brazil		W%sT	2020
+			-4:00	-		AMT
+Zone	Brazil/Acre		-5:00	Brazil		A%sT	2020
+			-5:00	-		ACT
+Zone	Brazil/DeNoronha	-2:00	Brazil		F%sT	2020
+			-2:00	-		FNT
 
 ###############################################################################
 

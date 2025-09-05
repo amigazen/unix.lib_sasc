@@ -26,12 +26,15 @@ Rule	US	1918	1919	-	Mar	lastSun	2:00	1:00	D
 Rule	US	1918	1919	-	Oct	lastSun	2:00	0	S
 Rule	US	1942	only	-	Feb	9	2:00	1:00	W # War
 Rule	US	1945	only	-	Sep	30	2:00	0	S
-Rule	US	1967	max	-	Oct	lastSun	2:00	0	S
+Rule	US	1967	2006	-	Oct	lastSun	2:00	0	S
 Rule	US	1967	1973	-	Apr	lastSun	2:00	1:00	D
 Rule	US	1974	only	-	Jan	6	2:00	1:00	D
 Rule	US	1975	only	-	Feb	23	2:00	1:00	D
 Rule	US	1976	1986	-	Apr	lastSun	2:00	1:00	D
-Rule	US	1987	max	-	Apr	Sun>=1	2:00	1:00	D
+Rule	US	1987	2006	-	Apr	Sun>=1	2:00	1:00	D
+# Energy Policy Act of 2005 extended DST starting in 2007
+Rule	US	2007	max	-	Mar	Sun>=8	2:00	1:00	D
+Rule	US	2007	max	-	Nov	Sun>=1	2:00	0	S
 
 # From Bob Devine (January 28, 1988):
 # ...Alaska (and Hawaii) had the timezone names changed in 1967.
@@ -210,9 +213,12 @@ Zone	US/Hawaii	-10:30	US	H%sT	1933 Apr 30 2:00
 # information is available.
 
 # Rule	NAME	FROM	TO	TYPE	IN	ON	AT	SAVE	LETTER/S
-Rule	Canada	1969	max	-	Oct	lastSun	2:00	0	S
+Rule	Canada	1969	2006	-	Oct	lastSun	2:00	0	S
 Rule	Canada	1969	1986	-	Apr	lastSun	2:00	1:00	D
-Rule	Canada	1987	max	-	Apr	Sun>=1	2:00	1:00	D
+Rule	Canada	1987	2006	-	Apr	Sun>=1	2:00	1:00	D
+# Canada adopted US DST rules starting in 2007
+Rule	Canada	2007	max	-	Mar	Sun>=8	2:00	1:00	D
+Rule	Canada	2007	max	-	Nov	Sun>=1	2:00	0	S
 
 # Zone	NAME			GMTOFF	RULES/SAVE	FORMAT	[UNTIL]
 # Bob Devine says that DST *is* observed in Newfoundland
@@ -278,8 +284,11 @@ Zone	Canada/Yukon		-9:00	Canada		Y%sT
 # Wait for more authoritative information before changing.
 
 # Rule	NAME	FROM	TO	TYPE	IN	ON	AT	SAVE	LETTER/S
-Rule	Mexico	1987	max	-	Oct	lastSun	2:00	0	S
-Rule	Mexico	1987	max	-	Apr	Sun>=1	2:00	1:00	D
+Rule	Mexico	1987	2006	-	Oct	lastSun	2:00	0	S
+Rule	Mexico	1987	2006	-	Apr	Sun>=1	2:00	1:00	D
+# Mexico adopted US DST rules starting in 2007
+Rule	Mexico	2007	max	-	Mar	Sun>=8	2:00	1:00	D
+Rule	Mexico	2007	max	-	Nov	Sun>=1	2:00	0	S
 
 # Zone	NAME			GMTOFF	RULES/SAVE	FORMAT	[UNTIL]
 Zone	Mexico/BajaNorte	-8:00	Mexico		P%sT
@@ -314,8 +323,11 @@ Link	US/Eastern	Jamaica
 # Rule	NAME	FROM	TO	TYPE	IN	ON	AT	SAVE	LETTER/S
 Rule	Cuba	1979	1980	-	Mar	Sun>=15	0:00	1:00	D
 Rule	Cuba	1979	1980	-	Oct	Sun>=8	0:00	0	S
-Rule	Cuba	1981	max	-	May	Sun>=8	0:00	1:00	D
-Rule	Cuba	1981	max	-	Oct	Sun>=8	0:00	0	S
+Rule	Cuba	1981	2006	-	May	Sun>=8	0:00	1:00	D
+Rule	Cuba	1981	2006	-	Oct	Sun>=8	0:00	0	S
+# Cuba adopted US DST rules starting in 2007
+Rule	Cuba	2007	max	-	Mar	Sun>=8	2:00	1:00	D
+Rule	Cuba	2007	max	-	Nov	Sun>=1	2:00	0	S
 
 # Zone	NAME			GMTOFF	RULES/SAVE	FORMAT
 Zone	Cuba			-5:00	Cuba		C%sT

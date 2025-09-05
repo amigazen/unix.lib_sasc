@@ -16,8 +16,11 @@ Rule	SystemV	1974	only	-	Jan	6	2:00	1:00	D
 Rule	SystemV	1974	only	-	Nov	lastSun	2:00	0	S
 Rule	SystemV	1975	only	-	Feb	23	2:00	1:00	D
 Rule	SystemV	1975	only	-	Oct	lastSun	2:00	0	S
-Rule	SystemV	1976	max	-	Apr	lastSun	2:00	1:00	D
-Rule	SystemV	1976	max	-	Oct	lastSun	2:00	0	S
+Rule	SystemV	1976	2006	-	Apr	lastSun	2:00	1:00	D
+Rule	SystemV	1976	2006	-	Oct	lastSun	2:00	0	S
+# System V updated to match US DST rules starting in 2007
+Rule	SystemV	2007	max	-	Mar	Sun>=8	2:00	1:00	D
+Rule	SystemV	2007	max	-	Nov	Sun>=1	2:00	0	S
 
 # Zone	NAME		GMTOFF	RULES/SAVE	FORMAT	[UNTIL]
 Zone	SystemV/AST4ADT	-4:00	SystemV		A%sT

@@ -16,12 +16,17 @@
 # EGYPT                                  RAMADAN)
 
 # Rule	NAME	FROM	TO	TYPE	IN	ON	AT	SAVE	LETTER/S
-Rule	Egypt	1960	max	-	May	1	2:00	1:00	" DST"
-Rule	Egypt	1960	max	-	Oct	1	2:00	0	-
+Rule	Egypt	1960	2014	-	May	1	2:00	1:00	" DST"
+Rule	Egypt	1960	2014	-	Oct	1	2:00	0	-
+# Egypt suspended DST from 2015-2023, resumed in 2024
+Rule	Egypt	2024	max	-	May	1	2:00	1:00	" DST"
+Rule	Egypt	2024	max	-	Oct	1	2:00	0	-
 
 # Zone	NAME	GMTOFF	RULES/SAVE	FORMAT	[UNTIL]
 Zone	Egypt	2:00	Egypt		EET%s	1981
 		2:00	-		EET	1983
+		2:00	Egypt		EET%s	2015
+		2:00	-		EET	2024
 		2:00	Egypt		EET%s
 
 ###############################################################################

@@ -2,3 +2,21 @@
 
 # From Arthur David Olson (February 13, 1988):
 # No data available.
+
+# 21st Century Update: Basic timezone data for major Antarctic research stations
+# Most stations follow the timezone of their sponsoring country
+
+# Zone	NAME			GMTOFF	RULES/SAVE	FORMAT	[UNTIL]
+Zone	Antarctica/McMurdo	12:00	NZ		NZ%sT	# New Zealand station
+Zone	Antarctica/South_Pole	12:00	NZ		NZ%sT	# Amundsen-Scott South Pole Station
+Zone	Antarctica/Rothera	-3:00	-		ROTT	# British Antarctic Survey
+Zone	Antarctica/Palmer	-3:00	-		CLT	# US Antarctic Program
+Zone	Antarctica/Mawson	5:00	-		MAWT	# Australian Antarctic Division
+Zone	Antarctica/Davis	7:00	-		DAVT	# Australian Antarctic Division
+Zone	Antarctica/Casey	8:00	-		AWST	# Australian Antarctic Division
+Zone	Antarctica/DumontDUrville	10:00	-		DDUT	# French Antarctic Program
+Zone	Antarctica/Syowa	3:00	-		SYOT	# Japanese Antarctic Research Expedition
+Zone	Antarctica/Mirny	6:00	-		MSK	# Russian Antarctic Expedition
+Zone	Antarctica/Vostok	6:00	-		MSK	# Russian Antarctic Expedition
+Zone	Antarctica/Troll	0:00	-		UTC	# Norwegian Polar Institute
+Zone	Antarctica/Troll	0:00	-		UTC	# Norwegian Polar Institute

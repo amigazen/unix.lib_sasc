@@ -32,11 +32,13 @@
 # CHINA               9 H  AHEAD OF UTC  APR 17 - SEP 10
 
 # Rule	NAME	FROM	TO	TYPE	IN	ON	AT	SAVE	LETTER/S
-Rule	PRC	1970	max	-	Apr	Sun<=14	2:00	1:00	D
-Rule	PRC	1970	max	-	Sep	Sun<=14	3:00	0	S
+Rule	PRC	1970	1991	-	Apr	Sun<=14	2:00	1:00	D
+Rule	PRC	1970	1991	-	Sep	Sun<=14	3:00	0	S
+# China stopped observing DST in 1991
 
 # Zone	NAME		GMTOFF	RULES/SAVE	FORMAT	[UNTIL]
-Zone	PRC		8:00	PRC		C%sT
+Zone	PRC		8:00	PRC		C%sT	1991
+		8:00	-		CST
 
 ###############################################################################
 
@@ -162,6 +164,36 @@ Rule	Zion	2008	only	-	Apr	27	0:00	1:00	D
 Rule	Zion	2008	only	-	Sep	21	0:00	0:00	S
 Rule	Zion	2009	only	-	Apr	19	0:00	1:00	D
 Rule	Zion	2009	only	-	Sep	13	0:00	0:00	S
+Rule	Zion	2010	only	-	Apr	 2	0:00	1:00	D
+Rule	Zion	2010	only	-	Sep	12	0:00	0:00	S
+Rule	Zion	2011	only	-	Apr	 1	0:00	1:00	D
+Rule	Zion	2011	only	-	Oct	 2	0:00	0:00	S
+Rule	Zion	2012	only	-	Mar	30	0:00	1:00	D
+Rule	Zion	2012	only	-	Sep	23	0:00	0:00	S
+Rule	Zion	2013	only	-	Mar	29	0:00	1:00	D
+Rule	Zion	2013	only	-	Sep	 8	0:00	0:00	S
+Rule	Zion	2014	only	-	Mar	28	0:00	1:00	D
+Rule	Zion	2014	only	-	Sep	28	0:00	0:00	S
+Rule	Zion	2015	only	-	Mar	27	0:00	1:00	D
+Rule	Zion	2015	only	-	Sep	13	0:00	0:00	S
+Rule	Zion	2016	only	-	Apr	 8	0:00	1:00	D
+Rule	Zion	2016	only	-	Oct	 2	0:00	0:00	S
+Rule	Zion	2017	only	-	Mar	24	0:00	1:00	D
+Rule	Zion	2017	only	-	Oct	22	0:00	0:00	S
+Rule	Zion	2018	only	-	Mar	23	0:00	1:00	D
+Rule	Zion	2018	only	-	Oct	 7	0:00	0:00	S
+Rule	Zion	2019	only	-	Mar	29	0:00	1:00	D
+Rule	Zion	2019	only	-	Oct	27	0:00	0:00	S
+Rule	Zion	2020	only	-	Mar	27	0:00	1:00	D
+Rule	Zion	2020	only	-	Oct	25	0:00	0:00	S
+Rule	Zion	2021	only	-	Mar	26	0:00	1:00	D
+Rule	Zion	2021	only	-	Oct	31	0:00	0:00	S
+Rule	Zion	2022	only	-	Mar	25	0:00	1:00	D
+Rule	Zion	2022	only	-	Oct	30	0:00	0:00	S
+Rule	Zion	2023	only	-	Mar	24	0:00	1:00	D
+Rule	Zion	2023	only	-	Oct	29	0:00	0:00	S
+Rule	Zion	2024	only	-	Mar	29	0:00	1:00	D
+Rule	Zion	2024	only	-	Oct	27	0:00	0:00	S
 
 # Zone	NAME		GMTOFF	RULES/SAVE	FORMAT	[UNTIL]
 Zone	Israel		2:00	Zion		I%sT
