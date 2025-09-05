@@ -1,7 +1,6 @@
 
 #include "amiga.h"
 #include "signals.h"
-#include "fifofd.h"
 #include "timers.h"
 #include "amigados.h"
 #include <exec/execbase.h>
@@ -299,7 +298,7 @@ void __stdargs __main(char *line)
     _startup_time = now.tv_secs;
 
     /* These use _startup_time, so must be here */
-    _init_fifo();
+ /*   _init_fifo(); */
     _init_signals();
 
     if (_us->pr_CLI)

@@ -34,13 +34,13 @@ int chdir(const char *path)
     old_lock = GetCurrentDir();
     
     /* Change to new directory */
-    if (SetCurrentDir(new_lock)) {
-	/* Success - unlock the new lock since SetCurrentDir takes ownership */
+    if (CurrentDir(new_lock)) {
+	/* Success - unlock the new lock since CurrentDir takes ownership */
 	/* Don't unlock old_lock as it's managed by the system */
 	return 0;
     } else {
 	/* Failed to change directory - restore old directory */
-	SetCurrentDir(old_lock);
+	CurrentDir(old_lock);
 	UnLock(new_lock);
 	errno = convert_oserr(IoErr());
 	return -1;

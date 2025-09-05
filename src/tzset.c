@@ -38,7 +38,7 @@ extern int daylight;
 extern time_t timezone;
 
 /* Static variables for locale handling */
-extern struct LocaleBase *LocaleBase = NULL;
+extern struct LocaleBase *LocaleBase;
 static struct Locale *CurrentLocale = NULL;
 static int tzset_called = 0;
 

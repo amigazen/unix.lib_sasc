@@ -47,6 +47,15 @@ extern int wildcard_get_count(wildcard_strlist *);
 extern int wildcard_is_empty(wildcard_strlist *);
 
 /*
+ * Amiga-specific macros and definitions
+ */
+
+/* CTOB - Convert C pointer to BPTR (Amiga BCPL pointer) */
+#ifndef CTOB
+#define CTOB(ptr) ((long)(ptr) >> 2)
+#endif
+
+/*
  * Additional Amiga-specific helper functions can be added here
  * as they are implemented.
  */

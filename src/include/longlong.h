@@ -15,6 +15,12 @@ typedef struct {
     unsigned long lo;  /* Low 32 bits */
 } long_long_t;
 
+/* Define unsigned version for uint64_t compatibility */
+typedef struct {
+    unsigned long hi;  /* High 32 bits */
+    unsigned long lo;  /* Low 32 bits */
+} unsigned_long_long_t;
+
 /* Constants for the emulated long long type */
 #define LONG_LONG_MAX_HI 0x7FFFFFFF
 #define LONG_LONG_MAX_LO 0xFFFFFFFF

@@ -3,9 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#undef lseek
-#undef write
-
+/* Internal implementation */
 int __write(int fd, const void *buffer, unsigned int length)
 {
     struct fileinfo *fi;
@@ -20,4 +18,10 @@ int __write(int fd, const void *buffer, unsigned int length)
 	errno = EACCES;
     }
     return -1;
+}
+
+/* Public POSIX write function */
+int write(int fd, const void *buffer, unsigned int length)
+{
+    return __write(fd, buffer, length);
 }

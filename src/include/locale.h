@@ -8,7 +8,11 @@ extern "C" {
 #endif
 
 /* Include SAS/C's locale functions */
-#include "include:locale.h"  /* For setlocale, localeconv, etc. */
+#ifdef __SASC
+#include "sc:include/locale.h"  /* For setlocale, localeconv, etc. */
+#else
+#error Wrong compiler (SAS/C required)
+#endif
 
 /* Additional POSIX locale functions if needed */
 extern char *setlocale(int category, const char *locale);

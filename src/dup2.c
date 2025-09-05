@@ -11,6 +11,7 @@
 #include "files.h"
 #include <errno.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 int dup2(int oldfd, int newfd)
 {

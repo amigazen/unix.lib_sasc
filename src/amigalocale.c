@@ -14,7 +14,7 @@
 #include <proto/locale.h>
 
 /* Static variables for locale handling */
-extern struct LocaleBase *LocaleBase = NULL;
+extern struct LocaleBase *LocaleBase;
 static struct Locale *CurrentLocale = NULL;
 static int locale_initialized = 0;
 

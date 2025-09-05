@@ -58,4 +58,15 @@
 #define	L_XTND		SEEK_END
 #endif
 
+/* pathconf() and fpathconf() constants - Amiga-specific values */
+#define	_PC_LINK_MAX		0x1001	/* maximum number of links to a file */
+#define	_PC_MAX_CANON		0x1002	/* maximum length of a formatted input line */
+#define	_PC_MAX_INPUT		0x1003	/* maximum length of an input line */
+#define	_PC_NAME_MAX		0x1004	/* maximum length of a filename */
+#define	_PC_PATH_MAX		0x1005	/* maximum length of a pathname */
+#define	_PC_PIPE_BUF		0x1006	/* maximum number of bytes that will be written atomically to a pipe */
+#define	_PC_CHOWN_RESTRICTED	0x1007	/* chown() restricted to owner */
+#define	_PC_NO_TRUNC		0x1008	/* pathname truncation */
+#define	_PC_VDISABLE		0x1009	/* terminal special character */
+
 #endif /* !_SYS_UNISTD_H_ */

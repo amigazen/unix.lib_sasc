@@ -1,8 +1,8 @@
 #ifndef FIFO_H
 #define FIFO_H
 
-#include "fifo.h"
-#include "fifo_pragmas.h"
+#include <libraries/fifo.h>
+#include <clib/fifo_protos.h>
 
 #define FIFO_BUFSIZE 1024
 #define FIFO_NAMELEN 32

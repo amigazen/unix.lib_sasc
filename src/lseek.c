@@ -2,6 +2,7 @@
 #include "files.h"
 #include <fcntl.h>
 
+/* Internal implementation */
 int __lseek(int fd, long rpos, int mode)
 {
     struct fileinfo *fi;
@@ -11,4 +12,10 @@ int __lseek(int fd, long rpos, int mode)
 	return fi->lseek(fi->userinfo, rpos, mode);
     }
     return -1;
+}
+
+/* Public POSIX lseek function */
+int lseek(int fd, long rpos, int mode)
+{
+    return __lseek(fd, rpos, mode);
 }

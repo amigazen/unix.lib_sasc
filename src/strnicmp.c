@@ -8,6 +8,7 @@
  */
 
 #include <proto/dos.h>
+#include <proto/utility.h>
 #include <string.h>
 
 /**

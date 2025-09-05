@@ -28,3 +28,8 @@ void __regargs __chkabort(void);
 int _make_protection(int mode);
 int _make_mode(int protection);
 void _fibstat(struct FileInfoBlock *fib, int isroot, struct stat *sbuf, long dev);
+
+/* CTOB - Convert C pointer to BPTR (Amiga BCPL pointer) */
+#ifndef CTOB
+#define CTOB(ptr) ((long)(ptr) >> 2)
+#endif

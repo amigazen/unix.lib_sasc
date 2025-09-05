@@ -8,6 +8,7 @@
  */
 
 #include "getopt.h"
+#include "amiga.h"
 #include <string.h>
 #include <stdio.h>
 

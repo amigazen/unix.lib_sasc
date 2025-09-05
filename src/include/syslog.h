@@ -46,6 +46,7 @@ void closelog(void);
 void openlog(const char *ident, int option, int facility);
 int  setlogmask(int mask);
 void syslog(int priority, const char *format, ...);
+void vsyslog(int priority, const char *format, va_list ap);
 
 #ifdef __cplusplus
 }

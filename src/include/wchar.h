@@ -18,8 +18,12 @@ typedef char wchar_t;
 #define WCHAR_NULL ((wchar_t)0)
 #endif
 
+#ifdef __SASC
 /* Include SAS/C's multibyte functions */
-#include "include:stdlib.h"  /* For mblen, mbtowc, wctomb, mbstowcs, wcstombs */
+#include "sc:include/stdlib.h"  /* For mblen, mbtowc, wctomb, mbstowcs, wcstombs */
+#else
+#error Wrong compiler (SAS/C required)
+#endif
 
 /* Wide character string functions */
 extern size_t wcslen(const wchar_t *s);

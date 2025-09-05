@@ -1,6 +1,8 @@
 #ifndef _STDINT_H_
 #define _STDINT_H_
 
+#include <longlong.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -10,12 +12,12 @@ typedef signed char         int8_t;
 typedef short int           int16_t;
 typedef long int            int32_t;
 /* SAS/C supports long long */
-typedef long long int       int64_t;
+typedef long_long_t         int64_t;
 
 typedef unsigned char       uint8_t;
 typedef unsigned short int  uint16_t;
 typedef unsigned long int   uint32_t;
-typedef unsigned long long int uint64_t;
+typedef unsigned_long_long_t  uint64_t;
 
 /* --- Minimum-width integer types --- */
 typedef int8_t              int_least8_t;
@@ -32,20 +34,20 @@ typedef uint64_t            uint_least64_t;
 typedef int                 int_fast8_t;
 typedef int                 int_fast16_t;
 typedef long int            int_fast32_t;
-typedef long long int       int_fast64_t;
+typedef long_long_t         int_fast64_t;
 
 typedef unsigned int        uint_fast8_t;
 typedef unsigned int        uint_fast16_t;
 typedef unsigned long int   uint_fast32_t;
-typedef unsigned long long int uint_fast64_t;
+typedef unsigned_long_long_t  uint_fast64_t;
 
 /* --- Integer types capable of holding object pointers --- */
 typedef long int            intptr_t;
 typedef unsigned long int   uintptr_t;
 
 /* --- Greatest-width integer types --- */
-typedef long long int       intmax_t;
-typedef unsigned long long int uintmax_t;
+typedef long_long_t         intmax_t;
+typedef unsigned_long_long_t  uintmax_t;
 
 
 /* --- Limits of exact-width integer types --- */

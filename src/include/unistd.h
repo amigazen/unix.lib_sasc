@@ -124,10 +124,7 @@ ssize_t	 __read __P((int, void *, size_t));
 ssize_t	 __write __P((int, const void *, unsigned int));
 int	 __close __P((int));
 
-#define lseek __lseek
-#define read __read
-#define write __write
-#define close __close
+/* lseek, read, write, and close are now proper functions, not macros, to avoid macro expansion conflicts */
 #endif
 
 #ifndef	_POSIX_SOURCE

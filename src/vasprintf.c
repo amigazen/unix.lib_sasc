@@ -13,6 +13,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+
+/* C89 compatibility for va_copy - not available in SAS/C */
+#ifndef va_copy
+#define va_copy(dest, src) ((dest) = (src))
+#endif
 #include <errno.h>
 
 int vasprintf(char **strp, const char *fmt, va_list args)

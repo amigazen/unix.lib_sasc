@@ -30,6 +30,17 @@ int _alloc_fd(void *userinfo, int flags,
   int (*ioctl)(void *userinfo, int request, void *data)
 );
 
+int _alloc_fd_at(void *userinfo, int flags,
+  unsigned long (*select_start)(void *userinfo, int rd, int wr, int ex),
+  int (*select_poll)(void *userinfo, int *rd, int *wr, int *ex),
+  int (*read)(void *userinfo, void *buffer, unsigned int length),
+  int (*write)(void *userinfo, void *buffer, unsigned int length),
+  int (*lseek)(void *userinfo, long rpos, int mode),
+  int (*close)(void *userinfo, int internal),
+  int (*ioctl)(void *userinfo, int request, void *data),
+  int fd
+);
+
 void _free_fd(int fd);
 
 struct fileinfo *_find_fd(int fd);

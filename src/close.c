@@ -2,6 +2,7 @@
 #include "files.h"
 #include <fcntl.h>
 
+/* Internal implementation */
 int __close(int fd)
 {
     struct fileinfo *fi;
@@ -24,4 +25,10 @@ int __close(int fd)
 	return err;
     }
     return -1;
+}
+
+/* Public POSIX close function */
+int close(int fd)
+{
+    return __close(fd);
 }

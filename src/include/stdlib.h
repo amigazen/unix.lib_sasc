@@ -2,8 +2,8 @@
 #define _UNIX_STDLIB_H
 #define unsetenv __fake_unsetenv
 
-#include "include/stdint.h"
-#include "include:stdlib.h"
+#include "stdint.h"
+#include <stdlib.h>
 #undef unsetenv
 #ifndef _ANSI_SOURCE
 int setenv(const char *, const char *, int);

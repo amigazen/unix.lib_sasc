@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2025 amigazen project
  * 
- * Amiga system includes for hybrid pthread implementation
+ * Amiga system includes for pthread implementation
  */
 
 #ifndef _AMIGAPTHREAD_H

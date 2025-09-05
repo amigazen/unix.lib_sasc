@@ -16,17 +16,18 @@ AR = oml
 AS = asm
 
 OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
-	asprintf.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o close.o \
-	creat.o ctime.o devices.o dir.o dir_data.o dirname.o dup.o dup2.o \
-	endpwent.o err.o error.o error_msg.o 	exec.o fcntl.o fd_setsize.o fibstat.o fifofd.o files.o fnmatch.o fpathconf.o \
+	amigalocale.o asprintf.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o \
+	clock.o clock_getcpuclockid.o close.o \
+	creat.o ctime.o devices.o difftime.o dir.o dir_data.o dirname.o dup.o dup2.o \
+	endpwent.o err.o error.o error_msg.o 	exec.o fcntl.o fd_setsize.o fibstat.o files.o fnmatch.o fpathconf.o \
 	fstat.o fsync.o ftruncate.o 	getdtablesize.o getegid.o geteuid.o \
 	getenv.o getgid.o gethostname.o getlogin.o getopt.o getopt1.o \
 	getopt_long.o getpass.o getpid.o getppid.o gettimeofday.o getuid.o getwd.o \
-	gid.o glob.o grp.o herror.o hypot.o index.o ioctl.o isatty.o kill.o link.o \
+	gid.o glob.o grp.o herror.o hypot.o iconv.o index.o ioctl.o isatty.o kill.o link.o \
 	longlong.o lseek.o lstat.o memccpy.o memchr.o memcmp.o memcpy.o memset.o message.o mkdir.o mkfifo.o \
 	mkstemp.o mktemp.o nice.o onbreak.o open.o pathconf.o perror.o \
-	pipe.o pclose.o popen.o pread.o processes.o protection.o pseudo_c.o \
-	pwd.o pwrite.o raise.o rcmd.o read.o readlink.o realpath.o regerror.o \
+	pclose.o pread.o processes.o protection.o pseudo_c.o \
+	pthread_getcpuclockid.o pwd.o pwrite.o raise.o rcmd.o read.o readlink.o realpath.o regerror.o \
 	regex.o regexp.o regsub.o rename.o rindex.o rmdir.o scandir.o \
 	select.o setenv.o setgid.o setjmp.o setpgid.o setsid.o setuid.o \
 	settimeofday.o siglist.o signal.o signals.o sigpause.o sigprocmask.o \
@@ -34,14 +35,16 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	strcoll.o strcpy.o strcspn.o strdup.o strerror.o strerror_r.o strftime.o stricmp.o \
 	syslog.o \
 	strlcat.o strlcpy.o strlen.o strncasecmp.o strncat.o strncpy.o strndup.o \
-	strnicmp.o strnlen.o strncmp.o strpbrk.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o \
+	strnicmp.o strnlen.o strncmp.o strpbrk.o strptime.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o \
 	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o \
-	timers.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
+	amigatimer.o timers.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
 	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o \
 	strichr.o stristr.o strnchr.o strins.o strrev.o crc32_main.o \
 	crc32_string.o wildcard_init.o wildcard_elements.o wildcard_pattern.o \
-	vasprintf.o vsnprintf.o wait.o wait4.o waitpid.o write.o \
-	_printf.o _scanf.o fprintf.o sprintf.o scanf.o
+	vasprintf.o vsnprintf.o wait.o wait4.o waitpid.o wcscat.o wcscmp.o \
+	wcscpy.o wcslen.o wcsncmp.o wcsncpy.o write.o \
+	_printf.o _scanf.o fprintf.o sprintf.o scanf.o \
+	mq_core.o mq_helpers.o mq_advanced.o mq_integration.o librt.o
 
 # libdl library objects (separate from unix.lib)
 LIBDL_OBJS = libdl.o
@@ -85,12 +88,30 @@ PSOCKETSTEST_DOBJS = unittests/psockets/testga.do
 PSOCKETSTEST_NBOBJS = unittests/psockets/testga.nbo
 PSOCKETSTEST_DNBOBJS = unittests/psockets/testga.dnbo
 
+# amigalocale test program objects (in unittests folder)
+AMIGALOCALETEST_OBJS = unittests/test_amigalocale.o
+AMIGALOCALETEST_DOBJS = unittests/test_amigalocale.do
+AMIGALOCALETEST_NBOBJS = unittests/test_amigalocale.nbo
+AMIGALOCALETEST_DNBOBJS = unittests/test_amigalocale.dnbo
+
+# tzset test program objects (in unittests folder)
+TZSETTEST_OBJS = unittests/test_tzset.o
+TZSETTEST_DOBJS = unittests/test_tzset.do
+TZSETTEST_NBOBJS = unittests/test_tzset.nbo
+TZSETTEST_DNBOBJS = unittests/test_tzset.dnbo
+
+# timer device test program objects (in unittests folder)
+TIMERDEVICETEST_OBJS = unittests/test_timer_device.o
+TIMERDEVICETEST_DOBJS = unittests/test_timer_device.do
+TIMERDEVICETEST_NBOBJS = unittests/test_timer_device.nbo
+TIMERDEVICETEST_DNBOBJS = unittests/test_timer_device.dnbo
+
 DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
-	amigatime.do asprintf.do basename.do bcmp.do bcopy.do bzero.do \
-	chdir.do chmod.do chown.do close.do creat.do ctime.do devices.do dir.do \
+	amigalocale.do amigatime.do asprintf.do basename.do bcmp.do bcopy.do bzero.do \
+	chdir.do chmod.do chown.do clock.do clock_getcpuclockid.do close.do creat.do ctime.do devices.do difftime.do dir.do \
 	dir_data.do dirname.do dup.do dup2.do endpwent.do err.do error.do \
 	error_msg.do exec.do fcntl.do fd_setsize.do \
-	fibstat.do fifofd.do files.do fnmatch.do fpathconf.do fstat.do \
+	fibstat.do files.do fnmatch.do fpathconf.do fstat.do \
 	fsync.do ftruncate.do getdtablesize.do getegid.do geteuid.do \
 	getenv.do getgid.do gethostname.do getlogin.do getopt.do getopt1.do \
 	getopt_long.do getpass.do getpid.do getppid.do gettimeofday.do getuid.do getwd.do \
@@ -98,17 +119,17 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	link.do longlong.do lseek.do lstat.do memccpy.do memchr.do memcmp.do memcpy.do memset.do message.do mkdir.do \
 	mkfifo.do mkstemp.do mktemp.do nice.do onbreak.do open.do pathconf.do \
 	perror.do pipe.do pclose.do popen.do pread.do processes.do protection.do \
-	pseudo_c.do 	pwd.do pwrite.do raise.do rcmd.do read.do readlink.do realpath.do \
+	pseudo_c.do pthread_getcpuclockid.do pwd.do pwrite.do raise.do rcmd.do read.do readlink.do realpath.do \
 	regerror.do regex.do regexp.do regsub.do rename.do rindex.do rmdir.do \
 	scandir.do select.do setenv.do setgid.do setjmp.do setpgid.do setsid.do \
 	setuid.do settimeofday.do siglist.do signal.do signals.do sigpause.do \
 	sigprocmask.do sigsetmask.do sleep.do snprintf.do sockets.do stat.do \
-	strcasecmp.do strcat.do strchr.do strcmp.do strcoll.do strcpy.do strcspn.do strdup.do strerror.do strerror_r.do strftime.do \
+	strcasecmp.do strcat.do strchr.do strcmp.do strcoll.do strcpy.do strcspn.do strdup.do strerror.do strerror_r.do strftime.do strptime.do \
 	syslog.do \
 	stricmp.do strlcat.do strlcpy.do strlen.do strncasecmp.do strncat.do strncpy.do \
 	strndup.do strnicmp.do strnlen.do strncmp.do strpbrk.do strrchr.do strsep.do strspn.do strstr.do strtok.do strtok_r.do strtol.do \
 	strtoll.do strxfrm.do symlink.do sysconf.do system.do tempnam.do time.do \
-	timeconvert.do timers.do truncate.do tzset.do uid.do umask.do uname.do \
+	timeconvert.do amigatimer.do timers.do truncate.do tzset.do uid.do umask.do uname.do \
 	unlink.do unsetenv.do usleep.do utime.do utimes.do ustat.do statvfs.do \
 	strtolower.do strupr.do strichr.do stristr.do strnchr.do strins.do \
 	strrev.do crc32_main.do crc32_string.do wildcard_init.do \
@@ -117,11 +138,11 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	_printf.do _scanf.do fprintf.do sprintf.do scanf.do
 
 NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
-	amigatime.nbo asprintf.nbo basename.nbo bcmp.nbo bcopy.nbo bzero.nbo \
-	chmod.nbo chown.nbo close.nbo creat.nbo ctime.nbo devices.nbo dir.nbo \
+	amigalocale.nbo amigatime.nbo asprintf.nbo basename.nbo bcmp.nbo bcopy.nbo bzero.nbo \
+	chmod.nbo chown.nbo clock.nbo clock_getcpuclockid.nbo close.nbo creat.nbo ctime.nbo devices.nbo difftime.nbo dir.nbo \
 	dir_data.nbo dirname.nbo dup.nbo dup2.nbo endpwent.nbo err.nbo error.nbo \
 	error_msg.nbo exec.nbo fchmod.nbo fchown.nbo fcntl.nbo fd_setsize.nbo \
-	fibstat.nbo fifofd.nbo files.nbo fnmatch.nbo fpathconf.nbo fstat.nbo \
+	fibstat.nbo files.nbo fnmatch.nbo fpathconf.nbo fstat.nbo \
 	fsync.nbo ftruncate.nbo getdtablesize.nbo getegid.nbo geteuid.nbo \
 	getenv.nbo getgid.nbo gethostname.nbo getlogin.nbo getopt.nbo getopt1.nbo \
 	getopt_long.nbo getpass.nbo getpid.nbo gettimeofday.nbo getuid.nbo getwd.nbo \
@@ -129,16 +150,16 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	link.nbo longlong.nbo lseek.nbo lstat.nbo memccpy.nbo memchr.nbo memcmp.nbo memcpy.nbo memset.nbo message.nbo mkdir.nbo \
 	mkfifo.nbo mkstemp.nbo mktemp.nbo nice.nbo onbreak.nbo open.nbo pathconf.nbo \
 	perror.nbo pipe.nbo pclose.nbo popen.nbo pread.nbo processes.nbo protection.nbo \
-	pseudo_c.nbo pwd.nbo pwrite.nbo raise.nbo read.nbo readlink.nbo realpath.nbo \
+	pseudo_c.nbo pthread_getcpuclockid.nbo pwd.nbo pwrite.nbo raise.nbo read.nbo readlink.nbo realpath.nbo \
 	regerror.nbo regex.nbo regexp.nbo regsub.nbo rename.nbo rindex.nbo rmdir.nbo \
 	scandir.nbo select.nbo setenv.nbo setgid.nbo setjmp.nbo setpgid.nbo setsid.nbo \
 	setuid.nbo settimeofday.nbo siglist.nbo signal.nbo signals.nbo sigpause.nbo \
 	sigprocmask.nbo sigsetmask.nbo sleep.nbo snprintf.nbo sockets.nbo stat.nbo \
-	strcasecmp.nbo strcat.nbo strchr.nbo strcmp.nbo strcoll.nbo strcpy.nbo strcspn.nbo strdup.nbo strerror.nbo strerror_r.nbo strftime.nbo \
+	strcasecmp.nbo strcat.nbo strchr.nbo strcmp.nbo strcoll.nbo strcpy.nbo strcspn.nbo strdup.nbo strerror.nbo strerror_r.nbo strftime.nbo strptime.nbo \
 	stricmp.nbo strlcat.nbo strlcpy.nbo strlen.nbo strncasecmp.nbo strncat.nbo strncpy.nbo \
 	strndup.nbo strnicmp.nbo strnlen.nbo strncmp.nbo strpbrk.nbo strrchr.nbo strsep.nbo strspn.nbo strstr.nbo strtok.nbo strtok_r.nbo strtol.nbo \
 	strtoll.nbo strxfrm.nbo symlink.nbo sysconf.nbo system.nbo tempnam.nbo time.nbo \
-	timeconvert.nbo timers.nbo truncate.nbo tzset.nbo uid.nbo umask.nbo uname.nbo \
+	timeconvert.nbo amigatimer.nbo timers.nbo truncate.nbo tzset.nbo uid.nbo umask.nbo uname.nbo \
 	unlink.nbo unsetenv.nbo usleep.nbo utime.nbo utimes.nbo ustat.nbo statvfs.nbo \
 	strtolower.nbo strupr.nbo strichr.nbo stristr.nbo strnchr.nbo strins.nbo \
 	strrev.nbo crc32_main.nbo crc32_string.nbo wildcard_init.nbo \
@@ -147,12 +168,12 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	_printf.nbo _scanf.nbo fprintf.nbo sprintf.nbo scanf.nbo
 
 DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
-	amigados.dnbo amigatime.dnbo asprintf.dnbo basename.dnbo bcmp.dnbo \
-	bcopy.dnbo bzero.dnbo chmod.dnbo chown.dnbo close.dnbo creat.dnbo \
-	ctime.dnbo devices.dnbo dir.dnbo dir_data.dnbo dirname.dnbo dup.dnbo \
+	amigados.dnbo amigalocale.dnbo amigatime.dnbo asprintf.dnbo basename.dnbo bcmp.dnbo \
+	bcopy.dnbo bzero.dnbo chmod.dnbo chown.dnbo clock.dnbo clock_getcpuclockid.dnbo close.dnbo creat.dnbo \
+	ctime.dnbo devices.dnbo difftime.dnbo dir.dnbo dir_data.dnbo dirname.dnbo dup.dnbo \
 	dup2.dnbo endpwent.dnbo err.dnbo error.dnbo error_msg.dnbo exec.dnbo \
 	fchmod.dnbo fchown.dnbo fcntl.dnbo fd_setsize.dnbo fibstat.dnbo \
-	fifofd.dnbo files.dnbo fnmatch.dnbo fpathconf.dnbo fstat.dnbo \
+	files.dnbo fnmatch.dnbo fpathconf.dnbo fstat.dnbo \
 	fsync.dnbo ftruncate.dnbo getdtablesize.dnbo getegid.dnbo geteuid.dnbo \
 	getenv.dnbo getgid.dnbo gethostname.dnbo getlogin.dnbo getopt.dnbo \
 	getopt1.dnbo getopt_long.dnbo getpass.dnbo getpid.dnbo gettimeofday.dnbo \
@@ -161,18 +182,18 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	lseek.dnbo lstat.dnbo memccpy.dnbo memchr.dnbo memcmp.dnbo memcpy.dnbo memset.dnbo message.dnbo mkdir.dnbo mkfifo.dnbo \
 	mkstemp.dnbo mktemp.dnbo nice.dnbo onbreak.dnbo open.dnbo pathconf.dnbo \
 	perror.dnbo pipe.dnbo pclose.dnbo popen.dnbo pread.dnbo processes.dnbo \
-	protection.dnbo pseudo_c.dnbo pwd.dnbo pwrite.dnbo raise.dnbo \
+	protection.dnbo pseudo_c.dnbo pthread_getcpuclockid.dnbo pwd.dnbo pwrite.dnbo raise.dnbo \
 	read.dnbo readlink.dnbo realpath.dnbo regerror.dnbo regex.dnbo \
 	regexp.dnbo regsub.dnbo rename.dnbo rindex.dnbo rmdir.dnbo scandir.dnbo \
 	select.dnbo setenv.dnbo setgid.dnbo setjmp.dnbo setpgid.dnbo setsid.dnbo \
 	setuid.dnbo settimeofday.dnbo siglist.dnbo signal.dnbo signals.dnbo \
 	sigpause.dnbo sigprocmask.dnbo sigsetmask.dnbo sleep.dnbo snprintf.dnbo \
 	sockets.dnbo stat.dnbo 	strcasecmp.dnbo strcat.dnbo strchr.dnbo strcmp.dnbo strcoll.dnbo strcpy.dnbo strcspn.dnbo strdup.dnbo \
-	strerror.dnbo strerror_r.dnbo strftime.dnbo stricmp.dnbo strlcat.dnbo \
+	strerror.dnbo strerror_r.dnbo strftime.dnbo strptime.dnbo stricmp.dnbo strlcat.dnbo \
 	strlcpy.dnbo strlen.dnbo strncasecmp.dnbo strncat.dnbo strncpy.dnbo strncmp.dnbo strndup.dnbo \
 	strnicmp.dnbo strnlen.dnbo strpbrk.dnbo strrchr.dnbo strsep.dnbo strspn.dnbo strstr.dnbo strtok.dnbo strtok_r.dnbo strtol.dnbo \
 	strtoll.dnbo strxfrm.dnbo symlink.dnbo sysconf.dnbo system.dnbo tempnam.dnbo \
-	time.dnbo timeconvert.dnbo timers.dnbo truncate.dnbo tzset.dnbo \
+	time.dnbo timeconvert.dnbo amigatimer.dnbo timers.dnbo truncate.dnbo tzset.dnbo \
 	uid.dnbo umask.dnbo uname.dnbo unlink.dnbo unsetenv.dnbo usleep.dnbo \
 	utime.dnbo utimes.dnbo ustat.dnbo statvfs.dnbo strtolower.dnbo strupr.dnbo \
 	strichr.dnbo stristr.dnbo strnchr.dnbo strins.dnbo strrev.dnbo \
@@ -199,8 +220,8 @@ SCOPTIONS = NOVER NOICONS CPU=ANY PARMS=BOTH NOSTKCHK IDLEN=100 \
 OFLAGS = OPTIMIZE
 DFLAGS = NOOPTIMIZE DEBUG=SF
 
-CFLAGS =    GST=amiga.gst DATA=NEAR $(IDIRS)
-CFLAGS_NB = GST=amiganb.gst DATA=FAR $(IDIRS)
+CFLAGS =    GST=amiga.gst DATA=NEAR $(IDIRS) IDIR=fifolib/
+CFLAGS_NB = GST=amiganb.gst DATA=FAR $(IDIRS) IDIR=fifolib/
 
 LIB = unix.lib
 FARLIB = unixnb.lib
@@ -249,6 +270,23 @@ PSOCKETSTEST_D_PROG = testgad
 PSOCKETSTEST_NB_PROG = testganb
 PSOCKETSTEST_DNB_PROG = testgadnb
 
+# amigalocale test program names
+AMIGALOCALETEST_PROG = test_amigalocale
+AMIGALOCALETEST_D_PROG = test_amigalocaled
+AMIGALOCALETEST_NB_PROG = test_amigalocalenb
+AMIGALOCALETEST_DNB_PROG = test_amigalocalednb
+
+# tzset test program names
+TZSETTEST_PROG = test_tzset
+TZSETTEST_D_PROG = test_tzsetd
+TZSETTEST_NB_PROG = test_tzsetnb
+TZSETTEST_DNB_PROG = test_tzsetdnb
+
+TIMERDEVICETEST_PROG = test_timer_device
+TIMERDEVICETEST_D_PROG = test_timer_deviced
+TIMERDEVICETEST_NB_PROG = test_timer_devicenb
+TIMERDEVICETEST_DNB_PROG = test_timer_devicednb
+
 .SUFFIXES: .c .a .o .do .nbo .dnbo
 #
 # Generic rules
@@ -266,7 +304,7 @@ PSOCKETSTEST_DNB_PROG = testgadnb
 
 normal: SCOPTIONS amiga.gst $(LIB)
 
-all: normal amiganb.gst $(FARLIB) libdl-all pthread-all psockets-all
+all: normal amiganb.gst $(FARLIB) libdl-all pthread-all psockets-all fifo-all apipe-all
 
 debug: SCOPTIONS amiga.gst $(DLIB) amiganb.gst $(DFARLIB) libdl-debug pthread-debug psockets-debug
 
@@ -467,6 +505,44 @@ $(PSOCKETSTEST_D_PROG): SCOPTIONS $(PSOCKETSTEST_DOBJS) $(PSOCKETS_DLIB)
 $(PSOCKETSTEST_DNB_PROG): SCOPTIONS $(PSOCKETSTEST_DNBOBJS) $(PSOCKETS_DFARLIB)
 	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/psockets/$(PSOCKETSTEST_DNB_PROG) FROM $(PSOCKETSTEST_DNBOBJS) LIB $(PSOCKETS_DFARLIB)
 
+# amigalocale test programs (output to unittests folder)
+$(AMIGALOCALETEST_PROG): SCOPTIONS $(AMIGALOCALETEST_OBJS) $(LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) TO unittests/$(AMIGALOCALETEST_PROG) FROM $(AMIGALOCALETEST_OBJS) $(LIB)
+
+$(AMIGALOCALETEST_NB_PROG): SCOPTIONS $(AMIGALOCALETEST_NBOBJS) $(FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) TO unittests/$(AMIGALOCALETEST_NB_PROG) FROM $(AMIGALOCALETEST_NBOBJS) $(FARLIB)
+
+$(AMIGALOCALETEST_D_PROG): SCOPTIONS $(AMIGALOCALETEST_DOBJS) $(DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) TO unittests/$(AMIGALOCALETEST_D_PROG) FROM $(AMIGALOCALETEST_DOBJS) $(DLIB)
+
+$(AMIGALOCALETEST_DNB_PROG): SCOPTIONS $(AMIGALOCALETEST_DNBOBJS) $(DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/$(AMIGALOCALETEST_DNB_PROG) FROM $(AMIGALOCALETEST_DNBOBJS) $(DFARLIB)
+
+# tzset test programs (output to unittests folder)
+$(TZSETTEST_PROG): SCOPTIONS $(TZSETTEST_OBJS) $(LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) TO unittests/$(TZSETTEST_PROG) FROM $(TZSETTEST_OBJS) $(LIB)
+
+$(TZSETTEST_NB_PROG): SCOPTIONS $(TZSETTEST_NBOBJS) $(FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) TO unittests/$(TZSETTEST_NB_PROG) FROM $(TZSETTEST_NBOBJS) $(FARLIB)
+
+$(TZSETTEST_D_PROG): SCOPTIONS $(TZSETTEST_DOBJS) $(DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) TO unittests/$(TZSETTEST_D_PROG) FROM $(TZSETTEST_DOBJS) $(DLIB)
+
+$(TZSETTEST_DNB_PROG): SCOPTIONS $(TZSETTEST_DNBOBJS) $(DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/$(TZSETTEST_DNB_PROG) FROM $(TZSETTEST_DNBOBJS) $(DFARLIB)
+
+$(TIMERDEVICETEST_PROG): SCOPTIONS $(TIMERDEVICETEST_OBJS) $(LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) TO unittests/$(TIMERDEVICETEST_PROG) FROM $(TIMERDEVICETEST_OBJS) $(LIB)
+
+$(TIMERDEVICETEST_NB_PROG): SCOPTIONS $(TIMERDEVICETEST_NBOBJS) $(FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) TO unittests/$(TIMERDEVICETEST_NB_PROG) FROM $(TIMERDEVICETEST_NBOBJS) $(FARLIB)
+
+$(TIMERDEVICETEST_D_PROG): SCOPTIONS $(TIMERDEVICETEST_DOBJS) $(DLIB)
+	$(CC) $(CFLAGS_D) $(OFLAGS) TO unittests/$(TIMERDEVICETEST_D_PROG) FROM $(TIMERDEVICETEST_DOBJS) $(DLIB)
+
+$(TIMERDEVICETEST_DNB_PROG): SCOPTIONS $(TIMERDEVICETEST_DNBOBJS) $(DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/$(TIMERDEVICETEST_DNB_PROG) FROM $(TIMERDEVICETEST_DNBOBJS) $(DFARLIB)
+
 clean:
 	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) SCOPTIONS
 	-$(RM) $(LIBDL_LIB) $(LIBDL_FARLIB) $(LIBDL_DLIB) $(LIBDL_DFARLIB)
@@ -476,6 +552,9 @@ clean:
 	-$(RM) unittests/$(DLTEST_PROG) unittests/$(DLTEST_D_PROG) unittests/$(DLTEST_NB_PROG) unittests/$(DLTEST_DNB_PROG)
 	-$(RM) unittests/pthread/$(PTHREADTEST_PROG) unittests/pthread/$(PTHREADTEST_D_PROG) unittests/pthread/$(PTHREADTEST_NB_PROG) unittests/pthread/$(PTHREADTEST_DNB_PROG)
 	-$(RM) unittests/psockets/$(PSOCKETSTEST_PROG) unittests/psockets/$(PSOCKETSTEST_D_PROG) unittests/psockets/$(PSOCKETSTEST_NB_PROG) unittests/psockets/$(PSOCKETSTEST_DNB_PROG)
+	-$(RM) unittests/$(AMIGALOCALETEST_PROG) unittests/$(AMIGALOCALETEST_D_PROG) unittests/$(AMIGALOCALETEST_NB_PROG) unittests/$(AMIGALOCALETEST_DNB_PROG)
+	-$(RM) unittests/$(TZSETTEST_PROG) unittests/$(TZSETTEST_D_PROG) unittests/$(TZSETTEST_NB_PROG) unittests/$(TZSETTEST_DNB_PROG)
+	-$(RM) unittests/$(TIMERDEVICETEST_PROG) unittests/$(TIMERDEVICETEST_D_PROG) unittests/$(TIMERDEVICETEST_NB_PROG) unittests/$(TIMERDEVICETEST_DNB_PROG)
 
 SCOPTIONS: SMakefile
 	copy to $@ <from <
@@ -523,6 +602,18 @@ $(ALLDNBOBJS)
 #
 # Specific rules
 #
+fifofd.o: fifofd.c fifolib/clib/fifo_protos.h fifolib/libraries/fifo.h fifofd.h amiga.h
+	$(CC) $(CFLAGS) fifofd.c OBJNAME=fifofd.o IDIR=fifolib/
+
+fifofd.nbo: fifofd.c fifolib/clib/fifo_protos.h fifolib/libraries/fifo.h fifofd.h amiga.h
+	$(CC) $(CFLAGS_NB) fifofd.c OBJNAME=fifofd.nbo IDIR=fifolib/
+
+fifofd.do: fifofd.c fifolib/clib/fifo_protos.h fifolib/libraries/fifo.h fifofd.h amiga.h
+	$(CC) $(CFLAGS) fifofd.c OBJNAME=fifofd.do IDIR=fifolib/
+
+fifofd.dnbo: fifofd.c fifolib/clib/fifo_protos.h fifolib/libraries/fifo.h fifofd.h amiga.h
+	$(CC) $(CFLAGS_NB) fifofd.c OBJNAME=fifofd.dnbo IDIR=fifolib/
+
 hypot.o: hypot.c
 	$(CC) $(CFLAGS) hypot.c
 
@@ -552,8 +643,8 @@ amiganb.gst: amiga.h
 #
 # Normal NEAR objects
 #
-_exit.o: _exit.c fifo_pragmas.h fifo.h fifofd.h signals.h amiga.h
-_main.o: _main.c fifo_pragmas.h fifo.h amigados.h fifofd.h signals.h amiga.h
+_exit.o: _exit.c signals.h amiga.h
+_main.o: _main.c amigados.h signals.h amiga.h
 abort.o: abort.c amiga.h
 access.o: access.c amiga.h
 chdir.o: chdir.c amiga.h
@@ -580,7 +671,6 @@ fchmod.o: fchmod.c amiga.h
 fcntl.o: fcntl.c amiga.h
 fd_setsize.o: fd_setsize.c include/sys/types.h
 fibstat.o: fibstat.c timeconvert.h amiga.h
-fifofd.o: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.o: files.c amiga.h
 fnmatch.o: fnmatch.c include/fnmatch.h
 basename.o: basename.c include/libgen.h
@@ -601,6 +691,7 @@ ioctl.o: ioctl.c amiga.h
 isatty.o: isatty.c amiga.h
 kill.o: kill.c processes.h signals.h amiga.h
 link.o: link.c amiga.h
+longlong.o: longlong.c include/longlong.h
 lseek.o: lseek.c amiga.h
 lstat.o: lstat.c amiga.h
 message.o: message.c amiga.h
@@ -610,8 +701,12 @@ mktemp.o: mktemp.c amiga.h
 onbreak.o: onbreak.c signals.h amiga.h
 open.o: open.c amigados.h amiga.h
 perror.o: perror.c amiga.h
-pipe.o: pipe.c fifo_pragmas.h fifo.h fifofd.h signals.h amiga.h
+
 popen.o: popen.c amigados.h amiga.h
+mq_core.o: mq_core.c include/internal/mq_internal.h amiga.h
+mq_helpers.o: mq_helpers.c include/internal/mq_internal.h amiga.h
+mq_advanced.o: mq_advanced.c include/internal/mq_internal.h amiga.h
+mq_integration.o: mq_integration.c include/internal/mq_internal.h amiga.h
 processes.o: processes.c processes.h amiga.h
 protection.o: protection.c amiga.h
 pseudo_c.o: pseudo_c.c amiga.h
@@ -655,6 +750,7 @@ stricmp.o: stricmp.c
 strtok_r.o: strtok_r.c
 strerror_r.o: strerror_r.c
 strftime.o: strftime.c
+amigalocale.o: amigalocale.c amiga.h include/amigalocale.h
 memccpy.o: memccpy.c
 strxfrm.o: strxfrm.c
 
@@ -688,8 +784,8 @@ write.o: write.c amiga.h
 #
 # Normal FAR objects
 #
-_exit.nbo: _exit.c fifo_pragmas.h fifo.h fifofd.h signals.h amiga.h
-_main.nbo: _main.c fifo_pragmas.h fifo.h amigados.h fifofd.h signals.h amiga.h
+_exit.nbo: _exit.c signals.h amiga.h
+_main.nbo: _main.c amigados.h signals.h amiga.h
 abort.nbo: abort.c amiga.h
 access.nbo: access.c amiga.h
 alloca.nbo: alloca.c
@@ -715,7 +811,6 @@ fchmod.nbo: fchmod.c amiga.h
 fcntl.nbo: fcntl.c amiga.h
 fd_setsize.nbo: fd_setsize.c include/sys/types.h
 fibstat.nbo: fibstat.c timeconvert.h amiga.h
-fifofd.nbo: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.nbo: files.c amiga.h
 fnmatch.nbo: fnmatch.c include/fnmatch.h
 basename.nbo: basename.c include/libgen.h
@@ -735,6 +830,7 @@ ioctl.nbo: ioctl.c amiga.h
 isatty.nbo: isatty.c amiga.h
 kill.nbo: kill.c processes.h signals.h amiga.h
 link.nbo: link.c amiga.h
+longlong.nbo: longlong.c include/longlong.h
 lseek.nbo: lseek.c amiga.h
 lstat.nbo: lstat.c amiga.h
 message.nbo: message.c amiga.h
@@ -744,7 +840,7 @@ mktemp.nbo: mktemp.c amiga.h
 onbreak.nbo: onbreak.c signals.h amiga.h
 open.nbo: open.c amigados.h amiga.h
 perror.nbo: perror.c amiga.h
-pipe.nbo: pipe.c fifo_pragmas.h fifo.h fifofd.h signals.h amiga.h
+pipe.nbo: pipe.c signals.h amiga.h
 popen.nbo: popen.c amigados.h amiga.h
 processes.nbo: processes.c processes.h amiga.h
 protection.nbo: protection.c amiga.h
@@ -787,6 +883,7 @@ stricmp.nbo: stricmp.c
 strtok_r.nbo: strtok_r.c
 strerror_r.nbo: strerror_r.c
 strftime.nbo: strftime.c
+amigalocale.nbo: amigalocale.c amiga.h include/amigalocale.h
 memccpy.nbo: memccpy.c
 strxfrm.nbo: strxfrm.c
 
@@ -820,8 +917,8 @@ write.nbo: write.c amiga.h
 #
 # Debugging NEAR objects
 #
-_exit.do: _exit.c fifo_pragmas.h fifo.h fifofd.h signals.h amiga.h
-_main.do: _main.c fifo_pragmas.h fifo.h amigados.h fifofd.h signals.h amiga.h
+_exit.do: _exit.c signals.h amiga.h
+_main.do: _main.c amigados.h signals.h amiga.h
 abort.do: abort.c amiga.h
 access.do: access.c amiga.h
 alloca.do: alloca.c
@@ -847,7 +944,6 @@ fchmod.do: fchmod.c amiga.h
 fcntl.do: fcntl.c amiga.h
 fd_setsize.do: fd_setsize.c include/sys/types.h
 fibstat.do: fibstat.c timeconvert.h amiga.h
-fifofd.do: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.do: files.c amiga.h
 fnmatch.do: fnmatch.c include/fnmatch.h
 basename.do: basename.c include/libgen.h
@@ -868,6 +964,7 @@ ioctl.do: ioctl.c amiga.h
 isatty.do: isatty.c amiga.h
 kill.do: kill.c processes.h signals.h amiga.h
 link.do: link.c amiga.h
+longlong.do: longlong.c include/longlong.h
 lseek.do: lseek.c amiga.h
 lstat.do: lstat.c amiga.h
 message.do: message.c amiga.h
@@ -877,7 +974,7 @@ mktemp.do: mktemp.c amiga.h
 onbreak.do: onbreak.c signals.h amiga.h
 open.do: open.c amigados.h amiga.h
 perror.do: perror.c amiga.h
-pipe.do: pipe.c fifo_pragmas.h fifo.h fifofd.h signals.h amiga.h
+pipe.do: pipe.c signals.h amiga.h
 popen.do: popen.c amigados.h amiga.h
 processes.do: processes.c processes.h amiga.h
 protection.do: protection.c amiga.h
@@ -919,6 +1016,7 @@ stricmp.do: stricmp.c
 strtok_r.do: strtok_r.c
 strerror_r.do: strerror_r.c
 strftime.do: strftime.c
+amigalocale.do: amigalocale.c amiga.h include/amigalocale.h
 memccpy.do: memccpy.c
 strxfrm.do: strxfrm.c
 
@@ -1035,11 +1133,23 @@ unittests/psockets/testga.o: unittests/psockets/testga.c
 unittests/psockets/testga.do: unittests/psockets/testga.c
 unittests/psockets/testga.nbo: unittests/psockets/testga.c
 unittests/psockets/testga.dnbo: unittests/psockets/testga.c
+
+# amigalocale test program dependencies (in unittests folder)
+unittests/test_amigalocale.o: unittests/test_amigalocale.c amiga.h include/amigalocale.h
+unittests/test_amigalocale.do: unittests/test_amigalocale.c amiga.h include/amigalocale.h
+unittests/test_amigalocale.nbo: unittests/test_amigalocale.c amiga.h include/amigalocale.h
+unittests/test_amigalocale.dnbo: unittests/test_amigalocale.c amiga.h include/amigalocale.h
+
+# tzset test program dependencies (in unittests folder)
+unittests/test_tzset.o: unittests/test_tzset.c amiga.h include/amigalocale.h
+unittests/test_tzset.do: unittests/test_tzset.c amiga.h include/amigalocale.h
+unittests/test_tzset.nbo: unittests/test_tzset.c amiga.h include/amigalocale.h
+unittests/test_tzset.dnbo: unittests/test_tzset.c amiga.h include/amigalocale.h
 #
 # Debugging FAR objects
 #
-_exit.dnbo: _exit.c fifo_pragmas.h fifo.h fifofd.h signals.h amiga.h
-_main.dnbo: _main.c fifo_pragmas.h fifo.h amigados.h fifofd.h signals.h amiga.h
+_exit.dnbo: _exit.c signals.h amiga.h
+_main.dnbo: _main.c amigados.h signals.h amiga.h
 abort.dnbo: abort.c amiga.h
 access.dnbo: access.c amiga.h
 alloca.dnbo: alloca.c
@@ -1065,7 +1175,6 @@ fchmod.dnbo: fchmod.c amiga.h
 fcntl.dnbo: fcntl.c amiga.h
 fd_setsize.dnbo: fd_setsize.c include/sys/types.h
 fibstat.dnbo: fibstat.c timeconvert.h amiga.h
-fifofd.dnbo: fifofd.c fifo_pragmas.h fifo.h fifofd.h amiga.h
 files.dnbo: files.c amiga.h
 fnmatch.dnbo: fnmatch.c include/fnmatch.h
 basename.dnbo: basename.c include/libgen.h
@@ -1095,7 +1204,7 @@ mktemp.dnbo: mktemp.c amiga.h
 onbreak.dnbo: onbreak.c signals.h amiga.h
 open.dnbo: open.c amigados.h amiga.h
 perror.dnbo: perror.c amiga.h
-pipe.dnbo: pipe.c fifo_pragmas.h fifo.h fifofd.h signals.h amiga.h
+pipe.dnbo: pipe.c signals.h amiga.h
 popen.dnbo: popen.c amigados.h amiga.h
 processes.dnbo: processes.c processes.h amiga.h
 protection.dnbo: protection.c amiga.h
@@ -1137,6 +1246,7 @@ stricmp.dnbo: stricmp.c
 strtok_r.dnbo: strtok_r.c
 strerror_r.dnbo: strerror_r.c
 strftime.dnbo: strftime.c
+amigalocale.dnbo: amigalocale.c amiga.h include/amigalocale.h
 memccpy.dnbo: memccpy.c
 strxfrm.dnbo: strxfrm.c
 
@@ -1167,3 +1277,35 @@ usleep.dnbo: usleep.c amiga.h
 utime.dnbo: utime.c timeconvert.h amiga.h
 wait4.dnbo: wait4.c processes.h signals.h amiga.h
 write.dnbo: write.c amiga.h
+
+# FIFO and APipe build targets
+fifo-all:
+	cd fifolib
+	smake all
+	cd ..
+
+apipe-all:
+	cd apipe
+	smake all
+	cd ..
+
+# Individual targets for convenience
+fifo.library:
+	cd fifolib
+	smake fifo.library
+	cd ..
+
+fifo-handler:
+	cd fifolib
+	smake fifo-handler
+	cd ..
+
+fifo-handler-debug:
+	cd fifolib
+	smake fifo-handler-debug
+	cd ..
+
+APipe-Handler:
+	cd apipe
+	smake APipe-Handler
+	cd ..

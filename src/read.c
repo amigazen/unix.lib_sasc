@@ -2,6 +2,7 @@
 #include "files.h"
 #include <fcntl.h>
 
+/* Internal implementation */
 int __read(int fd, void *buffer, unsigned int length)
 {
     struct fileinfo *fi;
@@ -13,4 +14,10 @@ int __read(int fd, void *buffer, unsigned int length)
 	errno = EACCES;
     }
     return -1;
+}
+
+/* Public POSIX read function */
+int read(int fd, void *buffer, unsigned int length)
+{
+    return __read(fd, buffer, length);
 }
