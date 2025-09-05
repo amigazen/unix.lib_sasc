@@ -62,15 +62,31 @@ typedef struct pthread_once pthread_once_t;
 #define PTHREAD_THREADS_MAX        64
 #define PTHREAD_KEYS_MAX           32
 
-/* Error codes */
+/* Error codes - only define if not already defined */
+#ifndef EINVAL
 #define EINVAL     22
+#endif
+#ifndef EAGAIN
 #define EAGAIN     11
+#endif
+#ifndef ESRCH
 #define ESRCH      3
+#endif
+#ifndef EBUSY
 #define EBUSY      16
+#endif
+#ifndef EDEADLK
 #define EDEADLK    45
+#endif
+#ifndef EPERM
 #define EPERM      1
+#endif
+#ifndef ETIMEDOUT
 #define ETIMEDOUT  60
+#endif
+#ifndef ENOSYS
 #define ENOSYS     78
+#endif
 
 /* Additional constants */
 #define PTHREAD_STACK_MIN 8192
@@ -180,8 +196,7 @@ int pthread_mutex_destroy(pthread_mutex_t *mutex);
 int pthread_mutex_lock(pthread_mutex_t *mutex);
 int pthread_mutex_trylock(pthread_mutex_t *mutex);
 int pthread_mutex_unlock(pthread_mutex_t *mutex);
-/* TODO: Implement timed functions */
-/* int pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timespec *abstime); */
+int pthread_mutex_timedlock(pthread_mutex_t *mutex, const struct timespec *abstime);
 
 /* Mutex attributes */
 /* TODO: Implement mutex attributes */
@@ -194,9 +209,8 @@ int pthread_mutex_unlock(pthread_mutex_t *mutex);
 int pthread_cond_init(pthread_cond_t *cond, const pthread_condattr_t *attr);
 int pthread_cond_destroy(pthread_cond_t *cond);
 int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex);
-/* TODO: Implement timed functions */
-/* int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, 
-                          const struct timespec *abstime); */
+int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, 
+                          const struct timespec *abstime);
 int pthread_cond_signal(pthread_cond_t *cond);
 int pthread_cond_broadcast(pthread_cond_t *cond);
 
@@ -223,11 +237,10 @@ int pthread_rwlock_trywrlock(pthread_rwlock_t *lock);
 /* int pthread_rwlockattr_destroy(pthread_rwlockattr_t *attr); */
 
 /* Thread-specific storage */
-/* TODO: Implement thread-specific storage */
-/* int pthread_key_create(pthread_key_t *key, void (*destructor)(void *)); */
-/* int pthread_key_delete(pthread_key_t key); */
-/* int pthread_setspecific(pthread_key_t key, const void *value); */
-/* void *pthread_getspecific(pthread_key_t key); */
+int pthread_key_create(pthread_key_t *key, void (*destructor)(void *));
+int pthread_key_delete(pthread_key_t key);
+int pthread_setspecific(pthread_key_t key, const void *value);
+void *pthread_getspecific(pthread_key_t key);
 
 /* Cancellation */
 int pthread_cancel(pthread_t thread);
@@ -241,8 +254,7 @@ int pthread_setcanceltype(int type, int *oldtype);
 /* void pthread_cleanup_pop(int execute); */
 
 /* Once */
-/* TODO: Implement pthread_once */
-/* int pthread_once(pthread_once_t *once_control, void (*init_routine)(void)); */
+int pthread_once(pthread_once_t *once_control, void (*init_routine)(void));
 
 /* Thread naming (non-standard extension) */
 /* TODO: Implement thread naming */
