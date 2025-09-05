@@ -12,22 +12,29 @@
  * - nanosleep
  */
 
- #include <sys/timer.h>
- #include <sys/time.h>
- #include <errno.h>
- #include <string.h>
- #include <stdlib.h>
- #include <unistd.h>
- #include <signal.h>
- 
- #include <proto/exec.h>
- #include <devices/timer.h>
- #include <utility/tagitem.h>
- #include <exec/signals.h>
- #include <exec/interrupts.h>
+#include "amiga.h"
+#include <sys/timer.h>
+#include <sys/time.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+
+#include <proto/exec.h>
+#include <clib/alib_protos.h>
+
+#include <devices/timer.h>
+#include <utility/tagitem.h>
+#include <dos/dos.h>
+#include <exec/interrupts.h>
  
  /* Use lower-level chkabort consistently */
- extern void __chkabort(void);
+extern void __chkabort(void);
+
+/* Function declarations */
+extern void *realloc(void *ptr, size_t size);
+extern void *memmove(void *dest, const void *src, size_t n);
  
  /* Define interrupt handler calling convention */
  #if defined(__GNUC__)
@@ -44,7 +51,7 @@
  };
  
  /* Forward declaration for the interrupt handler */
- static void INTERRUPT_HANDLER _timer_handler_func(register __a0 struct amiga_timer *timer);
+static void INTERRUPT_HANDLER _timer_handler_func(register struct amiga_timer *timer);
  
  /* Internal timer structure - now based on timer.device */
  struct amiga_timer {
@@ -99,25 +106,24 @@
  
  /* Initialize timer.device interface for nanosleep */
  static int _init_timer_device(void) {
-     if (TimerInterface.is_open) return 0;
-     TimerInterface.port = CreateMsgPort();
-     if (!TimerInterface.port) return -1;
-     TimerInterface.req = (struct TimeRequest *)CreateExtIO(TimerInterface.port, sizeof(struct TimeRequest));
-     if (!TimerInterface.req) {
-         DeleteMsgPort(TimerInterface.port);
-         TimerInterface.port = NULL;
-         return -1;
-     }
-     if (OpenDevice(TIMERNAME, UNIT_MICROHZ, (struct IORequest *)TimerInterface.req, 0) != 0) {
-         DeleteExtIO((struct IORequest *)TimerInterface.req);
-         TimerInterface.req = NULL;
-         DeleteMsgPort(TimerInterface.port);
-         TimerInterface.port = NULL;
-         return -1;
-     }
-     TimerInterface.is_open = 1;
-     atexit(_cleanup_resources);
-     return 0;
+    if (TimerInterface.is_open) return 0;
+    TimerInterface.port = CreateMsgPort();
+    if (!TimerInterface.port) return -1;
+    TimerInterface.req = (struct TimeRequest *)CreateExtIO(TimerInterface.port, sizeof(struct TimeRequest));
+    if (!TimerInterface.req) {
+        DeleteMsgPort(TimerInterface.port);
+        TimerInterface.port = NULL;
+        return -1;
+    }
+    if (OpenDevice(TIMERNAME, UNIT_MICROHZ, (struct IORequest *)TimerInterface.req, 0) != 0) {
+        DeleteExtIO((struct IORequest *)TimerInterface.req);
+        TimerInterface.req = NULL;
+        DeleteMsgPort(TimerInterface.port);
+        TimerInterface.port = NULL;
+        return -1;
+    }
+    TimerInterface.is_open = 1;
+    return 0;
  }
  
  /*
@@ -127,14 +133,16 @@
   */
  
  /* Find timer by ID */
- static struct amiga_timer *_find_timer(timer_t timerid) {
-     for (int i = 0; i < timer_count; i++) {
-         if (timers[i].timer_id == timerid) {
-             return &timers[i];
-         }
-     }
-     return NULL;
- }
+static struct amiga_timer *_find_timer(timer_t timerid) {
+    int i;
+    
+    for (i = 0; i < timer_count; i++) {
+        if (timers[i].timer_id == timerid) {
+            return &timers[i];
+        }
+    }
+    return NULL;
+}
  
  /*
   * ============================================================================
@@ -143,7 +151,7 @@
   */
  
  /* The software interrupt handler for timer expirations */
- static void INTERRUPT_HANDLER _timer_handler_func(register __a0 struct amiga_timer *timer) {
+static void INTERRUPT_HANDLER _timer_handler_func(register struct amiga_timer *timer) {
      if (CheckIO((struct IORequest *)timer->req)) {
          WaitIO((struct IORequest *)timer->req);
      }
@@ -164,24 +172,28 @@
  }
  
  int timer_create(clockid_t clockid, struct sigevent *sevp, timer_t *timerid) {
-     __chkabort();
-     if (timerid == NULL || (clockid != CLOCK_REALTIME && clockid != CLOCK_MONOTONIC)) {
-         errno = EINVAL;
-         return -1;
-     }
-     if (sevp && sevp->sigev_notify == SIGEV_THREAD) {
-         errno = EINVAL; return -1; /* Unsupported */
-     }
- 
-     if (timer_count >= timer_capacity) {
-         int new_capacity = timer_capacity ? timer_capacity * 2 : 8;
-         struct amiga_timer *new_timers = realloc(timers, new_capacity * sizeof(struct amiga_timer));
-         if (!new_timers) { errno = ENOMEM; return -1; }
-         timers = new_timers;
-         timer_capacity = new_capacity;
-     }
- 
-     struct amiga_timer *timer = &timers[timer_count];
+    struct amiga_timer *timer;
+    int new_capacity;
+    struct amiga_timer *new_timers;
+    
+    __chkabort();
+    if (timerid == NULL || (clockid != CLOCK_REALTIME && clockid != CLOCK_MONOTONIC)) {
+        errno = EINVAL;
+        return -1;
+    }
+    if (sevp && sevp->sigev_notify == SIGEV_THREAD) {
+        errno = EINVAL; return -1; /* Unsupported */
+    }
+
+    if (timer_count >= timer_capacity) {
+        new_capacity = timer_capacity ? timer_capacity * 2 : 8;
+        new_timers = (struct amiga_timer *)realloc(timers, new_capacity * sizeof(struct amiga_timer));
+        if (!new_timers) { errno = ENOMEM; return -1; }
+        timers = new_timers;
+        timer_capacity = new_capacity;
+    }
+
+    timer = &timers[timer_count];
      memset(timer, 0, sizeof(struct amiga_timer));
  
      timer->timer_id = next_timer_id++;
@@ -223,13 +235,18 @@
  }
  
  int timer_delete(timer_t timerid) {
-     __chkabort();
-     struct amiga_timer *timer = NULL;
-     int i;
-     for (i = 0; i < timer_count; i++) {
-         if (timers[i].timer_id == timerid) { timer = &timers[i]; break; }
-     }
-     if (!timer) { errno = EINVAL; return -1; }
+    struct amiga_timer *timer;
+    int i;
+    
+    __chkabort();
+    timer = NULL;
+    for (i = 0; i < timer_count; i++) {
+        if (timers[i].timer_id == timerid) { 
+            timer = &timers[i]; 
+            break; 
+        }
+    }
+    if (!timer) { errno = EINVAL; return -1; }
  
      if (timer->active) { AbortIO((struct IORequest *)timer->req); WaitIO((struct IORequest *)timer->req); }
      CloseDevice((struct IORequest *)timer->req);
@@ -243,10 +260,12 @@
  }
  
  int timer_gettime(timer_t timerid, struct itimerspec *curr_value) {
-     __chkabort();
-     if (!curr_value) { errno = EINVAL; return -1; }
-     struct amiga_timer *timer = _find_timer(timerid);
-     if (!timer) { errno = EINVAL; return -1; }
+    struct amiga_timer *timer;
+    
+    __chkabort();
+    if (!curr_value) { errno = EINVAL; return -1; }
+    timer = _find_timer(timerid);
+    if (!timer) { errno = EINVAL; return -1; }
  
      *curr_value = timer->current_value;
      if (!timer->active) {
@@ -259,26 +278,29 @@
  }
  
  int timer_settime(timer_t timerid, int flags, const struct itimerspec *new_value, struct itimerspec *old_value) {
-     __chkabort();
-     if (!new_value) { errno = EINVAL; return -1; }
-     struct amiga_timer *timer = _find_timer(timerid);
-     if (!timer) { errno = EINVAL; return -1; }
-     if (old_value) *old_value = timer->current_value;
- 
-     if (timer->active) {
-         AbortIO((struct IORequest *)timer->req);
-         WaitIO((struct IORequest *)timer->req);
-         timer->active = 0;
-     }
- 
-     timer->current_value = *new_value;
-     timer->overrun_count = 0;
- 
-     if (new_value->it_value.tv_sec == 0 && new_value->it_value.tv_nsec == 0) return 0;
- 
-     struct timespec request_time = new_value->it_value;
+    struct amiga_timer *timer;
+    struct timespec request_time;
+    struct timespec now;
+    
+    __chkabort();
+    if (!new_value) { errno = EINVAL; return -1; }
+    timer = _find_timer(timerid);
+    if (!timer) { errno = EINVAL; return -1; }
+    if (old_value) *old_value = timer->current_value;
+
+    if (timer->active) {
+        AbortIO((struct IORequest *)timer->req);
+        WaitIO((struct IORequest *)timer->req);
+        timer->active = 0;
+    }
+
+    timer->current_value = *new_value;
+    timer->overrun_count = 0;
+
+    if (new_value->it_value.tv_sec == 0 && new_value->it_value.tv_nsec == 0) return 0;
+
+    request_time = new_value->it_value;
      if (flags & TIMER_ABSTIME) {
-         struct timespec now;
          clock_gettime(CLOCK_REALTIME, &now);
          if (now.tv_sec > request_time.tv_sec || (now.tv_sec == request_time.tv_sec && now.tv_nsec >= request_time.tv_nsec)) return 0;
          request_time.tv_sec -= now.tv_sec;
@@ -296,18 +318,22 @@
  }
  
  int timer_getoverrun(timer_t timerid) {
-     __chkabort();
-     struct amiga_timer *timer = _find_timer(timerid);
-     if (!timer) { errno = EINVAL; return -1; }
-     int overruns = timer->overrun_count;
-     timer->overrun_count = 0;
-     return overruns;
- }
+    struct amiga_timer *timer;
+    int overruns;
+    
+    __chkabort();
+    timer = _find_timer(timerid);
+    if (!timer) { errno = EINVAL; return -1; }
+    overruns = timer->overrun_count;
+    timer->overrun_count = 0;
+    return overruns;
+}
  
  int clock_gettime(clockid_t clockid, struct timespec *tp) {
-     __chkabort();
-     if (!tp) { errno = EINVAL; return -1; }
-     struct timeval tv;
+    struct timeval tv;
+    
+    __chkabort();
+    if (!tp) { errno = EINVAL; return -1; }
      switch (clockid) {
          case CLOCK_REALTIME: case CLOCK_MONOTONIC:
              gettimeofday(&tv, NULL);
@@ -320,15 +346,18 @@
  }
  
  int clock_settime(clockid_t clockid, const struct timespec *tp) {
-     __chkabort();
-     if (!tp) { errno = EINVAL; return -1; }
-     if (clockid == CLOCK_REALTIME) {
-         struct timeval tv = {tp->tv_sec, tp->tv_nsec / 1000};
-         if (settimeofday(&tv, NULL) != 0) return -1;
-         return 0;
-     }
-     errno = EPERM; return -1;
- }
+    struct timeval tv;
+    
+    __chkabort();
+    if (!tp) { errno = EINVAL; return -1; }
+    if (clockid == CLOCK_REALTIME) {
+        tv.tv_sec = tp->tv_sec;
+        tv.tv_usec = tp->tv_nsec / 1000;
+        if (settimeofday(&tv, NULL) != 0) return -1;
+        return 0;
+    }
+    errno = EPERM; return -1;
+}
  
  int clock_getres(clockid_t clockid, struct timespec *res) {
      __chkabort();
@@ -344,54 +373,60 @@
  }
  
  int clock_nanosleep(clockid_t clockid, int flags, const struct timespec *request, struct timespec *remain) {
-     __chkabort();
-     if (!request || request->tv_nsec < 0 || request->tv_nsec >= 1000000000 || request->tv_sec < 0) { errno = EINVAL; return -1; }
-     if (clockid != CLOCK_REALTIME && clockid != CLOCK_MONOTONIC) { errno = EINVAL; return -1; }
- 
-     struct timespec relative_request;
-     if (flags & TIMER_ABSTIME) {
-         struct timespec now;
-         clock_gettime(clockid, &now);
-         if (now.tv_sec > request->tv_sec || (now.tv_sec == request->tv_sec && now.tv_nsec >= request->tv_nsec)) return 0;
-         relative_request.tv_sec = request->tv_sec - now.tv_sec;
-         relative_request.tv_nsec = request->tv_nsec - now.tv_nsec;
-         if (relative_request.tv_nsec < 0) { relative_request.tv_sec--; relative_request.tv_nsec += 1000000000; }
-     } else {
-         relative_request = *request;
-     }
-     
-     if (_init_timer_device() != 0) { errno = ENOSYS; return -1; }
- 
-     struct timeval start_tv, end_tv;
-     gettimeofday(&start_tv, NULL);
-     TimerInterface.req->tr_node.io_Command = TR_ADDREQUEST;
-     TimerInterface.req->tr_time.tv_secs = relative_request.tv_sec;
-     TimerInterface.req->tr_time.tv_micro = relative_request.tv_nsec / 1000;
- 
-     ULONG timer_sig = 1L << TimerInterface.port->mp_SigBit;
-     ULONG break_sigs = SIGBREAKF_CTRLC | SIGBREAKF_CTRLD;
- 
-     SendIO((struct IORequest *)TimerInterface.req);
-     ULONG signals = Wait(timer_sig | break_sigs);
- 
-     if (signals & timer_sig) {
-         WaitIO((struct IORequest *)TimerInterface.req);
-         if (remain) { remain->tv_sec = 0; remain->tv_nsec = 0; }
-         return 0;
-     } else {
-         gettimeofday(&end_tv, NULL);
-         AbortIO((struct IORequest *)TimerInterface.req);
-         WaitIO((struct IORequest *)TimerInterface.req);
-         if (remain) {
-             long es = end_tv.tv_sec - start_tv.tv_sec, eus = end_tv.tv_usec - start_tv.tv_usec;
-             if (eus < 0) { es--; eus += 1000000; }
-             long rs = relative_request.tv_sec - es, rns = relative_request.tv_nsec - (eus * 1000);
-             if (rns < 0) { rs--; rns += 1000000000; }
-             if (rs < 0) { remain->tv_sec = 0; remain->tv_nsec = 0; }
-             else { remain->tv_sec = rs; remain->tv_nsec = rns; }
-         }
-         errno = EINTR; return -1;
-     }
+    struct timespec relative_request;
+    struct timespec now;
+    struct timeval start_tv, end_tv;
+    ULONG timer_sig;
+    ULONG break_sigs;
+    ULONG signals;
+    long es, eus, rs, rns;
+    
+    __chkabort();
+    if (!request || request->tv_nsec < 0 || request->tv_nsec >= 1000000000 || request->tv_sec < 0) { errno = EINVAL; return -1; }
+    if (clockid != CLOCK_REALTIME && clockid != CLOCK_MONOTONIC) { errno = EINVAL; return -1; }
+
+    if (flags & TIMER_ABSTIME) {
+        clock_gettime(clockid, &now);
+        if (now.tv_sec > request->tv_sec || (now.tv_sec == request->tv_sec && now.tv_nsec >= request->tv_nsec)) return 0;
+        relative_request.tv_sec = request->tv_sec - now.tv_sec;
+        relative_request.tv_nsec = request->tv_nsec - now.tv_nsec;
+        if (relative_request.tv_nsec < 0) { relative_request.tv_sec--; relative_request.tv_nsec += 1000000000; }
+    } else {
+        relative_request = *request;
+    }
+    
+    if (_init_timer_device() != 0) { errno = ENOSYS; return -1; }
+    gettimeofday(&start_tv, NULL);
+    TimerInterface.req->tr_node.io_Command = TR_ADDREQUEST;
+    TimerInterface.req->tr_time.tv_secs = relative_request.tv_sec;
+    TimerInterface.req->tr_time.tv_micro = relative_request.tv_nsec / 1000;
+
+    timer_sig = 1L << TimerInterface.port->mp_SigBit;
+    break_sigs = SIGBREAKF_CTRL_C | SIGBREAKF_CTRL_D;
+
+    SendIO((struct IORequest *)TimerInterface.req);
+    signals = Wait(timer_sig | break_sigs);
+
+    if (signals & timer_sig) {
+        WaitIO((struct IORequest *)TimerInterface.req);
+        if (remain) { remain->tv_sec = 0; remain->tv_nsec = 0; }
+        return 0;
+    } else {
+        gettimeofday(&end_tv, NULL);
+        AbortIO((struct IORequest *)TimerInterface.req);
+        WaitIO((struct IORequest *)TimerInterface.req);
+        if (remain) {
+            es = end_tv.tv_sec - start_tv.tv_sec;
+            eus = end_tv.tv_usec - start_tv.tv_usec;
+            if (eus < 0) { es--; eus += 1000000; }
+            rs = relative_request.tv_sec - es;
+            rns = relative_request.tv_nsec - (eus * 1000);
+            if (rns < 0) { rs--; rns += 1000000000; }
+            if (rs < 0) { remain->tv_sec = 0; remain->tv_nsec = 0; }
+            else { remain->tv_sec = rs; remain->tv_nsec = rns; }
+        }
+        errno = EINTR; return -1;
+    }
  }
  
  int nanosleep(const struct timespec *request, struct timespec *remain) {
