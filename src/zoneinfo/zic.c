@@ -51,6 +51,9 @@ static char	elsieid[] = "@(#)zic.c	4.12";
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
 
 #ifndef TRUE
 #define TRUE	1
@@ -116,57 +119,53 @@ struct zone {
 	time_t		z_untiltime;
 };
 
-extern char *	icatalloc __P((char * old, const char * new));
-extern char *	icpyalloc __P((const char * string));
-extern void	ifree __P((char * p));
-extern char *	imalloc __P((int n));
-extern char *	irealloc __P((char * old, int n));
-extern int	link __P((const char * fromname, const char * toname));
+extern void *	icatalloc(char * old, const char * new);
+extern void *	icpyalloc(const char * string);
+extern void	ifree(char * p);
+extern void *	imalloc(int n);
+extern void *	irealloc(char * old, int n);
+extern int	link(const char * fromname, const char * toname);
 extern char *	optarg;
 extern int	optind;
-static void	addtt __P((time_t starttime, int type));
-static int	addtype
-		    __P((long gmtoff, const char * abbr, int isdst,
-		    int ttisstd));
-static void	addleap __P((time_t t, int positive, int rolling));
-static void	adjleap __P((void));
-static void	associate __P((void));
-static int	ciequal __P((const char * ap, const char * bp));
-static void	convert __P((long val, char * buf));
-static void	dolink __P((const char * fromfile, const char * tofile));
-static void	eat __P((const char * name, int num));
-static void	eats __P((const char * name, int num,
-		    const char * rname, int rnum));
-static long	eitol __P((int i));
-static void	error __P((const char * message));
-static char **	getfields __P((char * buf));
-static long	gethms __P((char * string, const char * errstrng,
-		    int signable));
-static void	infile __P((const char * filename));
-static void	inleap __P((char ** fields, int nfields));
-static void	inlink __P((char ** fields, int nfields));
-static void	inrule __P((char ** fields, int nfields));
-static int	inzcont __P((char ** fields, int nfields));
-static int	inzone __P((char ** fields, int nfields));
-static int	inzsub __P((char ** fields, int nfields, int iscont));
-static int	itsabbr __P((const char * abbr, const char * word));
-static int	itsdir __P((const char * name));
-static int	lowerit __P((int c));
-static char *	memcheck __P((char * tocheck));
-static int	mkdirs __P((char * filename));
-static void	newabbr __P((const char * abbr));
-static long	oadd __P((long t1, long t2));
-static void	outzone __P((const struct zone * zp, int ntzones));
-static void	puttzcode __P((long code, FILE * fp));
-static int	rcomp __P((const void *leftp, const void *rightp));
-static time_t	rpytime __P((const struct rule * rp, int wantedy));
-static void	rulesub __P((struct rule * rp, char * loyearp, char * hiyearp,
-		char * typep, char * monthp, char * dayp, char * timep));
-static void	setboundaries __P((void));
-static time_t	tadd __P((time_t t1, long t2));
-static void	usage __P((void));
-static void	writezone __P((const char * name));
-static int	yearistype __P((int year, const char * type));
+static void	addtt(time_t starttime, int type);
+static int	addtype(long gmtoff, const char * abbr, int isdst, int ttisstd);
+static void	addleap(time_t t, int positive, int rolling);
+static void	adjleap(void);
+static void	associate(void);
+static int	ciequal(const char * ap, const char * bp);
+static void	convert(long val, char * buf);
+static void	dolink(const char * fromfile, const char * tofile);
+static void	eat(const char * name, int num);
+static void	eats(const char * name, int num, const char * rname, int rnum);
+static long	eitol(int i);
+static void	error(const char * message);
+static char **	getfields(char * buf);
+static long	gethms(char * string, const char * errstrng, int signable);
+static void	infile(const char * filename);
+static void	inleap(char ** fields, int nfields);
+static void	inlink(char ** fields, int nfields);
+static void	inrule(char ** fields, int nfields);
+static int	inzcont(char ** fields, int nfields);
+static int	inzone(char ** fields, int nfields);
+static int	inzsub(char ** fields, int nfields, int iscont);
+static int	itsabbr(const char * abbr, const char * word);
+static int	itsdir(const char * name);
+static int	lowerit(int c);
+static void *	memcheck(void *tocheck);
+static int	mkdirs(char * filename);
+static void	newabbr(const char * abbr);
+static long	oadd(long t1, long t2);
+static void	outzone(const struct zone * zp, int ntzones);
+static void	puttzcode(long code, FILE * fp);
+static int	rcomp(const void *leftp, const void *rightp);
+static time_t	rpytime(const struct rule * rp, int wantedy);
+static void	rulesub(struct rule * rp, char * loyearp, char * hiyearp,
+		char * typep, char * monthp, char * dayp, char * timep);
+static void	setboundaries(void);
+static time_t	tadd(time_t t1, long t2);
+static void	usage(void);
+static void	writezone(const char * name);
+static int	yearistype(int year, const char * type);
 
 static int		charcnt;
 static int		errors;
@@ -287,8 +286,7 @@ struct lookup {
 	const int	l_value;
 };
 
-static struct lookup const *	byword __P((const char * string,
-					const struct lookup * lp));
+static struct lookup const *	byword(const char * string, const struct lookup * lp);
 
 static struct lookup const	line_codes[] = {
 	"Rule",		LC_RULE,
@@ -379,8 +377,7 @@ static char		roll[TZ_MAX_LEAPS];
 ** Memory allocation.
 */
 
-static char *
-memcheck(char *ptr)
+static void * memcheck(void *ptr)
 {
 	if (ptr == NULL) {
 		(void) perror(progname);
@@ -548,33 +545,33 @@ main(int argc, char **argv)
 static void
 dolink(const char *fromfile, const char *tofile)
 {
-	register char *	fromname;
-	register char *	toname;
+	register void *	fromname;
+	register void *	toname;
 
-	fromname = ecpyalloc(directory);
-	fromname = ecatalloc(fromname, "/");
-	fromname = ecatalloc(fromname, fromfile);
-	if (strchr(tofile, ':')) toname = ecpyalloc(tofile);
+	fromname = (void *)ecpyalloc(directory);
+	fromname = (void *)ecatalloc((char *)fromname, "/");
+	fromname = (void *)ecatalloc((char *)fromname, fromfile);
+	if (strchr(tofile, ':')) toname = (void *)ecpyalloc(tofile);
 	else
 	  {
-	    toname = ecpyalloc(directory);
-	    toname = ecatalloc(toname, "/");
-	    toname = ecatalloc(toname, tofile);
+	    toname = (void *)ecpyalloc(directory);
+	    toname = (void *)ecatalloc((char *)toname, "/");
+	    toname = (void *)ecatalloc((char *)toname, tofile);
 	  }
 	/*
 	** We get to be careful here since
 	** there's a fair chance of root running us.
 	*/
-	if (!itsdir(toname))
-		(void) remove(toname);
-	if (link(fromname, toname) != 0) {
+	if (!itsdir((char *)toname))
+		(void) remove((char *)toname);
+	if (link((char *)fromname, (char *)toname) != 0) {
 		(void) fprintf(stderr, "%s: Can't link from %s to ",
-			progname, fromname);
-		(void) perror(toname);
+			progname, (char *)fromname);
+		(void) perror((char *)toname);
 		(void) exit(EXIT_FAILURE);
 	}
-	ifree(fromname);
-	ifree(toname);
+	ifree((char *)fromname);
+	ifree((char *)toname);
 }
 
 static void

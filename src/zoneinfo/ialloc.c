@@ -48,6 +48,8 @@ static char	elsieid[] = "@(#)ialloc.c	8.18";
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
+#include "/amiga.h"
+
 
 #ifdef MAL
 #define NULLMAL(x)	((x) == NULL || (x) == MAL)
@@ -57,14 +59,14 @@ static char	elsieid[] = "@(#)ialloc.c	8.18";
 
 #define nonzero(n)	(((n) == 0) ? 1 : (n))
 
-char *	icalloc __P((int nelem, int elsize));
-char *	icatalloc __P((char * old, const char * new));
-char *	icpyalloc __P((const char * string));
-char *	imalloc __P((int n));
-char *	irealloc __P((char * pointer, int size));
-void	ifree __P((char * pointer));
+void *	icalloc(int nelem, int elsize);
+void *	icatalloc(char * old, const char * new);
+void *	icpyalloc(const char * string);
+void *	imalloc(int n);
+void *	irealloc(char * pointer, int size);
+void	ifree(char * pointer);
 
-char *
+void *
 imalloc(int n)
 {
 #ifdef MAL
@@ -77,7 +79,7 @@ imalloc(int n)
 #endif /* !defined MAL */
 }
 
-char *
+void *
 icalloc(int nelem, int elsize)
 {
 	if (nelem == 0 || elsize == 0)
@@ -85,7 +87,7 @@ icalloc(int nelem, int elsize)
 	return calloc((size_t) nelem, (size_t) elsize);
 }
 
-char *
+void *
 irealloc(char *pointer, int size)
 {
 	if (NULLMAL(pointer))
@@ -93,7 +95,7 @@ irealloc(char *pointer, int size)
 	return realloc((void *) pointer, (size_t) nonzero(size));
 }
 
-char *
+void *
 icatalloc(char *old, const char *new)
 {
 	register char *	result;
@@ -111,7 +113,7 @@ icatalloc(char *old, const char *new)
 	return result;
 }
 
-char *
+void *
 icpyalloc(const char *string)
 {
 	return icatalloc((char *) NULL, string);
