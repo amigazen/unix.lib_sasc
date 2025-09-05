@@ -1,9 +1,11 @@
 /*
  * SPDX-License-Identifier: BSD-2-Clause
- * * rt_revised.c - POSIX.1b realtime library implementation for Amiga
+ *
+ * * rt.c - POSIX.1b realtime library implementation for Amiga
+ *
  * * This file implements POSIX realtime timer functions using Amiga's
- * realtime.library and timer.device APIs. This version improves accuracy,
- * POSIX conformance, and Amiga-specific best practices.
+ * realtime.library and timer.device APIs. 
+ *
  * * Functions implemented:
  * - timer_create, timer_delete, timer_gettime, timer_settime
  * - clock_gettime, clock_settime, clock_getres, clock_nanosleep
@@ -21,6 +23,7 @@
  #include <proto/realtime.h>
  #include <devices/timer.h>
  #include <utility/tagitem.h>
+ #include <exec/signals.h>
  
  /* Use lower-level chkabort consistently */
  extern void __chkabort(void);
@@ -65,6 +68,8 @@
      struct Player *player;             /* RealTime library player */
      int active;                        /* Timer active flag */
      struct itimerspec current_value;   /* Current timer value */
+     struct timespec start_time;        /* Time when the timer was set */
+     char conductor_name[32];           /* Name of the conductor */
  };
  
  /* Global timer management */
@@ -96,13 +101,17 @@
          RealTimeBase = NULL;
      }
      if (TimerInterface.is_open) {
-         if (TimerInterface.req) {
-             CloseDevice((struct IORequest *)TimerInterface.req);
-             DeleteExtIO((struct IORequest *)TimerInterface.req);
+         /* Ensure any pending request is aborted */
+         if (!CheckIO((struct IORequest *)TimerInterface.req)) {
+             AbortIO((struct IORequest *)TimerInterface.req);
          }
-         if (TimerInterface.port) {
-             DeleteMsgPort(TimerInterface.port);
-         }
+         WaitIO((struct IORequest *)TimerInterface.req);
+         
+         CloseDevice((struct IORequest *)TimerInterface.req);
+         
+         if (TimerInterface.req) DeleteExtIO((struct IORequest *)TimerInterface.req);
+         if (TimerInterface.port) DeleteMsgPort(TimerInterface.port);
+         
          TimerInterface.is_open = 0;
      }
  }
@@ -204,13 +213,10 @@
  
      timer->timer_id = next_timer_id++;
      
-     char conductor_name[32];
-     sprintf(conductor_name, "posix_timer_%ld", timer->timer_id);
+     sprintf(timer->conductor_name, "posix_timer_%ld", timer->timer_id);
  
-     /* For simplicity, we create a conductor but no player yet.
-        The player will be associated when the timer is set. */
      timer->conductor = CreateConductor(
-         PLAYER_Name, conductor_name, 
+         PLAYER_Name, timer->conductor_name, 
          TAG_END
      );
  
@@ -285,8 +291,39 @@
          return -1;
      }
  
-     /* TODO: A full implementation would need to calculate remaining time */
-     *curr_value = timer->current_value;
+     /* Copy the configured interval */
+     curr_value->it_interval = timer->current_value.it_interval;
+ 
+     if (!timer->active) {
+         /* Timer is disarmed */
+         curr_value->it_value.tv_sec = 0;
+         curr_value->it_value.tv_nsec = 0;
+     } else {
+         /* Timer is armed, calculate remaining time */
+         struct timespec now, elapsed;
+         clock_gettime(CLOCK_MONOTONIC, &now);
+ 
+         elapsed.tv_sec = now.tv_sec - timer->start_time.tv_sec;
+         elapsed.tv_nsec = now.tv_nsec - timer->start_time.tv_nsec;
+         if (elapsed.tv_nsec < 0) {
+             elapsed.tv_sec--;
+             elapsed.tv_nsec += 1000000000;
+         }
+ 
+         /* Calculate remaining time */
+         curr_value->it_value.tv_sec = timer->current_value.it_value.tv_sec - elapsed.tv_sec;
+         curr_value->it_value.tv_nsec = timer->current_value.it_value.tv_nsec - elapsed.tv_nsec;
+         if (curr_value->it_value.tv_nsec < 0) {
+             curr_value->it_value.tv_sec--;
+             curr_value->it_value.tv_nsec += 1000000000;
+         }
+ 
+         /* If time has already expired, report zero */
+         if (curr_value->it_value.tv_sec < 0) {
+             curr_value->it_value.tv_sec = 0;
+             curr_value->it_value.tv_nsec = 0;
+         }
+     }
      
      return 0;
  }
@@ -321,15 +358,37 @@
          return 0;
      }
  
-     /* This is a simplified implementation. realtime.library is not a good
-        fit for interval timers. A timer.device-based approach would be better.
-        This implementation only handles the initial expiration. */
+     /* Delete old player if it exists */
+     if (timer->player) {
+         DeletePlayer(timer->player);
+         timer->player = NULL;
+     }
+ 
+     /* NOTE: POSIX interval timers (it_interval > 0) are not supported by this
+        implementation, as realtime.library does not provide an automatic
+        re-arming mechanism. The timer will fire only once. */
      ULONG ticks = new_value->it_value.tv_sec * 50 + new_value->it_value.tv_nsec / 20000000;
  
      if (ticks > 0) {
+         char player_name[32];
+         sprintf(player_name, "posix_player_%ld", timer->timer_id);
+         
+         timer->player = CreatePlayer(
+             PLAYER_Name, player_name,
+             PLAYER_Conductor, timer->conductor_name,
+             TAG_END);
+ 
+         if (timer->player == NULL) {
+             errno = ENOMEM;
+             return -1;
+         }
+ 
+         SetPlayerAttrs(timer->player, PLAYER_AlarmTime, ticks, TAG_END);
          SetConductorState(timer->conductor, CLOCKSTATE_RUNNING, 0);
-         /* A player would need to be created and linked here */
+         SetPlayerAttrs(timer->player, PLAYER_Ready, TRUE, TAG_END);
+         
          timer->active = 1;
+         clock_gettime(CLOCK_MONOTONIC, &timer->start_time);
      }
  
      return 0;
@@ -430,54 +489,91 @@
          return -1;
      }
  
-     struct timespec target_ts = *request;
+     struct timespec relative_request;
      if (flags & TIMER_ABSTIME) {
          struct timespec now;
          clock_gettime(clockid, &now);
          
-         if (now.tv_sec > target_ts.tv_sec || (now.tv_sec == target_ts.tv_sec && now.tv_nsec >= target_ts.tv_nsec)) {
+         if (now.tv_sec > request->tv_sec || (now.tv_sec == request->tv_sec && now.tv_nsec >= request->tv_nsec)) {
               return 0; /* Already past the target time */
          }
  
          /* Calculate relative time */
-         target_ts.tv_sec = request->tv_sec - now.tv_sec;
-         target_ts.tv_nsec = request->tv_nsec - now.tv_nsec;
-         if (target_ts.tv_nsec < 0) {
-             target_ts.tv_sec--;
-             target_ts.tv_nsec += 1000000000;
+         relative_request.tv_sec = request->tv_sec - now.tv_sec;
+         relative_request.tv_nsec = request->tv_nsec - now.tv_nsec;
+         if (relative_request.tv_nsec < 0) {
+             relative_request.tv_sec--;
+             relative_request.tv_nsec += 1000000000;
          }
+     } else {
+         relative_request = *request;
      }
      
-     return nanosleep(&target_ts, remain);
- }
- 
- int nanosleep(const struct timespec *request, struct timespec *remain) {
-     __chkabort();
-     
-     if (request == NULL || request->tv_nsec < 0 || request->tv_nsec >= 1000000000 || request->tv_sec < 0) {
-         errno = EINVAL;
-         return -1;
-     }
- 
      if (_init_timer_device() != 0) {
          errno = ENOSYS;
          return -1;
      }
  
-     TimerInterface.req->tr_node.io_Command = TR_ADDREQUEST;
-     TimerInterface.req->tr_time.tv_secs = request->tv_sec;
-     TimerInterface.req->tr_time.tv_micro = request->tv_nsec / 1000;
-     
-     DoIO((struct IORequest *)TimerInterface.req);
+     struct timeval start_tv, end_tv;
+     gettimeofday(&start_tv, NULL);
  
-     /* On Amiga, sleep is generally not interruptible in a POSIX sense,
-        so 'remain' will be zero on success. A SIGABRT (Ctrl+C) will
-        terminate, not interrupt. */
-     if (remain != NULL) {
-         remain->tv_sec = 0;
-         remain->tv_nsec = 0;
+     TimerInterface.req->tr_node.io_Command = TR_ADDREQUEST;
+     TimerInterface.req->tr_time.tv_secs = relative_request.tv_sec;
+     TimerInterface.req->tr_time.tv_micro = relative_request.tv_nsec / 1000;
+ 
+     ULONG timer_sig = 1L << TimerInterface.port->mp_SigBit;
+     ULONG break_sigs = SIGBREAKF_CTRLC | SIGBREAKF_CTRLD;
+ 
+     SendIO((struct IORequest *)TimerInterface.req);
+     ULONG signals = Wait(timer_sig | break_sigs);
+ 
+     if (signals & timer_sig) {
+         /* Timer finished normally */
+         WaitIO((struct IORequest *)TimerInterface.req);
+         if (remain) {
+             remain->tv_sec = 0;
+             remain->tv_nsec = 0;
+         }
+         return 0;
+     } else {
+         /* Interrupted by a signal */
+         gettimeofday(&end_tv, NULL);
+         AbortIO((struct IORequest *)TimerInterface.req);
+         WaitIO((struct IORequest *)TimerInterface.req);
+ 
+         if (remain) {
+             long elapsed_s = end_tv.tv_sec - start_tv.tv_sec;
+             long elapsed_us = end_tv.tv_usec - start_tv.tv_usec;
+             if (elapsed_us < 0) {
+                 elapsed_s--;
+                 elapsed_us += 1000000;
+             }
+ 
+             long remain_s = relative_request.tv_sec - elapsed_s;
+             long remain_ns = relative_request.tv_nsec - (elapsed_us * 1000);
+             if (remain_ns < 0) {
+                 remain_s--;
+                 remain_ns += 1000000000;
+             }
+ 
+             if (remain_s < 0) {
+                 remain->tv_sec = 0;
+                 remain->tv_nsec = 0;
+             } else {
+                 remain->tv_sec = remain_s;
+                 remain->tv_nsec = remain_ns;
+             }
+         }
+         errno = EINTR;
+         return -1;
      }
-     
-     return 0;
  }
+ 
+ int nanosleep(const struct timespec *request, struct timespec *remain) {
+     __chkabort();
+     
+     /* This function is now a simple wrapper around the more-capable clock_nanosleep */
+     return clock_nanosleep(CLOCK_MONOTONIC, 0, request, remain);
+ }
+ 
  
