@@ -19,15 +19,15 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	amigalocale.o asprintf.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o \
 	clock.o clock_getcpuclockid.o close.o \
 	creat.o ctime.o devices.o difftime.o dir.o dir_data.o dirname.o dup.o dup2.o \
-	endpwent.o err.o error.o error_msg.o 	exec.o fcntl.o fd_setsize.o fibstat.o files.o fnmatch.o fpathconf.o \
+	dprintf.o endpwent.o err.o error.o error_msg.o 	exec.o fcntl.o fd_setsize.o fibstat.o files.o fnmatch.o fpathconf.o \
 	fstat.o fsync.o ftruncate.o 	getdtablesize.o getegid.o geteuid.o \
 	getenv.o getgid.o gethostname.o getlogin.o getopt.o getopt1.o \
 	getopt_long.o getpass.o getpid.o getppid.o gettimeofday.o getuid.o getwd.o \
-	gid.o glob.o grp.o herror.o hypot.o iconv.o index.o ioctl.o isatty.o kill.o link.o \
+	gid.o glob.o grp.o herror.o hypot.o iconv.o index.o ioctl.o isatty.o kill.o kprintf.o link.o \
 	longlong.o lseek.o lstat.o memccpy.o memchr.o memcmp.o memcpy.o memset.o message.o mkdir.o mkfifo.o \
 	mkstemp.o mktemp.o nice.o onbreak.o open.o pathconf.o perror.o \
 	pclose.o pread.o processes.o protection.o pseudo_c.o \
-	pthread_getcpuclockid.o pwd.o pwrite.o raise.o rcmd.o read.o readlink.o realpath.o regerror.o \
+	pthread_getcpuclockid.o pwd.o pwrite.o raise.o rcmd.o random.o read.o readlink.o realpath.o regerror.o \
 	regex.o regexp.o regsub.o rename.o rindex.o rmdir.o scandir.o \
 	select.o setenv.o setgid.o setjmp.o setpgid.o setsid.o setuid.o \
 	settimeofday.o siglist.o signal.o signals.o sigpause.o sigprocmask.o \
@@ -44,7 +44,7 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	vasprintf.o vsnprintf.o wait.o wait4.o waitpid.o wcscat.o wcscmp.o \
 	wcscpy.o wcslen.o wcsncmp.o wcsncpy.o write.o \
 	_printf.o _scanf.o fprintf.o sprintf.o scanf.o \
-	mq_core.o mq_helpers.o mq_advanced.o mq_integration.o librt.o
+	mq_core.o mq_helpers.o mq_advanced.o mq_integration.o rt.o
 
 # libdl library objects (separate from unix.lib)
 LIBDL_OBJS = libdl.o
@@ -1055,15 +1055,15 @@ libdl.nbo: libdl.c amiga.h include/dlfcn.h
 libdl.dnbo: libdl.c amiga.h include/dlfcn.h
 
 # pthread dependencies
-pthread.o: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h debug.h
-pthread.do: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h debug.h
-pthread.nbo: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h debug.h
-pthread.dnbo: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h debug.h
+pthread.o: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h 
+pthread.do: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h
+pthread.nbo: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h
+pthread.dnbo: pthread.c include/amigapthread.h include/pthread.h pthread_priv.h
 
-pthread_sync.o: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h debug.h
-pthread_sync.do: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h debug.h
-pthread_sync.nbo: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h debug.h
-pthread_sync.dnbo: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h debug.h
+pthread_sync.o: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h
+pthread_sync.do: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h
+pthread_sync.nbo: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h
+pthread_sync.dnbo: pthread_sync.c include/amigapthread.h include/pthread.h include/semaphore.h pthread_priv.h
 
 pthread_startup.o: pthread_startup.s
 
@@ -1282,30 +1282,30 @@ write.dnbo: write.c amiga.h
 fifo-all:
 	cd fifolib
 	smake all
-	cd ..
+	cd /
 
 apipe-all:
 	cd apipe
 	smake all
-	cd ..
+	cd /
 
 # Individual targets for convenience
 fifo.library:
 	cd fifolib
 	smake fifo.library
-	cd ..
+	cd /
 
 fifo-handler:
 	cd fifolib
 	smake fifo-handler
-	cd ..
+	cd /
 
 fifo-handler-debug:
 	cd fifolib
 	smake fifo-handler-debug
-	cd ..
+	cd /
 
 APipe-Handler:
 	cd apipe
 	smake APipe-Handler
-	cd ..
+	cd /

@@ -12,6 +12,14 @@
 #include "amigapthread.h"
 #include "pthread.h"
 
+/* Cancellation state machine */
+typedef enum
+{
+    PTHREAD_STATE_RUNNING = 0,
+    PTHREAD_STATE_CANCEL_REQUESTED = 1,
+    PTHREAD_STATE_CANCELED = 2
+} pthread_cancel_state_t;
+
 /* Thread pair structure */
 typedef struct ThreadPair {
     struct Node tp_Node;
@@ -25,6 +33,12 @@ typedef struct ThreadPair {
     void *tp_Result;
     BOOL tp_Finished;
     BOOL tp_Detached;
+    /* Cancellation support */
+    int tp_CancelState;
+    int tp_CancelType;
+    pthread_cancel_state_t tp_CancelStateMachine;
+    struct SignalSemaphore tp_CancelSem;
+    BOOL tp_CancelInitialized;
 } ThreadPair;
 
 /* Function declarations */

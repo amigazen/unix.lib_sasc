@@ -9,6 +9,10 @@
 #include "include/amigapthread.h"
 #include "pthread_priv.h"
 
+/* Forward declarations for cancellation functions */
+static void pthread_cooperative_cancel_check(struct ThreadPair *tp);
+static void pthread_cooperative_cleanup(struct ThreadPair *tp);
+
 static LONG CustomASyncRun(STRPTR name, STRPTR cmd, struct ProcessControlBlock *pcb)
 {
     struct Process *process;
@@ -37,7 +41,43 @@ static LONG CustomASyncRun(STRPTR name, STRPTR cmd, struct ProcessControlBlock *
     return result;
 }
 
+/*
+ * Cooperative cancellation check - called by threads to check for cancellation
+ */
+static void pthread_cooperative_cancel_check(struct ThreadPair *tp)
+{
+    if (!tp || !tp->tp_CancelInitialized)
+        return;
+        
+    ObtainSemaphore(&tp->tp_CancelSem);
+    
+    if (tp->tp_CancelStateMachine == PTHREAD_STATE_CANCEL_REQUESTED)
+    {
+        tp->tp_CancelStateMachine = PTHREAD_STATE_CANCELED;
+        ReleaseSemaphore(&tp->tp_CancelSem);
+        
+        /* Thread should exit now */
+        pthread_exit(PTHREAD_CANCELED);
+    }
+    
+    ReleaseSemaphore(&tp->tp_CancelSem);
+}
 
+/*
+ * Cooperative cleanup - called when thread starts
+ */
+static void pthread_cooperative_cleanup(struct ThreadPair *tp)
+{
+    if (!tp)
+        return;
+        
+    if (tp->tp_CancelInitialized)
+    {
+        ObtainSemaphore(&tp->tp_CancelSem);
+        tp->tp_CancelStateMachine = PTHREAD_STATE_RUNNING;
+        ReleaseSemaphore(&tp->tp_CancelSem);
+    }
+}
 
 /* Global thread management */
 struct List *ThreadList = NULL;
@@ -111,6 +151,12 @@ void __saveds ThreadEntry(void)
     Permit();
     
     if (tp) {
+        /* Initialize cooperative cancellation */
+        pthread_cooperative_cleanup(tp);
+        
+        /* Check for user abort before starting */
+        chkabort();
+        
         /* Call the user's thread function */
         tp->tp_Result = tp->tp_StartRoutine(tp->tp_Arg);
         
@@ -160,6 +206,13 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
     tp->tp_Result = NULL;
     tp->tp_Finished = FALSE;
     tp->tp_Detached = FALSE;
+    
+    /* Initialize cancellation support */
+    tp->tp_CancelState = PTHREAD_CANCEL_ENABLE;
+    tp->tp_CancelType = PTHREAD_CANCEL_DEFERRED;
+    tp->tp_CancelStateMachine = PTHREAD_STATE_RUNNING;
+    InitSemaphore(&tp->tp_CancelSem);
+    tp->tp_CancelInitialized = TRUE;
     
     /* Allocate parent signal */
     tp->tp_ParentSignal = AllocSignal(-1);
@@ -240,6 +293,9 @@ int pthread_join(pthread_t thread, void **retval)
     /* Wait for thread to finish */
     Wait(1L << tp->tp_ParentSignal);
     
+    /* Check for user abort after waiting */
+    chkabort();
+    
     if (retval) {
         *retval = tp->tp_Result;
     }
@@ -260,6 +316,9 @@ int pthread_join(pthread_t thread, void **retval)
 int pthread_detach(pthread_t thread)
 {
     struct ThreadPair *tp;
+    
+    /* Check for user abort */
+    chkabort();
     
     tp = FindThreadPair(thread);
     if (tp == NULL) {
@@ -292,6 +351,9 @@ pthread_t pthread_self(void)
     struct Process *proc = (struct Process *)FindTask(NULL);
     struct ThreadPair *tp;
     
+    /* Check for user abort */
+    chkabort();
+    
     tp = (struct ThreadPair *)proc->pr_Task.tc_UserData;
     if (tp) {
         return tp->tp_ThreadId;
@@ -308,6 +370,9 @@ void pthread_exit(void *retval)
     struct Process *proc = (struct Process *)FindTask(NULL);
     struct ThreadPair *tp;
     
+    /* Check for user abort before exiting */
+    chkabort();
+    
     tp = (struct ThreadPair *)proc->pr_Task.tc_UserData;
     if (tp) {
         tp->tp_Result = retval;
@@ -323,38 +388,90 @@ void pthread_exit(void *retval)
 }
 
 /*
- * Cancel a thread (not implemented - would require signal handling)
+ * Cancel a thread using cooperative cancellation
  */
 int pthread_cancel(pthread_t thread)
 {
-    /* Not implemented in this simple version */
-    return ENOSYS;
+    struct ThreadPair *tp;
+    
+    tp = FindThreadPair(thread);
+    if (tp == NULL) {
+        return ESRCH;
+    }
+    
+    if (tp->tp_CancelInitialized) {
+        ObtainSemaphore(&tp->tp_CancelSem);
+        if (tp->tp_CancelStateMachine == PTHREAD_STATE_RUNNING) {
+            tp->tp_CancelStateMachine = PTHREAD_STATE_CANCEL_REQUESTED;
+        }
+        ReleaseSemaphore(&tp->tp_CancelSem);
+    }
+    
+    return 0;
 }
 
 /*
- * Test if thread is cancelled (not implemented)
+ * Test if thread is cancelled - cooperative cancellation check
  */
 void pthread_testcancel(void)
 {
-    /* Not implemented in this simple version */
+    struct Process *proc = (struct Process *)FindTask(NULL);
+    struct ThreadPair *tp;
+    
+    tp = (struct ThreadPair *)proc->pr_Task.tc_UserData;
+    if (tp && tp->tp_CancelState == PTHREAD_CANCEL_ENABLE) {
+        pthread_cooperative_cancel_check(tp);
+    }
 }
 
 /*
- * Set thread cancellation state (not implemented)
+ * Set thread cancellation state
  */
 int pthread_setcancelstate(int state, int *oldstate)
 {
-    /* Not implemented in this simple version */
-    return ENOSYS;
+    struct Process *proc = (struct Process *)FindTask(NULL);
+    struct ThreadPair *tp;
+    
+    if (state != PTHREAD_CANCEL_ENABLE && state != PTHREAD_CANCEL_DISABLE) {
+        return EINVAL;
+    }
+    
+    tp = (struct ThreadPair *)proc->pr_Task.tc_UserData;
+    if (tp == NULL) {
+        return EINVAL;
+    }
+    
+    if (oldstate) {
+        *oldstate = tp->tp_CancelState;
+    }
+    tp->tp_CancelState = state;
+    
+    return 0;
 }
 
 /*
- * Set thread cancellation type (not implemented)
+ * Set thread cancellation type
  */
 int pthread_setcanceltype(int type, int *oldtype)
 {
-    /* Not implemented in this simple version */
-    return ENOSYS;
+    struct Process *proc = (struct Process *)FindTask(NULL);
+    struct ThreadPair *tp;
+    
+    if (type != PTHREAD_CANCEL_DEFERRED && type != PTHREAD_CANCEL_ASYNCHRONOUS) {
+        return EINVAL;
+    }
+    
+    tp = (struct ThreadPair *)proc->pr_Task.tc_UserData;
+    if (tp == NULL) {
+        return EINVAL;
+    }
+    
+    if (oldtype) {
+        *oldtype = tp->tp_CancelType;
+    }
+    tp->tp_CancelType = type;
+    
+    return 0;
 }
 
 /*
