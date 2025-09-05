@@ -3,7 +3,11 @@
 #define unsetenv __fake_unsetenv
 
 #include "stdint.h"
-#include <stdlib.h>
+#ifdef __SASC
+#include "sc:include/stdlib.h"
+#else
+#error Wrong compiler (SAS/C required)
+#endif
 #undef unsetenv
 #ifndef _ANSI_SOURCE
 int setenv(const char *, const char *, int);
