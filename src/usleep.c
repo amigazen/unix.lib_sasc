@@ -9,18 +9,28 @@
  */
 
 #include "amiga.h"
+#include "amigatimer.h"
 #include <unistd.h>
 #include <errno.h>
 #include <proto/dos.h>
 
 int usleep(unsigned int usec)
 {    
+    unsigned int ticks;
+    
+    /* Check for abort signal */
+    __chkabort();
+    
+    /* Use timer device for high precision if available */
+    if (timer_device_sleep(0, usec, UNIT_MICROHZ) == 0) {
+        return 0;
+    }
+    
+    /* Fallback to Delay() for compatibility */
     /* Convert microseconds to ticks (1/50 second on PAL, 1/60 on NTSC) */
     /* Use 1/50 as default for compatibility */
-    unsigned int ticks = (usec * 50) / 1000000;
+    ticks = (usec * 50) / 1000000;
     
-    __chkabort();
-
     /* Ensure at least 1 tick if usec > 0 */
     if (usec > 0 && ticks == 0) {
         ticks = 1;
