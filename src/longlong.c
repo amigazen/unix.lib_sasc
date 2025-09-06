@@ -1,6 +1,8 @@
 #include "longlong.h"
 #include <limits.h>
 #include <errno.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 /* Define ERANGE if not already defined (for older systems) */
 #ifndef ERANGE
@@ -597,5 +599,230 @@ long_long_t get_long_long_min(void)
     long_long_t result;
     result.hi = LONG_LONG_MIN_HI;
     result.lo = LONG_LONG_MIN_LO;
+    return result;
+}
+
+/* lldiv_t structure for long long division results */
+typedef struct {
+    long_long_t quot;  /* Quotient */
+    long_long_t rem;   /* Remainder */
+} lldiv_t;
+
+/* Convert string to long long (atoll equivalent) */
+long_long_t atoll(const char *str)
+{
+    char *endptr;
+    long_long_t result = {0, 0};
+    const char *start = str;
+    int negative = 0;
+    int valid_digits = 0;
+    long_long_t max_value = get_long_long_max();
+    long_long_t zero = {0, 0};
+    long_long_t base_value = {0, 10};
+    long_long_t temp;
+    
+    /* Skip leading whitespace */
+    while (isspace((unsigned char)*str)) {
+        str++;
+    }
+    
+    /* Handle sign */
+    if (*str == '+') {
+        str++;
+    } else if (*str == '-') {
+        negative = 1;
+        str++;
+    }
+    
+    /* Process digits (base 10 only for atoll) */
+    while (*str && isdigit((unsigned char)*str)) {
+        int digit = *str - '0';
+        
+        /* Check for overflow before multiplying */
+        if (long_long_gt(result, max_value)) {
+            /* Overflow - return maximum value */
+            result = max_value;
+            errno = ERANGE;
+            break;
+        }
+        
+        /* Multiply by 10 */
+        temp = result;
+        result = long_long_mul(result, base_value);
+        
+        /* Check for overflow after multiplication */
+        if (long_long_lt(result, temp)) {
+            /* Overflow occurred */
+            result = max_value;
+            errno = ERANGE;
+            break;
+        }
+        
+        /* Add digit */
+        temp = long_to_long_long(digit);
+        result = long_long_add(result, temp);
+        
+        /* Check for overflow after addition */
+        if (long_long_lt(result, temp)) {
+            /* Overflow occurred */
+            result = max_value;
+            errno = ERANGE;
+            break;
+        }
+        
+        valid_digits = 1;
+        str++;
+    }
+    
+    /* Apply sign if negative */
+    if (negative) {
+        result = long_long_negate(result);
+    }
+    
+    return result;
+}
+
+/* Helper function to convert long_long_t to unsigned_long_long_t */
+unsigned_long_long_t long_long_to_unsigned_long_long(long_long_t value)
+{
+    unsigned_long_long_t result;
+    result.hi = value.hi;
+    result.lo = value.lo;
+    return result;
+}
+
+/* Helper function to convert unsigned_long_long_t to long_long_t */
+long_long_t unsigned_long_long_to_long_long(unsigned_long_long_t value)
+{
+    long_long_t result;
+    result.hi = value.hi;
+    result.lo = value.lo;
+    return result;
+}
+
+/* Convert string to unsigned long long */
+unsigned_long_long_t strtoull(const char *str, char **endptr, int base)
+{
+    long_long_t result = {0, 0};
+    const char *start = str;
+    int negative = 0;
+    int valid_digits = 0;
+    long_long_t max_value = get_long_long_max();
+    long_long_t zero = {0, 0};
+    long_long_t base_value;
+    long_long_t temp;
+    
+    /* Skip leading whitespace */
+    while (isspace((unsigned char)*str)) {
+        str++;
+    }
+    
+    /* Handle sign */
+    if (*str == '+') {
+        str++;
+    } else if (*str == '-') {
+        negative = 1;
+        str++;
+    }
+    
+    /* Validate base */
+    if (base == 0) {
+        /* Auto-detect base */
+        if (*str == '0') {
+            str++;
+            if (*str == 'x' || *str == 'X') {
+                base = 16;
+                str++;
+            } else if (*str == 'b' || *str == 'B') {
+                base = 2;
+                str++;
+            } else {
+                base = 8;
+            }
+        } else {
+            base = 10;
+        }
+    }
+    
+    if (base < 2 || base > 36) {
+        if (endptr) *endptr = (char *)start;
+        return long_long_to_unsigned_long_long(zero);
+    }
+    
+    /* Convert base to our long long representation */
+    base_value = long_to_long_long(base);
+    
+    /* Process digits */
+    while (*str) {
+        int digit;
+        
+        if (isdigit((unsigned char)*str)) {
+            digit = *str - '0';
+        } else if (isalpha((unsigned char)*str)) {
+            digit = tolower((unsigned char)*str) - 'a' + 10;
+        } else {
+            break;  /* Invalid character */
+        }
+        
+        if (digit >= base) {
+            break;  /* Digit not valid for this base */
+        }
+        
+        /* Check for overflow before multiplying */
+        if (long_long_gt(result, max_value)) {
+            /* Overflow - return maximum value */
+            result = max_value;
+            errno = ERANGE;
+            break;
+        }
+        
+        /* Multiply by base */
+        temp = result;
+        result = long_long_mul(result, base_value);
+        
+        /* Check for overflow after multiplication */
+        if (long_long_lt(result, temp)) {
+            /* Overflow occurred */
+            result = max_value;
+            errno = ERANGE;
+            break;
+        }
+        
+        /* Add digit */
+        temp = long_to_long_long(digit);
+        result = long_long_add(result, temp);
+        
+        /* Check for overflow after addition */
+        if (long_long_lt(result, temp)) {
+            /* Overflow occurred */
+            result = max_value;
+            errno = ERANGE;
+            break;
+        }
+        
+        valid_digits = 1;
+        str++;
+    }
+    
+    /* Set endptr */
+    if (endptr) {
+        if (valid_digits) {
+            *endptr = (char *)str;
+        } else {
+            *endptr = (char *)start;
+        }
+    }
+    
+    /* For unsigned, we ignore the sign and just return the absolute value */
+    /* This matches the behavior of standard strtoull */
+    
+    return long_long_to_unsigned_long_long(result);
+}
+
+/* Long long division returning lldiv_t structure */
+lldiv_t lldiv(long_long_t numer, long_long_t denom)
+{
+    lldiv_t result;
+    long_long_divmod(numer, denom, &result.quot, &result.rem);
     return result;
 }

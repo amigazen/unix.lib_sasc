@@ -21,6 +21,12 @@ typedef struct {
     unsigned long lo;  /* Low 32 bits */
 } unsigned_long_long_t;
 
+/* lldiv_t structure for long long division results */
+typedef struct {
+    long_long_t quot;  /* Quotient */
+    long_long_t rem;   /* Remainder */
+} lldiv_t;
+
 /* Constants for the emulated long long type */
 #define LONG_LONG_MAX_HI 0x7FFFFFFF
 #define LONG_LONG_MAX_LO 0xFFFFFFFF
@@ -46,6 +52,8 @@ long_long_t get_long_long_min(void);
 
 /* String conversion functions */
 long_long_t strtoll(const char *str, char **endptr, int base);
+long_long_t atoll(const char *str);
+unsigned_long_long_t strtoull(const char *str, char **endptr, int base);
 
 /* Conversion functions */
 long long_long_to_long(long_long_t value);
@@ -84,5 +92,8 @@ int long_long_is_positive(long_long_t value);
 int long_long_clz(long_long_t value);
 int long_long_ctz(long_long_t value);
 int long_long_popcount(long_long_t value);
+
+/* Division function */
+lldiv_t lldiv(long_long_t numer, long_long_t denom);
 
 #endif /* LONG_LONG_H */
