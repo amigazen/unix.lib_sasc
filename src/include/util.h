@@ -19,3 +19,4 @@ pid_t forkpty(int *amaster, char *name, const struct termios *termp, const struc
 int openpty(int *amaster, int *aslave, char *name, const struct termios *termp, const struct winsize *winp);
 
 #endif /* _UTIL_H */
+

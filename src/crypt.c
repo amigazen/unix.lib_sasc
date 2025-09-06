@@ -141,3 +141,4 @@ void encrypt(char block[64], int flag)
     (void)block; /* Suppress unused parameter warning */
     (void)flag;  /* Suppress unused parameter warning */
 }
+

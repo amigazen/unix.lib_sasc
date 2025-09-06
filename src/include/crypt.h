@@ -25,3 +25,4 @@ void setkey(const char *key);
 void encrypt(char block[64], int flag);
 
 #endif /* _CRYPT_H */
+

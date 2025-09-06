@@ -33,3 +33,10 @@ void _fibstat(struct FileInfoBlock *fib, int isroot, struct stat *sbuf, long dev
 #ifndef CTOB
 #define CTOB(ptr) ((long)(ptr) >> 2)
 #endif
+
+/* Define 'restrict' as nothing for C89 compatibility 
+#ifdef _SASC
+#ifndef restrict
+#define restrict
+#endif#endif
+*/

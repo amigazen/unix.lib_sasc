@@ -24,5 +24,8 @@ int unsetenv(const char *);
 extern uint32_t crc32(const void *, size_t);
 extern uint32_t crc32_string(const char *);
 
+/* Thread-safe random number generation */
+extern int rand_r(unsigned int *);
+
 #endif
 #endif

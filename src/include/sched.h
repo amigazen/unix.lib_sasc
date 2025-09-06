@@ -40,3 +40,4 @@ int pthread_attr_setscope(pthread_attr_t *attr, int scope);
 typedef struct pthread_attr pthread_attr_t;
 
 #endif /* _SCHED_H */
+
