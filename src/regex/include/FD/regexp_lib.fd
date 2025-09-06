@@ -1,0 +1,9 @@
+* "regexp.library"
+##base _RegexpBase
+##bias 30
+##public
+RegComp(expression)(a0)
+RegFree(handle)(a1)
+RegExec(handle,string)(a0,a1)
+RegXlatError(errorcode)(d0)
+##end

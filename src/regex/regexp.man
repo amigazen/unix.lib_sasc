@@ -1,0 +1,42 @@
+regexp.library
+
+NAME
+     regexp.library - functions to match regular expressions
+
+VERSION
+     V37.2 - 26-Feb-98
+
+REQUIREMENTS
+     - AmigaOS - currently only tested with OS3.1 but should run on every
+       version from 2.0 (V36) on.
+
+DESCRIPTION
+     regexp.library is a straightforward port of the NetBSD regexp.c v1.7
+     functions. It provides the regular expression matching functions
+     through the standard AmigaOS shared library API. See the Autodoc file
+     and includes for programming information!
+
+BUGS
+     None known
+
+HISTORY
+     V37.1 (20-Feb-98)    - First release
+
+     V37.2 (26-Feb-98)    - Added RegXlatError() to translate numeric error
+                            codes into readable text.
+                          - some optimization
+                          - improved the makefile, now generating pragmas
+                            with fd2pragma
+
+AUTHOR
+     Original copyright by the University of Toronto, written by Henry
+     Spencer and released as freeware. Altered by John Gilmore and James A.
+     Woods, Amiga version by Matthias Bethke.
+
+     For questions concerning the Amiga version, contact me at:
+
+     email: Matthias.Bethke@stud.uni-erlangen.de
+     smail: Matthias Bethke
+            Haagstr. 5
+            91054 Erlangen
+            Germany

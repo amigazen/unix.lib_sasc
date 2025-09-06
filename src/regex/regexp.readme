@@ -1,0 +1,13 @@
+Short: Library for BSDish patternmatching
+Author: Matthias.Bethke@stud.uni-erlangen.de
+Uploader: Matthias.Bethke@stud.uni-erlangen.de
+Type: util/libs
+Version: 38
+
+regexp.library is a straightforward port of the NetBSD regexp.c v1.7
+functions. It provides the regular expression matching functions
+through the standard AmigaOS shared library API.
+
+New in V38:
+- Function to translate numeric error codes into readable text
+- some optimization
