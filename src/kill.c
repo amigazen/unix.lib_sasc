@@ -46,7 +46,8 @@ int kill(int pid, int signal)
     /* Our process list is now reasonably upto date */
     if (pid < 0)
 	pid = -pid;	/* Consider that each process is a pg onto itself */
-    if (pid == _our_pid) {
+    /* Check if killing ourselves using consistent PID method */
+    if (pid == getpid()) {
 	if (signal)
 	    _sig_dispatch(signal);
 	return 0;

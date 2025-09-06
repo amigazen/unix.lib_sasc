@@ -35,7 +35,15 @@ void _init_processes(void)
        which guarantees positive pid's for all created processes.
        This range is further restricted to 23 bits so that a pid fits within the
        range of an emacs number (generally 24 bits, though it is 26 on the Amiga) */
-    _our_pid = ((int) _us ^ _startup_time) & 0x7fffff;
+    /* Initialize PID using consistent method with getpid() */
+    {
+        struct Process *proc = (struct Process *)FindTask(NULL);
+        if (proc != NULL) {
+            _our_pid = (int)((ULONG)proc & 0xFFFF);
+        } else {
+            _our_pid = ((int) _us ^ _startup_time) & 0x7fffff; /* Fallback */
+        }
+    }
     _next_pid = _our_pid + 1;
     _sprintf(_door_name, "door.%lx.%lx", _us, _startup_time);
     if ((_startup_port = CreateMsgPort()) &&

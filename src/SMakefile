@@ -38,7 +38,7 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	strnicmp.o strnlen.o strncmp.o strpbrk.o strptime.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o \
 	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o \
 	amigatimer.o timers.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
-	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o util.o  \
+	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o util.o vfork.o \
 	crc32_main.o \
 	crc32_string.o wildcard_init.o wildcard_elements.o wildcard_pattern.o \
 	vasprintf.o vsnprintf.o wait.o wait4.o waitpid.o wcscat.o wcscmp.o \
@@ -82,6 +82,12 @@ PTHREADTEST_OBJS = unittests/pthread/pthread_test.o
 PTHREADTEST_DOBJS = unittests/pthread/pthread_test.do
 PTHREADTEST_NBOBJS = unittests/pthread/pthread_test.nbo
 PTHREADTEST_DNBOBJS = unittests/pthread/pthread_test.dnbo
+
+# vfork test program objects
+VFORKTEST_OBJS = unittests/test_vfork.o
+VFORKTEST_DOBJS = unittests/test_vfork.do
+VFORKTEST_NBOBJS = unittests/test_vfork.nbo
+VFORKTEST_DNBOBJS = unittests/test_vfork.dnbo
 
 # psockets test program objects (in unittests/psockets folder)
 PSOCKETSTEST_OBJS = unittests/psockets/testga.o
@@ -132,7 +138,7 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	strtoll.do strxfrm.do symlink.do sysconf.do system.do tempnam.do time.do \
 	timeconvert.do amigatimer.do timers.do truncate.do tzset.do uid.do umask.do uname.do \
 	unlink.do unsetenv.do usleep.do utime.do utimes.do ustat.do statvfs.do \
-	strtolower.do strupr.do \
+	strtolower.do strupr.do vfork.do \
 	crc32_main.do crc32_string.do wildcard_init.do \
 	wildcard_elements.do wildcard_pattern.do vasprintf.do \
 	vsnprintf.do wait.do wait4.do waitpid.do write.do \
@@ -163,7 +169,7 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	strtoll.nbo strxfrm.nbo symlink.nbo sysconf.nbo system.nbo tempnam.nbo time.nbo \
 	timeconvert.nbo amigatimer.nbo timers.nbo truncate.nbo tzset.nbo uid.nbo umask.nbo uname.nbo \
 	unlink.nbo unsetenv.nbo usleep.nbo utime.nbo utimes.nbo ustat.nbo statvfs.nbo \
-	strtolower.nbo strupr.nbo \
+	strtolower.nbo strupr.nbo vfork.nbo \
 	crc32_main.nbo crc32_string.nbo wildcard_init.nbo \
 	wildcard_elements.nbo wildcard_pattern.nbo vasprintf.nbo \
 	vsnprintf.nbo wait.nbo wait4.nbo waitpid.nbo write.nbo \
@@ -197,7 +203,7 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	strtoll.dnbo strxfrm.dnbo symlink.dnbo sysconf.dnbo system.dnbo tempnam.dnbo \
 	time.dnbo timeconvert.dnbo amigatimer.dnbo timers.dnbo truncate.dnbo tzset.dnbo \
 	uid.dnbo umask.dnbo uname.dnbo unlink.dnbo unsetenv.dnbo usleep.dnbo \
-	utime.dnbo utimes.dnbo ustat.dnbo statvfs.dnbo strtolower.dnbo strupr.dnbo \
+	utime.dnbo utimes.dnbo ustat.dnbo statvfs.dnbo 	strtolower.dnbo strupr.dnbo vfork.dnbo \
 	crc32_main.dnbo crc32_string.dnbo wildcard_init.dnbo \
 	wildcard_elements.dnbo wildcard_pattern.dnbo vasprintf.dnbo vsnprintf.dnbo \
 	wait.dnbo \
@@ -265,6 +271,12 @@ PTHREADTEST_D_PROG = test_pthreadd
 PTHREADTEST_NB_PROG = test_pthreadnb
 PTHREADTEST_DNB_PROG = test_pthreaddnb
 
+# vfork test program names
+VFORKTEST_PROG = test_vfork
+VFORKTEST_D_PROG = test_vforkd
+VFORKTEST_NB_PROG = test_vforknb
+VFORKTEST_DNB_PROG = test_vforkdnb
+
 # psockets test program names
 PSOCKETSTEST_PROG = testga
 PSOCKETSTEST_D_PROG = testgad
@@ -305,9 +317,9 @@ TIMERDEVICETEST_DNB_PROG = test_timer_devicednb
 
 normal: SCOPTIONS amiga.gst $(LIB)
 
-all: normal amiganb.gst $(FARLIB) libdl-all pthread-all psockets-all fifo-all apipe-all
+all: normal amiganb.gst $(FARLIB) libdl-all pthread-all psockets-all fifo-all apipe-all vfork-test
 
-debug: SCOPTIONS amiga.gst $(DLIB) amiganb.gst $(DFARLIB) libdl-debug pthread-debug psockets-debug
+debug: SCOPTIONS amiga.gst $(DLIB) amiganb.gst $(DFARLIB) libdl-debug pthread-debug psockets-debug vfork-test-debug
 
 debug: SCOPTIONS amiga.gst $(DLIB) amiganb.gst $(DFARLIB)
 
@@ -329,6 +341,11 @@ libdl-debug: SCOPTIONS amiga.gst amiganb.gst $(LIBDL_DLIB) $(LIBDL_DFARLIB) $(TE
 pthread-all: SCOPTIONS amiga.gst amiganb.gst $(PTHREAD_LIB) $(PTHREAD_FARLIB) $(PTHREADTEST_PROG) $(PTHREADTEST_NB_PROG)
 
 pthread-debug: SCOPTIONS amiga.gst amiganb.gst $(PTHREAD_DLIB) $(PTHREAD_DFARLIB) $(PTHREADTEST_D_PROG) $(PTHREADTEST_DNB_PROG)
+
+# vfork test build targets
+vfork-test: SCOPTIONS amiga.gst amiganb.gst $(VFORKTEST_PROG) $(VFORKTEST_NB_PROG)
+
+vfork-test-debug: SCOPTIONS amiga.gst amiganb.gst $(VFORKTEST_D_PROG) $(VFORKTEST_DNB_PROG)
 
 # psockets build targets
 psockets-all: SCOPTIONS amiga.gst amiganb.gst $(PSOCKETS_LIB) $(PSOCKETS_FARLIB) $(PSOCKETSTEST_PROG) $(PSOCKETSTEST_NB_PROG)
@@ -493,6 +510,19 @@ $(PTHREADTEST_D_PROG): SCOPTIONS $(PTHREADTEST_DOBJS) $(PTHREAD_DLIB)
 $(PTHREADTEST_DNB_PROG): SCOPTIONS $(PTHREADTEST_DNBOBJS) $(PTHREAD_DFARLIB)
 	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/pthread/$(PTHREADTEST_DNB_PROG) FROM $(PTHREADTEST_DNBOBJS) LIB $(PTHREAD_DFARLIB)
 
+# vfork test programs (output to unittests folder)
+$(VFORKTEST_PROG): SCOPTIONS $(VFORKTEST_OBJS) $(UNIX_LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) TO unittests/$(VFORKTEST_PROG) FROM $(VFORKTEST_OBJS) LIB $(UNIX_LIB)
+
+$(VFORKTEST_NB_PROG): SCOPTIONS $(VFORKTEST_NBOBJS) $(UNIX_FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) TO unittests/$(VFORKTEST_NB_PROG) FROM $(VFORKTEST_NBOBJS) LIB $(UNIX_FARLIB)
+
+$(VFORKTEST_D_PROG): SCOPTIONS $(VFORKTEST_DOBJS) $(UNIX_DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) TO unittests/$(VFORKTEST_D_PROG) FROM $(VFORKTEST_DOBJS) LIB $(UNIX_DLIB)
+
+$(VFORKTEST_DNB_PROG): SCOPTIONS $(VFORKTEST_DNBOBJS) $(UNIX_DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/$(VFORKTEST_DNB_PROG) FROM $(VFORKTEST_DNBOBJS) LIB $(UNIX_DFARLIB)
+
 # psockets test programs (output to unittests/psockets folder)
 $(PSOCKETSTEST_PROG): SCOPTIONS $(PSOCKETSTEST_OBJS) $(PSOCKETS_LIB)
 	$(CC) $(CFLAGS) $(OFLAGS) TO unittests/psockets/$(PSOCKETSTEST_PROG) FROM $(PSOCKETSTEST_OBJS) LIB $(PSOCKETS_LIB)
@@ -552,6 +582,7 @@ clean:
 	-$(RM) $(TESTLIB_LIB) $(TESTLIB_FARLIB) $(TESTLIB_DLIB) $(TESTLIB_DFARLIB)
 	-$(RM) unittests/$(DLTEST_PROG) unittests/$(DLTEST_D_PROG) unittests/$(DLTEST_NB_PROG) unittests/$(DLTEST_DNB_PROG)
 	-$(RM) unittests/pthread/$(PTHREADTEST_PROG) unittests/pthread/$(PTHREADTEST_D_PROG) unittests/pthread/$(PTHREADTEST_NB_PROG) unittests/pthread/$(PTHREADTEST_DNB_PROG)
+	-$(RM) unittests/$(VFORKTEST_PROG) unittests/$(VFORKTEST_D_PROG) unittests/$(VFORKTEST_NB_PROG) unittests/$(VFORKTEST_DNB_PROG)
 	-$(RM) unittests/psockets/$(PSOCKETSTEST_PROG) unittests/psockets/$(PSOCKETSTEST_D_PROG) unittests/psockets/$(PSOCKETSTEST_NB_PROG) unittests/psockets/$(PSOCKETSTEST_DNB_PROG)
 	-$(RM) unittests/$(AMIGALOCALETEST_PROG) unittests/$(AMIGALOCALETEST_D_PROG) unittests/$(AMIGALOCALETEST_NB_PROG) unittests/$(AMIGALOCALETEST_DNB_PROG)
 	-$(RM) unittests/$(TZSETTEST_PROG) unittests/$(TZSETTEST_D_PROG) unittests/$(TZSETTEST_NB_PROG) unittests/$(TZSETTEST_DNB_PROG)
@@ -778,6 +809,7 @@ unlink.o: unlink.c amiga.h
 usleep.o: usleep.c amiga.h
 utime.o: utime.c timeconvert.h amiga.h
 wait4.o: wait4.c processes.h signals.h amiga.h
+vfork.o: vfork.c include/unistd.h include/amigapthread.h pthread_priv.h amiga.h
 write.o: write.c amiga.h
 #
 # Normal FAR objects
@@ -908,6 +940,7 @@ unlink.nbo: unlink.c amiga.h
 usleep.nbo: usleep.c amiga.h
 utime.nbo: utime.c timeconvert.h amiga.h
 wait4.nbo: wait4.c processes.h signals.h amiga.h
+vfork.nbo: vfork.c include/unistd.h include/amigapthread.h pthread_priv.h amiga.h
 write.nbo: write.c amiga.h
 #
 # Debugging NEAR objects
@@ -1038,6 +1071,7 @@ unlink.do: unlink.c amiga.h
 usleep.do: usleep.c amiga.h
 utime.do: utime.c timeconvert.h amiga.h
 wait4.do: wait4.c processes.h signals.h amiga.h
+vfork.do: vfork.c include/unistd.h include/amigapthread.h pthread_priv.h amiga.h
 write.do: write.c amiga.h
 
 # libdl dependencies
@@ -1131,6 +1165,12 @@ unittests/test_amigalocale.o: unittests/test_amigalocale.c amiga.h include/amiga
 unittests/test_amigalocale.do: unittests/test_amigalocale.c amiga.h include/amigalocale.h
 unittests/test_amigalocale.nbo: unittests/test_amigalocale.c amiga.h include/amigalocale.h
 unittests/test_amigalocale.dnbo: unittests/test_amigalocale.c amiga.h include/amigalocale.h
+
+# vfork test program dependencies (in unittests folder)
+unittests/test_vfork.o: unittests/test_vfork.c amiga.h include/unistd.h include/amigapthread.h
+unittests/test_vfork.do: unittests/test_vfork.c amiga.h include/unistd.h include/amigapthread.h
+unittests/test_vfork.nbo: unittests/test_vfork.c amiga.h include/unistd.h include/amigapthread.h
+unittests/test_vfork.dnbo: unittests/test_vfork.c amiga.h include/unistd.h include/amigapthread.h
 
 # tzset test program dependencies (in unittests folder)
 unittests/test_tzset.o: unittests/test_tzset.c amiga.h include/amigalocale.h
@@ -1265,6 +1305,7 @@ unlink.dnbo: unlink.c amiga.h
 usleep.dnbo: usleep.c amiga.h
 utime.dnbo: utime.c timeconvert.h amiga.h
 wait4.dnbo: wait4.c processes.h signals.h amiga.h
+vfork.dnbo: vfork.c include/unistd.h include/amigapthread.h pthread_priv.h amiga.h
 write.dnbo: write.c amiga.h
 
 # FIFO and APipe build targets

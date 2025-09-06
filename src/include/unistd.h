@@ -215,7 +215,9 @@ int	 ttyslot __P((void));
 int	 uname __P((struct utsname *));
 u_int	 ualarm __P((u_int, u_int));
 void	*valloc __P((size_t));			/* obsoleted by malloc() */
-int	 vfork __P((void));
+pid_t	 vfork __P((void));
+int	 vfork_wait __P((pid_t pid, int *status));
+void	 vfork_cleanup __P((void));
 
 #endif /* !_POSIX_SOURCE */
 __END_DECLS
