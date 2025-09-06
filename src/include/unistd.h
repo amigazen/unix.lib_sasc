@@ -40,6 +40,13 @@
 #include <sys/types.h>
 #include <sys/unistd.h>
 
+/* Define restrict as nothing for C89 compatibility */
+#ifndef restrict
+#define restrict
+#endif
+
+#include <spawn.h>
+
 /* POSIX utsname structure for uname() */
 struct utsname {
     char sysname[65];    /* Operating system name */
@@ -84,6 +91,14 @@ int	 execv __P((const char *, char * const *));
 int	 execve __P((const char *, char * const *, char * const *));
 int	 execvp __P((const char *, char * const *));
 pid_t	 fork __P((void));
+int	 posix_spawn __P((pid_t *restrict, const char *restrict,
+			  const posix_spawn_file_actions_t *,
+			  const posix_spawnattr_t *restrict,
+			  char *const [restrict], char *const [restrict]));
+int	 posix_spawnp __P((pid_t *restrict, const char *restrict,
+			   const posix_spawn_file_actions_t *,
+			   const posix_spawnattr_t *restrict,
+			   char *const [restrict], char *const [restrict]));
 long	 fpathconf __P((int, int));		/* not yet */
 char	*getcwd __P((char *, int));
 gid_t	 getegid __P((void));

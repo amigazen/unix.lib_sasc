@@ -65,6 +65,11 @@ extern void (*signal(int sig,void (*fn)(int)))(int);
 extern int raise(int);
 extern long sigsetmask(long mask);
 extern int sigprocmask(int, const sigset_t *, sigset_t *);
+extern int sigemptyset(sigset_t *);
+extern int sigfillset(sigset_t *);
+extern int sigaddset(sigset_t *, int);
+extern int sigdelset(sigset_t *, int);
+extern int sigismember(const sigset_t *, int);
 
 /* Only kill(getpid(), sig) works */
 /* Also, getpid() is a unique number for this process */

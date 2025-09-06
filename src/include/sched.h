@@ -11,6 +11,9 @@
 
 #include <exec/types.h>
 
+/* Forward declaration for pthread_attr_t - defined in pthread.h */
+typedef struct pthread_attr pthread_attr_t;
+
 /* Scheduling policies */
 #define SCHED_OTHER     0
 #define SCHED_FIFO      1
@@ -35,9 +38,6 @@ int pthread_attr_getinheritsched(const pthread_attr_t *attr, int *inherit);
 int pthread_attr_setinheritsched(pthread_attr_t *attr, int inherit);
 int pthread_attr_getscope(const pthread_attr_t *attr, int *scope);
 int pthread_attr_setscope(pthread_attr_t *attr, int scope);
-
-/* Forward declaration for pthread_attr_t */
-typedef struct pthread_attr pthread_attr_t;
 
 #endif /* _SCHED_H */
 

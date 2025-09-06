@@ -26,25 +26,26 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	gid.o glob.o grp.o herror.o hypot.o iconv.o index.o ioctl.o isatty.o kill.o kprintf.o link.o \
 	longlong.o lseek.o lstat.o memccpy.o memchr.o memcmp.o memcpy.o memset.o message.o mkdir.o mkfifo.o \
 	mkstemp.o mktemp.o nice.o onbreak.o open.o pathconf.o perror.o \
-	pclose.o pread.o processes.o protection.o pseudo_c.o \
-	pthread_getcpuclockid.o pwd.o pwrite.o raise.o rcmd.o random.o read.o readlink.o realpath.o regerror.o \
+	pclose.o posix_spawn.o pread.o processes.o protection.o pseudo_c.o \
+	pthread_getcpuclockid.o pwd.o pwrite.o raise.o rcmd.o rand_r.o random.o read.o readlink.o realpath.o regerror.o \
 	regex.o regexp.o regsub.o rename.o rindex.o rmdir.o scandir.o \
 	select.o setenv.o setgid.o setjmp.o setpgid.o setsid.o setuid.o \
 	settimeofday.o siglist.o signal.o signals.o sigpause.o sigprocmask.o \
-	sigsetmask.o sleep.o snprintf.o sockets.o stat.o strcasecmp.o strcat.o strchr.o strcmp.o \
+	sigsetmask.o sleep.o snprintf.o sockets.o sched_functions.o stat.o strcasecmp.o strcat.o strchr.o strcmp.o \
 	strcoll.o strcpy.o strcspn.o strdup.o strerror.o strerror_r.o strftime.o stricmp.o \
 	syslog.o \
-	strlcat.o strlcpy.o strlen.o strncasecmp.o strncat.o strncpy.o strndup.o \
+	strlcat.o strlcpy.o strlen.o strncat.o strncpy.o strndup.o \
 	strnicmp.o strnlen.o strncmp.o strpbrk.o strptime.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o \
 	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o \
 	amigatimer.o timers.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
-	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o util.o \
-	strichr.o stristr.o strnchr.o strins.o strrev.o crc32_main.o \
+	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o util.o  \
+	crc32_main.o \
 	crc32_string.o wildcard_init.o wildcard_elements.o wildcard_pattern.o \
 	vasprintf.o vsnprintf.o wait.o wait4.o waitpid.o wcscat.o wcscmp.o \
 	wcscpy.o wcslen.o wcsncmp.o wcsncpy.o write.o \
 	_printf.o _scanf.o fprintf.o sprintf.o scanf.o \
 	mq_core.o mq_helpers.o mq_advanced.o mq_integration.o rt.o
+	
 
 # libdl library objects (separate from unix.lib)
 LIBDL_OBJS = libdl.o
@@ -119,23 +120,24 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	link.do longlong.do lseek.do lstat.do memccpy.do memchr.do memcmp.do memcpy.do memset.do message.do mkdir.do \
 	mkfifo.do mkstemp.do mktemp.do nice.do onbreak.do open.do pathconf.do \
 	perror.do pipe.do pclose.do popen.do pread.do processes.do protection.do \
-	pseudo_c.do pthread_getcpuclockid.do pwd.do pwrite.do raise.do rcmd.do read.do readlink.do realpath.do \
+	pseudo_c.do pthread_getcpuclockid.do pwd.do pwrite.do raise.do rcmd.do rand_r.do read.do readlink.do realpath.do \
 	regerror.do regex.do regexp.do regsub.do rename.do rindex.do rmdir.do \
 	scandir.do select.do setenv.do setgid.do setjmp.do setpgid.do setsid.do \
 	setuid.do settimeofday.do siglist.do signal.do signals.do sigpause.do \
 	sigprocmask.do sigsetmask.do sleep.do snprintf.do sockets.do stat.do \
 	strcasecmp.do strcat.do strchr.do strcmp.do strcoll.do strcpy.do strcspn.do strdup.do strerror.do strerror_r.do strftime.do strptime.do \
 	syslog.do \
-	stricmp.do strlcat.do strlcpy.do strlen.do strncasecmp.do strncat.do strncpy.do \
+	stricmp.do strlcat.do strlcpy.do strlen.do strncat.do strncpy.do \
 	strndup.do strnicmp.do strnlen.do strncmp.do strpbrk.do strrchr.do strsep.do strspn.do strstr.do strtok.do strtok_r.do strtol.do \
 	strtoll.do strxfrm.do symlink.do sysconf.do system.do tempnam.do time.do \
 	timeconvert.do amigatimer.do timers.do truncate.do tzset.do uid.do umask.do uname.do \
 	unlink.do unsetenv.do usleep.do utime.do utimes.do ustat.do statvfs.do \
-	strtolower.do strupr.do strichr.do stristr.do strnchr.do strins.do \
-	strrev.do crc32_main.do crc32_string.do wildcard_init.do \
+	strtolower.do strupr.do \
+	crc32_main.do crc32_string.do wildcard_init.do \
 	wildcard_elements.do wildcard_pattern.do vasprintf.do \
 	vsnprintf.do wait.do wait4.do waitpid.do write.do \
-	_printf.do _scanf.do fprintf.do sprintf.do scanf.do
+	_printf.do _scanf.do fprintf.do sprintf.do scanf.do \
+	atol.do swab.do
 
 NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	amigalocale.nbo amigatime.nbo asprintf.nbo basename.nbo bcmp.nbo bcopy.nbo bzero.nbo \
@@ -150,19 +152,19 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	link.nbo longlong.nbo lseek.nbo lstat.nbo memccpy.nbo memchr.nbo memcmp.nbo memcpy.nbo memset.nbo message.nbo mkdir.nbo \
 	mkfifo.nbo mkstemp.nbo mktemp.nbo nice.nbo onbreak.nbo open.nbo pathconf.nbo \
 	perror.nbo pipe.nbo pclose.nbo popen.nbo pread.nbo processes.nbo protection.nbo \
-	pseudo_c.nbo pthread_getcpuclockid.nbo pwd.nbo pwrite.nbo raise.nbo read.nbo readlink.nbo realpath.nbo \
+	pseudo_c.nbo pthread_getcpuclockid.nbo pwd.nbo pwrite.nbo raise.nbo rand_r.nbo read.nbo readlink.nbo realpath.nbo \
 	regerror.nbo regex.nbo regexp.nbo regsub.nbo rename.nbo rindex.nbo rmdir.nbo \
 	scandir.nbo select.nbo setenv.nbo setgid.nbo setjmp.nbo setpgid.nbo setsid.nbo \
 	setuid.nbo settimeofday.nbo siglist.nbo signal.nbo signals.nbo sigpause.nbo \
 	sigprocmask.nbo sigsetmask.nbo sleep.nbo snprintf.nbo sockets.nbo stat.nbo \
 	strcasecmp.nbo strcat.nbo strchr.nbo strcmp.nbo strcoll.nbo strcpy.nbo strcspn.nbo strdup.nbo strerror.nbo strerror_r.nbo strftime.nbo strptime.nbo \
-	stricmp.nbo strlcat.nbo strlcpy.nbo strlen.nbo strncasecmp.nbo strncat.nbo strncpy.nbo \
+	stricmp.nbo strlcat.nbo strlcpy.nbo strlen.nbo strncat.nbo strncpy.nbo \
 	strndup.nbo strnicmp.nbo strnlen.nbo strncmp.nbo strpbrk.nbo strrchr.nbo strsep.nbo strspn.nbo strstr.nbo strtok.nbo strtok_r.nbo strtol.nbo \
 	strtoll.nbo strxfrm.nbo symlink.nbo sysconf.nbo system.nbo tempnam.nbo time.nbo \
 	timeconvert.nbo amigatimer.nbo timers.nbo truncate.nbo tzset.nbo uid.nbo umask.nbo uname.nbo \
 	unlink.nbo unsetenv.nbo usleep.nbo utime.nbo utimes.nbo ustat.nbo statvfs.nbo \
-	strtolower.nbo strupr.nbo strichr.nbo stristr.nbo strnchr.nbo strins.nbo \
-	strrev.nbo crc32_main.nbo crc32_string.nbo wildcard_init.nbo \
+	strtolower.nbo strupr.nbo \
+	crc32_main.nbo crc32_string.nbo wildcard_init.nbo \
 	wildcard_elements.nbo wildcard_pattern.nbo vasprintf.nbo \
 	vsnprintf.nbo wait.nbo wait4.nbo waitpid.nbo write.nbo \
 	_printf.nbo _scanf.nbo fprintf.nbo sprintf.nbo scanf.nbo
@@ -182,7 +184,7 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	lseek.dnbo lstat.dnbo memccpy.dnbo memchr.dnbo memcmp.dnbo memcpy.dnbo memset.dnbo message.dnbo mkdir.dnbo mkfifo.dnbo \
 	mkstemp.dnbo mktemp.dnbo nice.dnbo onbreak.dnbo open.dnbo pathconf.dnbo \
 	perror.dnbo pipe.dnbo pclose.dnbo popen.dnbo pread.dnbo processes.dnbo \
-	protection.dnbo pseudo_c.dnbo pthread_getcpuclockid.dnbo pwd.dnbo pwrite.dnbo raise.dnbo \
+	protection.dnbo pseudo_c.dnbo pthread_getcpuclockid.dnbo pwd.dnbo pwrite.dnbo raise.dnbo rand_r.dnbo \
 	read.dnbo readlink.dnbo realpath.dnbo regerror.dnbo regex.dnbo \
 	regexp.dnbo regsub.dnbo rename.dnbo rindex.dnbo rmdir.dnbo scandir.dnbo \
 	select.dnbo setenv.dnbo setgid.dnbo setjmp.dnbo setpgid.dnbo setsid.dnbo \
@@ -190,13 +192,12 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	sigpause.dnbo sigprocmask.dnbo sigsetmask.dnbo sleep.dnbo snprintf.dnbo \
 	sockets.dnbo stat.dnbo 	strcasecmp.dnbo strcat.dnbo strchr.dnbo strcmp.dnbo strcoll.dnbo strcpy.dnbo strcspn.dnbo strdup.dnbo \
 	strerror.dnbo strerror_r.dnbo strftime.dnbo strptime.dnbo stricmp.dnbo strlcat.dnbo \
-	strlcpy.dnbo strlen.dnbo strncasecmp.dnbo strncat.dnbo strncpy.dnbo strncmp.dnbo strndup.dnbo \
+	strlcpy.dnbo strlen.dnbo strncat.dnbo strncpy.dnbo strncmp.dnbo strndup.dnbo \
 	strnicmp.dnbo strnlen.dnbo strpbrk.dnbo strrchr.dnbo strsep.dnbo strspn.dnbo strstr.dnbo strtok.dnbo strtok_r.dnbo strtol.dnbo \
 	strtoll.dnbo strxfrm.dnbo symlink.dnbo sysconf.dnbo system.dnbo tempnam.dnbo \
 	time.dnbo timeconvert.dnbo amigatimer.dnbo timers.dnbo truncate.dnbo tzset.dnbo \
 	uid.dnbo umask.dnbo uname.dnbo unlink.dnbo unsetenv.dnbo usleep.dnbo \
 	utime.dnbo utimes.dnbo ustat.dnbo statvfs.dnbo strtolower.dnbo strupr.dnbo \
-	strichr.dnbo stristr.dnbo strnchr.dnbo strins.dnbo strrev.dnbo \
 	crc32_main.dnbo crc32_string.dnbo wildcard_init.dnbo \
 	wildcard_elements.dnbo wildcard_pattern.dnbo vasprintf.dnbo vsnprintf.dnbo \
 	wait.dnbo \
@@ -756,11 +757,8 @@ strxfrm.o: strxfrm.c
 
 strtolower.o: strtolower.c
 strupr.o: strupr.c
-strichr.o: strichr.c
-stristr.o: stristr.c
-strnchr.o: strnchr.c
-strins.o: strins.c
-strrev.o: strrev.c
+atol.o: atol.c
+swab.o: swab.c
 crc32_main.o: crc32_main.c
 crc32_string.o: crc32_string.c
 wildcard_init.o: wildcard_init.c
@@ -889,11 +887,8 @@ strxfrm.nbo: strxfrm.c
 
 strtolower.nbo: strtolower.c
 strupr.nbo: strupr.c
-strichr.nbo: strichr.c
-stristr.nbo: stristr.c
-strnchr.nbo: strnchr.c
-strins.nbo: strins.c
-strrev.nbo: strrev.c
+atol.nbo: atol.c
+swab.nbo: swab.c
 crc32_main.nbo: crc32_main.c
 crc32_string.nbo: crc32_string.c
 wildcard_init.nbo: wildcard_init.c
@@ -1022,11 +1017,8 @@ strxfrm.do: strxfrm.c
 
 strtolower.do: strtolower.c
 strupr.do: strupr.c
-strichr.do: strichr.c
-stristr.do: stristr.c
-strnchr.do: strnchr.c
-strins.do: strins.c
-strrev.do: strrev.c
+atol.do: atol.c
+swab.do: swab.c
 crc32_main.do: crc32_main.c
 crc32_string.do: crc32_string.c
 wildcard_init.do: wildcard_init.c
@@ -1252,11 +1244,8 @@ strxfrm.dnbo: strxfrm.c
 
 strtolower.dnbo: strtolower.c
 strupr.dnbo: strupr.c
-strichr.dnbo: strichr.c
-stristr.dnbo: stristr.c
-strnchr.dnbo: strnchr.c
-strins.dnbo: strins.c
-strrev.dnbo: strrev.c
+atol.dnbo: atol.c
+swab.dnbo: swab.c
 crc32_main.dnbo: crc32_main.c
 crc32_string.dnbo: crc32_string.c
 wildcard_init.dnbo: wildcard_init.c

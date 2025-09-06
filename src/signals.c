@@ -157,7 +157,7 @@ void _sig_dispatch(int sig)
     int smask = sigmask(sig);
 
     if (sig == SIGKILL)
-	__exit(0);
+	_exit(0);
 
     if (_sig_mask & smask) {
 	_sig_pending |= smask;
@@ -174,7 +174,7 @@ void _sig_dispatch(int sig)
 		    _sig_mask |= smask;
 		    if (_break_func()) { 
 			_message("user interrupt");
-			__exit(0);
+			_exit(0);
 		    }
 		    _sig_mask &= ~smask;
 		} else if (fn == SIG_DFL) {
@@ -187,7 +187,7 @@ void _sig_dispatch(int sig)
 			case SIGQUIT:
 			    _message("user interrupt");
 			default:
-			    __exit(0);
+			    _exit(0);
 		    }
 		} else if (fn != SIG_IGN) {
 		    _sig_mask |= smask;
@@ -294,4 +294,73 @@ void _cleanup_signals(void)
     /* cleanup_sigio(); */
     /* cleanup_sigurg(); */
     cleanup_children();
+}
+
+/*
+ * sigemptyset - Initialize and empty signal set
+ */
+int sigemptyset(sigset_t *set)
+{
+    if (set == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+    
+    *set = 0;
+    return 0;
+}
+
+/*
+ * sigfillset - Initialize and fill signal set
+ */
+int sigfillset(sigset_t *set)
+{
+    if (set == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+    
+    *set = ~0L;
+    return 0;
+}
+
+/*
+ * sigaddset - Add signal to signal set
+ */
+int sigaddset(sigset_t *set, int signo)
+{
+    if (set == NULL || signo < 1 || signo >= NSIG) {
+        errno = EINVAL;
+        return -1;
+    }
+    
+    *set |= (1L << (signo - 1));
+    return 0;
+}
+
+/*
+ * sigdelset - Remove signal from signal set
+ */
+int sigdelset(sigset_t *set, int signo)
+{
+    if (set == NULL || signo < 1 || signo >= NSIG) {
+        errno = EINVAL;
+        return -1;
+    }
+    
+    *set &= ~(1L << (signo - 1));
+    return 0;
+}
+
+/*
+ * sigismember - Test if signal is member of signal set
+ */
+int sigismember(const sigset_t *set, int signo)
+{
+    if (set == NULL || signo < 1 || signo >= NSIG) {
+        errno = EINVAL;
+        return -1;
+    }
+    
+    return (*set & (1L << (signo - 1))) ? 1 : 0;
 }
