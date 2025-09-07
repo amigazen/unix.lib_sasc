@@ -160,6 +160,8 @@ tgoto(char *cm, int destcol, int destline)
     static char result[64];
     char *p, *q;
     int i, j;
+    int oncol = 0;  /* Track whether we're on column or line */
+    int which;
     
     if (!cm) {
         return NULL;
@@ -170,40 +172,54 @@ tgoto(char *cm, int destcol, int destline)
     p = (char *)cm;
     q = result;
     i = 0;
+    which = destline;  /* Start with line (0-based) */
     
     while (*p && i < sizeof(result) - 1) {
         if (*p == '%') {
             p++;
             switch (*p) {
             case 'd':  /* Decimal number */
-                sprintf(q, "%d", destline);
+                sprintf(q, "%d", which);
                 while (*q) {
                     q++;
                     i++;
                 }
+                /* Switch between line and column */
+                oncol = 1 - oncol;
+                which = oncol ? destcol : destline;
                 break;
             case '2':  /* Two-digit decimal */
-                sprintf(q, "%02d", destline);
+                sprintf(q, "%02d", which);
                 while (*q) {
                     q++;
                     i++;
                 }
+                /* Switch between line and column */
+                oncol = 1 - oncol;
+                which = oncol ? destcol : destline;
                 break;
             case '3':  /* Three-digit decimal */
-                sprintf(q, "%03d", destline);
+                sprintf(q, "%03d", which);
                 while (*q) {
                     q++;
                     i++;
                 }
+                /* Switch between line and column */
+                oncol = 1 - oncol;
+                which = oncol ? destcol : destline;
                 break;
             case 'i':  /* Increment coordinates */
                 destcol++;
                 destline++;
+                /* Update current which value */
+                which = oncol ? destcol : destline;
                 break;
             case 'r':  /* Reverse coordinates */
                 j = destcol;
                 destcol = destline;
                 destline = j;
+                /* Update current which value */
+                which = oncol ? destcol : destline;
                 break;
             case '%':  /* Literal % */
                 *q++ = '%';

@@ -219,6 +219,87 @@ pid_t	 vfork __P((void));
 int	 vfork_wait __P((pid_t pid, int *status));
 void	 vfork_cleanup __P((void));
 
+/* Amiga-specific termcap data structures */
+struct amiga_console_info {
+    int width;
+    int height;
+    int colors;
+    int depth;
+    int mode;
+    char *device_name;
+    char *window_title;
+};
+
+struct amiga_keymap_info {
+    char *keymap_name;
+    int keymap_type;
+    int special_keys;
+    int function_keys;
+};
+
+struct amiga_window_info {
+    int x;
+    int y;
+    int width;
+    int height;
+    int flags;
+    char *title;
+};
+
+struct amiga_window_properties {
+    int x;
+    int y;
+    int width;
+    int height;
+    int flags;
+    char *title;
+    int close_gadget;
+    int size_gadget;
+    int depth_gadget;
+};
+
+/* Termcap functions */
+int	 tgetent __P((char *, char *));
+char	*tgetstr __P((char *, char **));
+int	 tgetflag __P((char *));
+int	 tgetnum __P((char *));
+char	*tgoto __P((char *, int, int));
+int	 tputs __P((char *, int, int (*)(char)));
+
+/* Enhanced termcap functions */
+int	 t_getent __P((struct tinfo **, const char *));
+int	 t_getnum __P((struct tinfo *, const char *));
+int	 t_getflag __P((struct tinfo *, const char *));
+char	*t_getstr __P((struct tinfo *, const char *, char **, size_t *));
+char	*t_agetstr __P((struct tinfo *, const char *));
+int	 t_getterm __P((struct tinfo *, char **, size_t *));
+int	 t_goto __P((struct tinfo *, const char *, int, int, char *, size_t));
+int	 t_puts __P((struct tinfo *, const char *, int, void (*)(char, void *), void *));
+void	 t_freent __P((struct tinfo *));
+int	 t_setinfo __P((struct tinfo **, const char *));
+
+/* Core capability database functions */
+int	 cgetclose __P((void));
+int	 cgetent __P((char **, char **, char *));
+int	 cgetfirst __P((char **, char **));
+int	 cgetnext __P((char **, char **));
+int	 cgetmatch __P((char *, char *));
+int	 cgetnum __P((char *, char *, long *));
+int	 cgetset __P((char *));
+int	 cgetstr __P((char *, char *, char **));
+int	 cgetustr __P((char *, char *, char **));
+char	*cgetcap __P((char *, char *, int));
+
+/* Amiga-specific termcap functions */
+int	 amiga_termcap_init __P((void));
+int	 amiga_termcap_get_console_info __P((struct amiga_console_info *));
+int	 amiga_termcap_set_console_mode __P((int));
+int	 amiga_termcap_get_keymap_info __P((struct amiga_keymap_info *));
+int	 amiga_termcap_set_keymap __P((char *));
+int	 amiga_termcap_get_window_info __P((struct amiga_window_info *));
+int	 amiga_termcap_set_window_properties __P((struct amiga_window_properties *));
+void	 amiga_termcap_cleanup __P((void));
+
 #endif /* !_POSIX_SOURCE */
 __END_DECLS
 
