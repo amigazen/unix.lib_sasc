@@ -1,0 +1,65 @@
+#
+# :ts=8
+#
+
+###############################################################################
+
+NAME = regex.library
+
+###############################################################################
+
+OPTIMIZE =	optimize opttime
+#DEBUG =		line
+DEBUG =		symbolflush noopt
+
+###############################################################################
+
+CFLAGS =	resopt idlen=64 comnest streq strmerge nostkchk \
+		includedir=/include includedir=include:  $(OPTIMIZE) debug=$(DEBUG) \
+		params=register strsect=code mccons smallcode smalldata
+AFLAGS =	-d
+LFLAGS =	addsym smallcode smalldata noicons batch
+
+###############################################################################
+
+OBJS = \
+	startup.o \
+	regex.o
+
+TEST_OBJS = \
+	unittest/test_regex.o
+
+###############################################################################
+
+LIBS = lib:sc.lib lib:amiga.lib
+
+###############################################################################
+
+all: $(NAME)
+
+test: test_regex
+
+###############################################################################
+
+$(NAME): $(OBJS)
+	slink $(OBJS) to $@.debug lib $(LIBS) $(LFLAGS) \
+		map $@.map,fhx fwidth 32 pwidth 32 swidth 32
+	slink $@.debug to $@ noicons nodebug
+
+test_regex: $(TEST_OBJS)
+	slink $(TEST_OBJS) to $@ lib $(LIBS) $(LFLAGS) 
+
+###############################################################################
+
+clean:
+	delete $(NAME) $(NAME).debug $(NAME).map $(OBJS) $(TEST_OBJS) test_regex test_regex.map
+
+version:
+	bumprev $(VERSION) $(NAME)
+
+###############################################################################
+
+startup.o : startup.c startup.h regex.library_rev.h /include/internal/regex_internal.h
+regex.o : regex.c /include/internal/regex_internal.h startup.h
+
+unittest/test_regex.o : unittest/test_regex.c /include/regex.h
