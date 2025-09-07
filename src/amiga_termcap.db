@@ -1,0 +1,132 @@
+# Amiga-Specific Termcap Database
+# Built for AmigaOS console.device and related APIs
+#
+# SPDX-License-Identifier: BSD-2-Clause
+#
+# Copyright (c) 2025 amigazen project
+# All rights reserved.
+
+# Amiga Console - Standard Amiga console window
+amiga-console|amiga|amigaos-console:\
+	:co#80:li#25:am:bs:cr=^M:do=^J:le=^H:nd=^L:up=^K:\
+	:cl=\033[2J:cd=\033[J:ce=\033[K:ho=\033[H:\
+	:cm=\033[%i%d;%dH:cm=\033[%i%d;%dH:\
+	:md=\033[1m:me=\033[0m:mr=\033[7m:so=\033[7m:se=\033[0m:\
+	:us=\033[4m:ue=\033[0m:Co#16:AF=\033[3%dm:AB=\033[4%dm:\
+	:k1=\033[11~:k2=\033[12~:k3=\033[13~:k4=\033[14~:\
+	:k5=\033[15~:k6=\033[17~:k7=\033[18~:k8=\033[19~:\
+	:k9=\033[20~:k0=\033[21~:k;=\033[23~:k,=\033[24~:\
+	:kh=\033[H:kl=\033[D:kr=\033[C:ku=\033[A:kd=\033[B:\
+	:kP=\033[5~:kN=\033[6~:kI=\033[2~:kD=\033[3~:\
+	:kH=\033[F:kL=\033[2~:kR=\033[4~:kU=\033[5~:kD=\033[6~:\
+	:kb=^H:pc=\0:bl=^G:
+
+# Amiga Console 80x25 - 80 column console
+amiga-console-80x25|amiga-80x25:\
+	:co#80:li#25:am:bs:cr=^M:do=^J:le=^H:nd=^L:up=^K:\
+	:cl=\033[2J:cd=\033[J:ce=\033[K:ho=\033[H:\
+	:cm=\033[%i%d;%dH:\
+	:md=\033[1m:me=\033[0m:mr=\033[7m:so=\033[7m:se=\033[0m:\
+	:us=\033[4m:ue=\033[0m:Co#16:AF=\033[3%dm:AB=\033[4%dm:\
+	:k1=\033[11~:k2=\033[12~:k3=\033[13~:k4=\033[14~:\
+	:k5=\033[15~:k6=\033[17~:k7=\033[18~:k8=\033[19~:\
+	:k9=\033[20~:k0=\033[21~:k;=\033[23~:k,=\033[24~:\
+	:kh=\033[H:kl=\033[D:kr=\033[C:ku=\033[A:kd=\033[B:\
+	:kP=\033[5~:kN=\033[6~:kI=\033[2~:kD=\033[3~:\
+	:kH=\033[F:kL=\033[2~:kR=\033[4~:kU=\033[5~:kD=\033[6~:\
+	:kb=^H:pc=\0:bl=^G:
+
+# Amiga Console 132x25 - Wide console
+amiga-console-132x25|amiga-132x25:\
+	:co#132:li#25:am:bs:cr=^M:do=^J:le=^H:nd=^L:up=^K:\
+	:cl=\033[2J:cd=\033[J:ce=\033[K:ho=\033[H:\
+	:cm=\033[%i%d;%dH:\
+	:md=\033[1m:me=\033[0m:mr=\033[7m:so=\033[7m:se=\033[0m:\
+	:us=\033[4m:ue=\033[0m:Co#16:AF=\033[3%dm:AB=\033[4%dm:\
+	:k1=\033[11~:k2=\033[12~:k3=\033[13~:k4=\033[14~:\
+	:k5=\033[15~:k6=\033[17~:k7=\033[18~:k8=\033[19~:\
+	:k9=\033[20~:k0=\033[21~:k;=\033[23~:k,=\033[24~:\
+	:kh=\033[H:kl=\033[D:kr=\033[C:ku=\033[A:kd=\033[B:\
+	:kP=\033[5~:kN=\033[6~:kI=\033[2~:kD=\033[3~:\
+	:kH=\033[F:kL=\033[2~:kR=\033[4~:kU=\033[5~:kD=\033[6~:\
+	:kb=^H:pc=\0:bl=^G:
+
+# Amiga Console Color - Color console
+amiga-console-color|amiga-color:\
+	:co#80:li#25:am:bs:cr=^M:do=^J:le=^H:nd=^L:up=^K:\
+	:cl=\033[2J:cd=\033[J:ce=\033[K:ho=\033[H:\
+	:cm=\033[%i%d;%dH:\
+	:md=\033[1m:me=\033[0m:mr=\033[7m:so=\033[7m:se=\033[0m:\
+	:us=\033[4m:ue=\033[0m:Co#16:AF=\033[3%dm:AB=\033[4%dm:\
+	:k1=\033[11~:k2=\033[12~:k3=\033[13~:k4=\033[14~:\
+	:k5=\033[15~:k6=\033[17~:k7=\033[18~:k8=\033[19~:\
+	:k9=\033[20~:k0=\033[21~:k;=\033[23~:k,=\033[24~:\
+	:kh=\033[H:kl=\033[D:kr=\033[C:ku=\033[A:kd=\033[B:\
+	:kP=\033[5~:kN=\033[6~:kI=\033[2~:kD=\033[3~:\
+	:kH=\033[F:kL=\033[2~:kR=\033[4~:kU=\033[5~:kD=\033[6~:\
+	:kb=^H:pc=\0:bl=^G:
+
+# Amiga Console Monochrome - Monochrome console
+amiga-console-mono|amiga-mono:\
+	:co#80:li#25:am:bs:cr=^M:do=^J:le=^H:nd=^L:up=^K:\
+	:cl=\033[2J:cd=\033[J:ce=\033[K:ho=\033[H:\
+	:cm=\033[%i%d;%dH:\
+	:md=\033[1m:me=\033[0m:mr=\033[7m:so=\033[7m:se=\033[0m:\
+	:us=\033[4m:ue=\033[0m:Co#2:AF=\033[3%dm:AB=\033[4%dm:\
+	:k1=\033[11~:k2=\033[12~:k3=\033[13~:k4=\033[14~:\
+	:k5=\033[15~:k6=\033[17~:k7=\033[18~:k8=\033[19~:\
+	:k9=\033[20~:k0=\033[21~:k;=\033[23~:k,=\033[24~:\
+	:kh=\033[H:kl=\033[D:kr=\033[C:ku=\033[A:kd=\033[B:\
+	:kP=\033[5~:kN=\033[6~:kI=\033[2~:kD=\033[3~:\
+	:kH=\033[F:kL=\033[2~:kR=\033[4~:kU=\033[5~:kD=\033[6~:\
+	:kb=^H:pc=\0:bl=^G:
+
+# Amiga Serial Console - Serial port console
+amiga-serial|amiga-aux:\
+	:co#80:li#25:am:bs:cr=^M:do=^J:le=^H:nd=^L:up=^K:\
+	:cl=\033[2J:cd=\033[J:ce=\033[K:ho=\033[H:\
+	:cm=\033[%i%d;%dH:\
+	:md=\033[1m:me=\033[0m:mr=\033[7m:so=\033[7m:se=\033[0m:\
+	:us=\033[4m:ue=\033[0m:Co#16:AF=\033[3%dm:AB=\033[4%dm:\
+	:k1=\033[11~:k2=\033[12~:k3=\033[13~:k4=\033[14~:\
+	:k5=\033[15~:k6=\033[17~:k7=\033[18~:k8=\033[19~:\
+	:k9=\033[20~:k0=\033[21~:k;=\033[23~:k,=\033[24~:\
+	:kh=\033[H:kl=\033[D:kr=\033[C:ku=\033[A:kd=\033[B:\
+	:kP=\033[5~:kN=\033[6~:kI=\033[2~:kD=\033[3~:\
+	:kH=\033[F:kL=\033[2~:kR=\033[4~:kU=\033[5~:kD=\033[6~:\
+	:kb=^H:pc=\0:bl=^G:
+
+# Amiga Raw Console - Raw mode console
+amiga-raw|amiga-raw-console:\
+	:co#80:li#25:bs:cr=^M:do=^J:le=^H:nd=^L:up=^K:\
+	:cl=\033[2J:cd=\033[J:ce=\033[K:ho=\033[H:\
+	:cm=\033[%i%d;%dH:\
+	:md=\033[1m:me=\033[0m:mr=\033[7m:so=\033[7m:se=\033[0m:\
+	:us=\033[4m:ue=\033[0m:Co#16:AF=\033[3%dm:AB=\033[4%dm:\
+	:k1=\033[11~:k2=\033[12~:k3=\033[13~:k4=\033[14~:\
+	:k5=\033[15~:k6=\033[17~:k7=\033[18~:k8=\033[19~:\
+	:k9=\033[20~:k0=\033[21~:k;=\033[23~:k,=\033[24~:\
+	:kh=\033[H:kl=\033[D:kr=\033[C:ku=\033[A:kd=\033[B:\
+	:kP=\033[5~:kN=\033[6~:kI=\033[2~:kD=\033[3~:\
+	:kH=\033[F:kL=\033[2~:kR=\033[4~:kU=\033[5~:kD=\033[6~:\
+	:kb=^H:pc=\0:bl=^G:
+
+# Generic Amiga Terminal - Fallback
+amiga|amiga-terminal:\
+	:co#80:li#25:am:bs:cr=^M:do=^J:le=^H:nd=^L:up=^K:\
+	:cl=\033[2J:cd=\033[J:ce=\033[K:ho=\033[H:\
+	:cm=\033[%i%d;%dH:\
+	:md=\033[1m:me=\033[0m:mr=\033[7m:so=\033[7m:se=\033[0m:\
+	:us=\033[4m:ue=\033[0m:Co#16:AF=\033[3%dm:AB=\033[4%dm:\
+	:k1=\033[11~:k2=\033[12~:k3=\033[13~:k4=\033[14~:\
+	:k5=\033[15~:k6=\033[17~:k7=\033[18~:k8=\033[19~:\
+	:k9=\033[20~:k0=\033[21~:k;=\033[23~:k,=\033[24~:\
+	:kh=\033[H:kl=\033[D:kr=\033[C:ku=\033[A:kd=\033[B:\
+	:kP=\033[5~:kN=\033[6~:kI=\033[2~:kD=\033[3~:\
+	:kH=\033[F:kL=\033[2~:kR=\033[4~:kU=\033[5~:kD=\033[6~:\
+	:kb=^H:pc=\0:bl=^G:
+
+# Dumb Terminal - Minimal capabilities
+dumb|amiga-dumb:\
+	:co#80:li#25:bs:cr=^M:do=^J:le=^H:nd=^L:up=^K:\
+	:kb=^H:pc=\0:bl=^G:

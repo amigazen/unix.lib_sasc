@@ -65,6 +65,12 @@ PSOCKETS_DOBJS = amigapsockets.do getaddrinfo.do getnameinfo.do inet_aton.do ine
 PSOCKETS_NBOBJS = amigapsockets.nbo getaddrinfo.nbo getnameinfo.nbo inet_aton.nbo inet_ntop_ipv4.nbo inet_pton_ipv4.nbo poll.nbo resolver_stubs.nbo
 PSOCKETS_DNBOBJS = amigapsockets.dnbo getaddrinfo.dnbo getnameinfo.dnbo inet_aton.dnbo inet_ntop_ipv4.dnbo inet_pton_ipv4.dnbo poll.dnbo resolver_stubs.dnbo
 
+# termcap library objects (separate from unix.lib)
+TERMCAP_OBJS = amiga_termcap_db.o amiga_console.o amiga_keymap.o amiga_termcap_utils.o cgetcap.o cgetent.o tgetent.o
+TERMCAP_DOBJS = amiga_termcap_db.do amiga_console.do amiga_keymap.do amiga_termcap_utils.do cgetcap.do cgetent.do tgetent.do
+TERMCAP_NBOBJS = amiga_termcap_db.nbo amiga_console.nbo amiga_keymap.nbo amiga_termcap_utils.nbo cgetcap.nbo cgetent.nbo tgetent.nbo
+TERMCAP_DNBOBJS = amiga_termcap_db.dnbo amiga_console.dnbo amiga_keymap.dnbo amiga_termcap_utils.dnbo cgetcap.dnbo cgetent.dnbo tgetent.dnbo
+
 # Test library objects (in unittests folder)
 TESTLIB_OBJS = unittests/testlib.o
 TESTLIB_DOBJS = unittests/testlib.do
@@ -112,6 +118,12 @@ TIMERDEVICETEST_OBJS = unittests/test_timer_device.o
 TIMERDEVICETEST_DOBJS = unittests/test_timer_device.do
 TIMERDEVICETEST_NBOBJS = unittests/test_timer_device.nbo
 TIMERDEVICETEST_DNBOBJS = unittests/test_timer_device.dnbo
+
+# termcap test program objects (in unittests folder)
+TERMCAPTEST_OBJS = unittests/test_termcap.o
+TERMCAPTEST_DOBJS = unittests/test_termcap.do
+TERMCAPTEST_NBOBJS = unittests/test_termcap.nbo
+TERMCAPTEST_DNBOBJS = unittests/test_termcap.dnbo
 
 DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	amigalocale.do amigatime.do asprintf.do basename.do bcmp.do bcopy.do bzero.do \
@@ -253,6 +265,12 @@ PSOCKETS_FARLIB = psocketsnb.lib
 PSOCKETS_DLIB = psocketsd.lib
 PSOCKETS_DFARLIB = psocketsdnb.lib
 
+# termcap library names (following Amiga conventions)
+TERMCAP_LIB = termcap.lib
+TERMCAP_FARLIB = termcapnb.lib
+TERMCAP_DLIB = termcapd.lib
+TERMCAP_DFARLIB = termcapdnb.lib
+
 # Test library names (in unittests folder)
 TESTLIB_LIB = unittests/testlib.lib
 TESTLIB_FARLIB = unittests/testlibnb.lib
@@ -299,6 +317,11 @@ TIMERDEVICETEST_PROG = test_timer_device
 TIMERDEVICETEST_D_PROG = test_timer_deviced
 TIMERDEVICETEST_NB_PROG = test_timer_devicenb
 TIMERDEVICETEST_DNB_PROG = test_timer_devicednb
+
+TERMCAPTEST_PROG = test_termcap
+TERMCAPTEST_D_PROG = test_termcapd
+TERMCAPTEST_NB_PROG = test_termcapnb
+TERMCAPTEST_DNB_PROG = test_termcapdnb
 
 .SUFFIXES: .c .a .o .do .nbo .dnbo
 #
@@ -1308,6 +1331,32 @@ wait4.dnbo: wait4.c processes.h signals.h amiga.h
 vfork.dnbo: vfork.c include/unistd.h include/amigapthread.h pthread_priv.h amiga.h
 write.dnbo: write.c amiga.h
 
+# Termcap library build targets
+$(TERMCAP_LIB): $(TERMCAP_OBJS)
+	$(AR) $(TERMCAP_LIB) r $(TERMCAP_OBJS)
+
+$(TERMCAP_DLIB): $(TERMCAP_DOBJS)
+	$(AR) $(TERMCAP_DLIB) r $(TERMCAP_DOBJS)
+
+$(TERMCAP_FARLIB): $(TERMCAP_NBOBJS)
+	$(AR) $(TERMCAP_FARLIB) r $(TERMCAP_NBOBJS)
+
+$(TERMCAP_DFARLIB): $(TERMCAP_DNBOBJS)
+	$(AR) $(TERMCAP_DFARLIB) r $(TERMCAP_DNBOBJS)
+
+# termcap.lib targets are already defined above as $(TERMCAP_LIB), etc.
+# No need for redundant targets
+
+termcap-all: $(TERMCAP_LIB) $(TERMCAP_DLIB) $(TERMCAP_FARLIB) $(TERMCAP_DFARLIB)
+
+termcap-clean:
+	$(RM) $(TERMCAP_OBJS) $(TERMCAP_DOBJS) $(TERMCAP_NBOBJS) $(TERMCAP_DNBOBJS)
+	$(RM) $(TERMCAP_LIB) $(TERMCAP_DLIB) $(TERMCAP_FARLIB) $(TERMCAP_DFARLIB)
+
+# Install termcap library to destination
+termcap-install: $(TERMCAP_LIB)
+	$(CP) $(TERMCAP_LIB) $(DEST)
+
 # FIFO and APipe build targets
 fifo-all:
 	cd fifolib
@@ -1339,3 +1388,64 @@ APipe-Handler:
 	cd apipe
 	smake APipe-Handler
 	cd /
+
+# Termcap object dependencies
+amiga_termcap_db.o: amiga_termcap_db.c amiga_termcap_private.h amiga.h
+amiga_console.o: amiga_console.c amiga_termcap_private.h amiga.h
+amiga_keymap.o: amiga_keymap.c amiga_termcap_private.h amiga.h
+amiga_termcap_utils.o: amiga_termcap_utils.c amiga_termcap_private.h amiga.h
+cgetcap.o: cgetcap.c amiga_termcap_private.h amiga.h
+cgetent.o: cgetent.c amiga_termcap_private.h amiga.h
+tgetent.o: tgetent.c amiga_termcap_private.h amiga.h
+
+amiga_termcap_db.do: amiga_termcap_db.c amiga_termcap_private.h amiga.h
+amiga_console.do: amiga_console.c amiga_termcap_private.h amiga.h
+amiga_keymap.do: amiga_keymap.c amiga_termcap_private.h amiga.h
+amiga_termcap_utils.do: amiga_termcap_utils.c amiga_termcap_private.h amiga.h
+cgetcap.do: cgetcap.c amiga_termcap_private.h amiga.h
+cgetent.do: cgetent.c amiga_termcap_private.h amiga.h
+tgetent.do: tgetent.c amiga_termcap_private.h amiga.h
+
+amiga_termcap_db.nbo: amiga_termcap_db.c amiga_termcap_private.h amiga.h
+amiga_console.nbo: amiga_console.c amiga_termcap_private.h amiga.h
+amiga_keymap.nbo: amiga_keymap.c amiga_termcap_private.h amiga.h
+amiga_termcap_utils.nbo: amiga_termcap_utils.c amiga_termcap_private.h amiga.h
+cgetcap.nbo: cgetcap.c amiga_termcap_private.h amiga.h
+cgetent.nbo: cgetent.c amiga_termcap_private.h amiga.h
+tgetent.nbo: tgetent.c amiga_termcap_private.h amiga.h
+
+amiga_termcap_db.dnbo: amiga_termcap_db.c amiga_termcap_private.h amiga.h
+amiga_console.dnbo: amiga_console.c amiga_termcap_private.h amiga.h
+amiga_keymap.dnbo: amiga_keymap.c amiga_termcap_private.h amiga.h
+amiga_termcap_utils.dnbo: amiga_termcap_utils.c amiga_termcap_private.h amiga.h
+cgetcap.dnbo: cgetcap.c amiga_termcap_private.h amiga.h
+cgetent.dnbo: cgetent.c amiga_termcap_private.h amiga.h
+tgetent.dnbo: tgetent.c amiga_termcap_private.h amiga.h
+
+# Termcap test program dependencies and targets
+unittests/test_termcap.o: unittests/test_termcap.c include/termcap.h include/unistd.h amiga.h
+unittests/test_termcap.do: unittests/test_termcap.c include/termcap.h include/unistd.h amiga.h
+unittests/test_termcap.nbo: unittests/test_termcap.c include/termcap.h include/unistd.h amiga.h
+unittests/test_termcap.dnbo: unittests/test_termcap.c include/termcap.h include/unistd.h amiga.h
+
+$(TERMCAPTEST_PROG): $(TERMCAPTEST_OBJS) $(TERMCAP_LIB) $(LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) $(TERMCAPTEST_OBJS) $(TERMCAP_LIB) $(LIB) -o $(TERMCAPTEST_PROG)
+
+$(TERMCAPTEST_D_PROG): $(TERMCAPTEST_DOBJS) $(TERMCAP_DLIB) $(DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) $(TERMCAPTEST_DOBJS) $(TERMCAP_DLIB) $(DLIB) -o $(TERMCAPTEST_D_PROG)
+
+$(TERMCAPTEST_NB_PROG): $(TERMCAPTEST_NBOBJS) $(TERMCAP_FARLIB) $(FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) $(TERMCAPTEST_NBOBJS) $(TERMCAP_FARLIB) $(FARLIB) -o $(TERMCAPTEST_NB_PROG)
+
+$(TERMCAPTEST_DNB_PROG): $(TERMCAPTEST_DNBOBJS) $(TERMCAP_DFARLIB) $(DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) $(TERMCAPTEST_DNBOBJS) $(TERMCAP_DFARLIB) $(DFARLIB) -o $(TERMCAPTEST_DNB_PROG)
+
+test_termcap: $(TERMCAPTEST_PROG)
+
+test_termcap-debug: $(TERMCAPTEST_D_PROG)
+
+test_termcap-nb: $(TERMCAPTEST_NB_PROG)
+
+test_termcap-nb-debug: $(TERMCAPTEST_DNB_PROG)
+
+test_termcap-all: $(TERMCAPTEST_PROG) $(TERMCAPTEST_D_PROG) $(TERMCAPTEST_NB_PROG) $(TERMCAPTEST_DNB_PROG)
