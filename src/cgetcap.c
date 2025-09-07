@@ -33,10 +33,7 @@ cgetcap(char *buf, const char *cap, int type)
     found = 0;
     
     while (*p) {
-        /* Skip to next capability */
-        while (*p && *p != ':') {
-            p++;
-        }
+        /* Skip to next capability (skip colon if present) */
         if (*p == ':') {
             p++; /* Skip the colon */
         }

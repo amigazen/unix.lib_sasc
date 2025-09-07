@@ -25,6 +25,7 @@ amiga_termcap_load_db(const char *path)
     char line[1024];
     struct termcap_entry *entry, *last_entry;
     int line_count = 0;
+    int expecting_continuation = 0;
     
     if (!path) {
         return AMIGA_TERMCAP_ERROR_INVALID;
@@ -73,12 +74,42 @@ amiga_termcap_load_db(const char *path)
             len--;
         }
         
-        /* Skip continuation lines (starting with tab) */
-        if (*p == '\t') {
+        /* Check for backslash continuation */
+        if (len > 0 && p[len-1] == '\\') {
+            p[len-1] = '\0'; /* Remove the backslash */
+            len--;
+            expecting_continuation = 1;
+        }
+        
+        /* Handle continuation lines (starting with tab or expected continuation) */
+        if (*p == '\t' || expecting_continuation) {
+            /* This is a continuation line - append to current entry */
+            if (last_entry) {
+                char *old_cap = last_entry->capabilities;
+                char *new_cap;
+                int old_len = old_cap ? amiga_termcap_strlen(old_cap) : 0;
+                int new_len = amiga_termcap_strlen(p + (*p == '\t' ? 1 : 0)); /* Skip the tab if present */
+                
+                new_cap = amiga_termcap_malloc(old_len + new_len + 1);
+                if (new_cap) {
+                    if (old_cap) {
+                        amiga_termcap_strcpy(new_cap, old_cap);
+                    } else {
+                        new_cap[0] = '\0';
+                    }
+                    amiga_termcap_strcat(new_cap, p + (*p == '\t' ? 1 : 0)); /* Skip the tab if present */
+                    if (old_cap) {
+                        amiga_termcap_free(old_cap);
+                    }
+                    last_entry->capabilities = new_cap;
+                }
+            }
+            expecting_continuation = 0;
             continue;
         }
         
         /* Parse entry */
+        expecting_continuation = 0; /* Reset continuation flag for new entry */
         entry = amiga_termcap_malloc(sizeof(struct termcap_entry));
         if (!entry) {
             fclose(fp);
@@ -142,6 +173,7 @@ amiga_termcap_load_db(const char *path)
                 return AMIGA_TERMCAP_ERROR_MEMORY;
             }
         } else {
+            /* No capabilities on this line - they might be on continuation lines */
             entry->capabilities = amiga_termcap_strdup("");
         }
         

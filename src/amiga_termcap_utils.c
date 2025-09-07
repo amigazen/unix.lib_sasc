@@ -428,3 +428,51 @@ amiga_termcap_handle_escape(const char **str, char *output, int maxlen)
     *str = p + 1;
     return len;
 }
+
+/*
+ * amiga_termcap_strcpy - string copy function
+ * 
+ * This function copies a string from source to destination.
+ */
+char *
+amiga_termcap_strcpy(char *dest, const char *src)
+{
+    char *d = dest;
+    
+    if (!dest || !src) {
+        return NULL;
+    }
+    
+    while ((*d++ = *src++)) {
+        /* Copy characters */
+    }
+    
+    return dest;
+}
+
+/*
+ * amiga_termcap_strcat - string concatenation function
+ * 
+ * This function concatenates a string to the end of another string.
+ */
+char *
+amiga_termcap_strcat(char *dest, const char *src)
+{
+    char *d = dest;
+    
+    if (!dest || !src) {
+        return NULL;
+    }
+    
+    /* Find end of destination string */
+    while (*d) {
+        d++;
+    }
+    
+    /* Copy source string to end of destination */
+    while ((*d++ = *src++)) {
+        /* Copy characters */
+    }
+    
+    return dest;
+}

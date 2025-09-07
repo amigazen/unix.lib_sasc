@@ -27,14 +27,14 @@ cgetent(char **buf, char **db_array, const char *name)
     char *result;
     int len;
     
-    if (!buf || !db_array || !name) {
+    if (!buf || !name) {
         return -1;
     }
     
     
     /* Load database if not already loaded */
     if (!g_termcap_db) {
-        if (amiga_termcap_load_db("ENV:termcap") != 0) {
+        if (amiga_termcap_load_embedded_db() != 0) {
             return -1;
         }
     }
@@ -120,7 +120,7 @@ cgetfirst(char **buf, char **db_array)
     
     /* Load database if not already loaded */
     if (!g_termcap_db) {
-        if (amiga_termcap_load_db("ENV:termcap") != 0) {
+        if (amiga_termcap_load_embedded_db() != 0) {
             return -1;
         }
     }
@@ -150,7 +150,7 @@ cgetnext(char **buf, char **db_array)
     
     /* Load database if not already loaded */
     if (!g_termcap_db) {
-        if (amiga_termcap_load_db("ENV:termcap") != 0) {
+        if (amiga_termcap_load_embedded_db() != 0) {
             return -1;
         }
     }

@@ -70,6 +70,8 @@ int amiga_keymap_qual_to_string(UWORD qual, char *buffer, int buflen);
 int amiga_termcap_strlen(const char *str);
 char *amiga_termcap_strdup(const char *str);
 int amiga_termcap_strcmp(const char *s1, const char *s2);
+char *amiga_termcap_strcpy(char *dest, const char *src);
+char *amiga_termcap_strcat(char *dest, const char *src);
 char *amiga_termcap_strchr(const char *str, int c);
 char *amiga_termcap_strstr(const char *haystack, const char *needle);
 

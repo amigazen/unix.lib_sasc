@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* External database reference */
+extern struct termcap_db *g_termcap_db;
+
 /* Global variables for compatibility */
 char PC = '\0';                   /* Pad character */
 char *BC = NULL;                  /* Backspace character */
@@ -37,9 +40,16 @@ tgetent(char *bp, char *name)
     }
     
     
+    /* Load database if not already loaded */
+    if (!g_termcap_db) {
+        if (amiga_termcap_load_embedded_db() != 0) {
+            return -1;
+        }
+    }
+    
     /* Try to get entry from database */
-    result = cgetent(&entry, NULL, name);
-    if (result != 0) {
+    entry = amiga_termcap_find_entry(name);
+    if (!entry) {
         return -1;
     }
     
@@ -60,31 +70,7 @@ tgetent(char *bp, char *name)
     BC = NULL;
     UP = NULL;
     
-    /* Extract common capabilities */
-    {
-        char *area = bp + len + 1;
-        char *bc_str, *up_str;
-        
-        /* Get backspace capability */
-        bc_str = tgetstr("bc", &area);
-        if (bc_str) {
-            BC = bc_str;
-        }
-        
-        /* Get up cursor capability */
-        up_str = tgetstr("up", &area);
-        if (up_str) {
-            UP = up_str;
-        }
-        
-        /* Get pad character */
-        {
-            long pad_char;
-            if (cgetnum(bp, "pc", &pad_char) == 0) {
-                PC = (char)pad_char;
-            }
-        }
-    }
+    /* Global variables will be set by individual capability functions when called */
     
     amiga_termcap_free(entry);
     
@@ -99,12 +85,24 @@ tgetent(char *bp, char *name)
 char *
 tgetstr(char *id, char **area)
 {
+    char *result;
+    
     if (!g_termcap_buffer || !id || !area) {
         return NULL;
     }
     
+    result = cgetstr(g_termcap_buffer, id, area);
     
-    return cgetstr(g_termcap_buffer, id, area);
+    /* Set global variables for common capabilities */
+    if (result) {
+        if (amiga_termcap_strcmp(id, "bc") == 0) {
+            BC = result;
+        } else if (amiga_termcap_strcmp(id, "up") == 0) {
+            UP = result;
+        }
+    }
+    
+    return result;
 }
 
 /*
@@ -138,9 +136,13 @@ tgetnum(char *id)
         return -1;
     }
     
-    
     if (cgetnum(g_termcap_buffer, id, &num) != 0) {
         return -1;
+    }
+    
+    /* Set global variables for common capabilities */
+    if (amiga_termcap_strcmp(id, "pc") == 0) {
+        PC = (char)num;
     }
     
     return (int)num;

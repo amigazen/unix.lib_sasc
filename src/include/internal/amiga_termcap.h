@@ -77,6 +77,7 @@ int amiga_keymap_convert(struct amiga_termcap *termcap, UWORD qual, UWORD code,
 
 /* Termcap database functions */
 int amiga_termcap_load_db(const char *path);
+int amiga_termcap_load_embedded_db(void);
 void amiga_termcap_unload_db(void);
 char *amiga_termcap_find_entry(const char *name);
 
