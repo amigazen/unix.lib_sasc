@@ -1,6 +1,8 @@
 #ifndef UNIX_STRING_H
 #define UNIX_STRING_H 1
 
+#include <stddef.h>  /* For size_t and NULL */
+
 /* Nonstandard routines */
 #if !defined(_ANSI_SOURCE) && !defined(_STRICT_ANSI)
 

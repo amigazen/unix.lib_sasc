@@ -24,47 +24,47 @@ extern "C" {
  */
 
 /* Setup terminal */
-int setupterm(char *term, int fildes, int *errret);
+int setupterm(const char *term, int fildes, int *errret);
 
 /* Get terminal flag */
-int tigetflag(char *capname);
+int tigetflag(const char *capname);
 
 /* Get terminal number */
-int tigetnum(char *capname);
+int tigetnum(const char *capname);
 
 /* Get terminal string */
-char *tigetstr(char *capname, char **area);
+char *tigetstr(const char *capname);
 
 /* Output parameterized string */
-int tparm(char *str, ...);
+char *tparm(const char *str, ...);
 
 /* Output string with padding */
-int tputs(char *str, int affcnt, int (*putc)(int));
+int tputs(const char *str, int affcnt, int (*putc)(int));
 
 /* Move cursor */
-char *tgoto(char *cm, int destcol, int destline);
+char *tgoto(const char *cm, int destcol, int destline);
 
 /*
  * Standard termcap functions (for compatibility)
  */
 
 /* Load terminal entry */
-int tgetent(char *buffer, char *terminal);
+int tgetent(char *buffer, const char *terminal);
 
 /* Get string capability */
-char *tgetstr(char *cn, char **ptr);
+char *tgetstr(const char *cn, char **ptr);
 
 /* Get boolean capability */
-int tgetflag(char *id);
+int tgetflag(const char *id);
 
 /* Get numeric capability */
-int tgetnum(char *id);
+int tgetnum(const char *id);
 
 /* Generate cursor positioning string */
-char *tgoto(char *cm, int col, int line);
+char *tgoto(const char *cm, int col, int line);
 
 /* Output string with padding */
-int tputs(char *cp, int affcnt, int (*outc)(char));
+int tputs(const char *cp, int affcnt, int (*outc)(int));
 
 /*
  * Enhanced Amiga-specific functions
