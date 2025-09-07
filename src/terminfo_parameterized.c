@@ -11,6 +11,7 @@
 
 #include "amiga_termcap_private.h"
 #include "include/internal/amiga_terminfo.h"
+#include "include/terminfo.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

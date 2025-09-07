@@ -12,8 +12,8 @@
 #ifndef _AMIGA_TERMINFO_H
 #define _AMIGA_TERMINFO_H
 
-#include "terminfo.h"
-#include "termcap.h"
+#include "/terminfo.h"
+#include "/termcap.h"
 
 /* Internal terminal structure */
 struct terminal {

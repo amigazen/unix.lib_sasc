@@ -11,10 +11,28 @@
 
 #include "amiga_termcap_private.h"
 #include "include/internal/amiga_terminfo.h"
+#include "include/terminfo.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+
+/* strdup implementation for SAS/C compatibility */
+char *strdup(const char *s)
+{
+    char *dup;
+    size_t len;
+    
+    if (!s) return NULL;
+    
+    len = strlen(s) + 1;
+    dup = (char *)malloc(len);
+    if (dup) {
+        strcpy(dup, s);
+    }
+    
+    return dup;
+}
 
 /* Global variables */
 TERMINAL *cur_term = NULL;
@@ -632,8 +650,12 @@ int tigetflag(const char *capname)
 int resetterm(void)
 {
     /* Reset terminal to initial state */
+    char *area;
+    char *cl_str;
+    
     if (cur_term && cur_term->capabilities) {
-        char *cl_str = tgetstr("cl", NULL);
+        area = NULL;
+        cl_str = tgetstr("cl", &area);
         if (cl_str) {
             printf("%s", cl_str);
             fflush(stdout);
