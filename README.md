@@ -62,8 +62,10 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 - *libiconv APIs*: A brand new implementation of libiconv functions integrated with _locale.library_, with basic support for Latin1 and UTF8 codesets to start with
 - *Unit tests*: Unit tests for many of the new functions, aiming to reach full test coverage in time
 - **curses.lib**: Updated version of Simon Raybould's Amiga port of _curses_ now BSD licensed
+- **termcap and terminfo**: A brand new termcap and terminfo implementation built around con-handler, keymap.device and console.device supporting Amiga ANSI escape codes
 - **psockets.lib**: A brand new Amiga port of _psockets_ wrapping _bsdsocket.library_
 - **pthread.lib**: A brand new Amiga native implementation of _pthread_
+- **regex.library**: Updated shared library implementation of Henry Spender's regex functions
 - **Full set of POSIX libraries**: For full POSIX compatibility regex, libdl and libiconv are also needed... watch this space!
 - **Pipes support**: unix.lib dependencies Matt Dillon's _fifo_ and Per Bojsen's _APipe_ are now included directly in the project
 - **Designed for use with _unsui_**: Used as the standard C library for amigazen project's _unsui_ POSIX runtime for Amiga
@@ -113,6 +115,68 @@ In conclusion the right solution is to:
 - Use a static library for the bulk of functions you need to offer but which are not used all the time by all applications.
 - For a library used by most or all programs running on the system, it may make sense to have the most popular functions available in a core dynamic library while the remaining functions are static only.
 
+### Why do we need both fifo and apipe when the operating system already provides the Queue-Handler and PIPE:?
+
+While AmigaOS 3.2's built-in queue-handler and PIPE: device provide basic pipe functionality, they fall short of the comprehensive POSIX pipe requirements that modern Unix software expects. Here's why we need both FIFO and APipe:
+
+#### **What Queue-Handler Provides:**
+- **Basic named pipes** (`PIPE:name`) and anonymous pipes
+- **Blocking I/O** with configurable buffer sizes
+- **Simple message passing** between processes
+- **Standard Amiga message port** interface
+
+#### **What's Missing for Full POSIX Compatibility:**
+
+**1. Process Execution Pipes (`popen()`/`pclose()`)**
+- Queue-handler cannot execute commands and connect their I/O streams
+- APipe provides the `APIPE:` device that can spawn processes and create pipes to their stdin/stdout/stderr
+- Essential for shell command execution, subprocess management, and system() calls
+
+**2. Advanced FIFO Features**
+- **Non-blocking I/O** (`O_NONBLOCK`) - Queue-Handler only supports blocking operations
+- **Socket pairs** (`socketpair()`) - Not supported by Queue-Handler
+- **Cooked mode** with line buffering and special character processing
+- **`mkfifo()`** function for creating named pipes programmatically
+- **Priority-based message handling** with multiple priority levels
+- **Signal-based notifications** for async I/O events
+
+**3. POSIX Compliance**
+- **Standard file descriptors** - Queue-Handler uses Amiga message ports, not file descriptors
+- **`select()`/`poll()` support** - Required for multiplexed I/O
+- **Error handling** - POSIX-compliant errno values and error reporting
+- **Resource management** - Proper cleanup and reference counting
+
+**4. Performance and Reliability**
+- **Optimized buffering** - FIFO system provides better memory management
+- **Concurrent access** - Better handling of multiple readers/writers
+- **Memory efficiency** - Reduced overhead compared to generic message ports
+- **Robust error recovery** - Better handling of edge cases and error conditions
+
+#### **Why Both FIFO and APipe?**
+
+**FIFO (Matt Dillon's fifo.library)** provides:
+- Complete POSIX pipe implementation
+- Non-blocking I/O and advanced features
+- Socket pairs and named pipes
+- High-performance message queuing
+
+**APipe (Per Bojsen's APipe-Handler)** provides:
+- Process execution pipes (`popen()`/`pclose()`)
+- Command execution with I/O redirection
+- Subprocess management
+- Integration with Amiga's process system
+
+#### **The Integration Strategy:**
+Rather than trying to extend the basic Queue-Handler to support all POSIX features (which would be a massive undertaking), UniLib3 integrates the proven, battle-tested FIFO and APipe systems that already provide these capabilities. This approach:
+
+- **Leverages existing, working code** that's been tested in real-world applications
+- **Maintains compatibility** with existing Amiga software that uses these systems
+- **Provides full POSIX compliance** without reinventing the wheel
+- **Ensures reliability** by using mature, stable implementations
+
+The result is a complete POSIX pipe implementation that works seamlessly with both classic Amiga software and modern Unix applications ported to Amiga.
+
+
 ## Contact 
 
 - At GitHub https://github.com/amigazen/unsui/ 
@@ -130,7 +194,7 @@ UniLib3 is part of amigazen project's effort to modernize Amiga development tool
 - **David Gay** - Original creator of unix.lib who used it for his Emacs port to Amiga
 - **Enrico Forestieri** - Developer of the second version of unix.lib, expanding it with more functions and adding sockets support
 - **Irmen de Jong** - The developer behind the original Amiga Python 2, whose C library implementation code has been incorporated into UniLib3
-- **Henry Spencer** - Author of public domain string functions distributed as 'stringlib'
+- **Henry Spencer** - Author of the public domain string functions distributed as 'stringlib' and the regex functions in regex.library
 - **Simon John Raybould** - Author of the curses library implementation for Amiga
 - **Greg Parker** - Author of poll.c used in the _psockets_ implementation
 - **Matt Dillon** - Creator of the FIFO system included here, and countless other Unix-on-Amiga foundation stones, not least the DICE compiler itself
