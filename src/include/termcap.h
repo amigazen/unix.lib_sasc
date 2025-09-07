@@ -29,6 +29,21 @@ extern "C" {
  */
 
 /*
+ * Enhanced termcap structure for t_* API
+ */
+struct tinfo {
+    char *info;                   /* Full termcap entry */
+    char *up;                     /* Cached UP capability */
+    char *bc;                     /* Cached BC capability */
+    struct tbuf {
+        struct tbuf *next;
+        char *data;
+        char *ptr;
+        char *eptr;
+    } *tbuf;                      /* String buffer management */
+};
+
+/*
  * Global variables for compatibility
  */
 extern char PC;                   /* Pad character */

@@ -103,6 +103,18 @@ char *amiga_termcap_find_entry(const char *name);
 #define AMIGA_CAP_TERM_WIDTH       "co"    /* Terminal width */
 #define AMIGA_CAP_TERM_HEIGHT      "li"    /* Terminal height */
 
+/* Function prototypes for internal termcap functions */
+int cgetcap(const char *buf, const char *cap, int type);
+char *cgetstr(char *buf, const char *cap, char **area);
+int cgetnum(const char *buf, const char *cap, long *num);
+int cgetflag(const char *buf, const char *cap);
+
+/* Enhanced API function prototypes */
+char *t_getstr(struct tinfo *info, const char *id, char **area, size_t *limit);
+int t_getnum(struct tinfo *info, const char *id);
+int t_getflag(struct tinfo *info, const char *id);
+char *t_agetstr(struct tinfo *info, const char *id);
+
 #ifdef __cplusplus
 }
 #endif

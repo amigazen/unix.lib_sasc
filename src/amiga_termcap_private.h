@@ -9,7 +9,6 @@
 #define _AMIGA_TERMCAP_PRIVATE_H_
 
 #include "internal/amiga_termcap.h"
-#include "termcap.h"
 
 /* Internal buffer management */
 #define AMIGA_TERMCAP_BUFFER_SIZE  4096
@@ -30,19 +29,6 @@ struct termcap_db {
     char *db_path;                    /* Path to database file */
 };
 
-/* Extended termcap info structure */
-struct tinfo {
-    char *info;                   /* Termcap entry string */
-    char *up;                     /* Cursor up capability */
-    char *bc;                     /* Backspace capability */
-    struct amiga_termcap *amiga;  /* Amiga-specific data */
-    struct tbuf {
-        struct tbuf *next;
-        char *data;
-        char *ptr;
-        char *eptr;
-    } *tbuf;
-};
 
 /* Global database instance */
 extern struct termcap_db *g_termcap_db;

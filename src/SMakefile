@@ -66,10 +66,10 @@ PSOCKETS_NBOBJS = amigapsockets.nbo getaddrinfo.nbo getnameinfo.nbo inet_aton.nb
 PSOCKETS_DNBOBJS = amigapsockets.dnbo getaddrinfo.dnbo getnameinfo.dnbo inet_aton.dnbo inet_ntop_ipv4.dnbo inet_pton_ipv4.dnbo poll.dnbo resolver_stubs.dnbo
 
 # termcap library objects (separate from unix.lib)
-TERMCAP_OBJS = amiga_termcap_db.o amiga_termcap_db_embedded.o amiga_console.o amiga_keymap.o amiga_termcap_utils.o cgetcap.o cgetent.o tgetent.o
-TERMCAP_DOBJS = amiga_termcap_db.do amiga_termcap_db_embedded.do amiga_console.do amiga_keymap.do amiga_termcap_utils.do cgetcap.do cgetent.do tgetent.do
-TERMCAP_NBOBJS = amiga_termcap_db.nbo amiga_termcap_db_embedded.nbo amiga_console.nbo amiga_keymap.nbo amiga_termcap_utils.nbo cgetcap.nbo cgetent.nbo tgetent.nbo
-TERMCAP_DNBOBJS = amiga_termcap_db.dnbo amiga_termcap_db_embedded.dnbo amiga_console.dnbo amiga_keymap.dnbo amiga_termcap_utils.dnbo cgetcap.dnbo cgetent.dnbo tgetent.dnbo
+TERMCAP_OBJS = amiga_termcap_db.o amiga_termcap_db_embedded.o amiga_console.o amiga_keymap.o amiga_termcap_utils.o cgetcap.o cgetent.o tgetent.o t_enhanced.o t_goto_enhanced.o
+TERMCAP_DOBJS = amiga_termcap_db.do amiga_termcap_db_embedded.do amiga_console.do amiga_keymap.do amiga_termcap_utils.do cgetcap.do cgetent.do tgetent.do t_enhanced.do t_goto_enhanced.do
+TERMCAP_NBOBJS = amiga_termcap_db.nbo amiga_termcap_db_embedded.nbo amiga_console.nbo amiga_keymap.nbo amiga_termcap_utils.nbo cgetcap.nbo cgetent.nbo tgetent.nbo t_enhanced.nbo t_goto_enhanced.nbo
+TERMCAP_DNBOBJS = amiga_termcap_db.dnbo amiga_termcap_db_embedded.dnbo amiga_console.dnbo amiga_keymap.dnbo amiga_termcap_utils.dnbo cgetcap.dnbo cgetent.dnbo tgetent.dnbo t_enhanced.dnbo t_goto_enhanced.dnbo
 
 # Test library objects (in unittests folder)
 TESTLIB_OBJS = unittests/testlib.o
