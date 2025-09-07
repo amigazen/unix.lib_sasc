@@ -29,7 +29,7 @@ static char *g_termcap_buffer = NULL;
  * It loads a termcap entry for the specified terminal name.
  */
 int
-tgetent(char *bp, char *name)
+tgetent(char *bp, const char *name)
 {
     char *entry;
     int result;
@@ -53,12 +53,8 @@ tgetent(char *bp, char *name)
         return -1;
     }
     
-    /* Copy entry to buffer, truncating if necessary */
+    /* Copy entry to buffer - use full length to preserve all capabilities */
     len = amiga_termcap_strlen(entry);
-    if (len >= 1024) {
-        len = 1023;
-    }
-    
     strncpy(bp, entry, len);
     bp[len] = '\0';
     
@@ -83,7 +79,7 @@ tgetent(char *bp, char *name)
  * This function extracts a string capability from the current termcap entry.
  */
 char *
-tgetstr(char *id, char **area)
+tgetstr(const char *id, char **area)
 {
     char *result;
     
@@ -112,7 +108,7 @@ tgetstr(char *id, char **area)
  * termcap entry.
  */
 int
-tgetflag(char *id)
+tgetflag(const char *id)
 {
     if (!g_termcap_buffer || !id) {
         return 0;
@@ -128,7 +124,7 @@ tgetflag(char *id)
  * This function extracts a numeric capability from the current termcap entry.
  */
 int
-tgetnum(char *id)
+tgetnum(const char *id)
 {
     long num;
     
@@ -155,7 +151,7 @@ tgetnum(char *id)
  * coordinates, using the cursor motion capability.
  */
 char *
-tgoto(char *cm, int destcol, int destline)
+tgoto(const char *cm, int destcol, int destline)
 {
     static char result[64];
     char *p, *q;
@@ -250,19 +246,21 @@ tgoto(char *cm, int destcol, int destline)
  * This function outputs a string with appropriate padding based on
  * the terminal's padding requirements.
  */
-void
-tputs(char *cp, int affcnt, int (*outc)(int))
+int
+tputs(const char *cp, int affcnt, int (*outc)(int))
 {
     int len, pad;
     
     if (!cp || !outc) {
-        return;
+        return -1;
     }
     
     
     /* Output the string */
     while (*cp) {
-        outc(*cp++);
+        if (outc(*cp++) == EOF) {
+            return -1;
+        }
     }
     
     /* Calculate padding */
@@ -270,7 +268,11 @@ tputs(char *cp, int affcnt, int (*outc)(int))
     if (PC && len > 0) {
         pad = (len * affcnt) / 10;
         while (pad-- > 0) {
-            outc(PC);
+            if (outc(PC) == EOF) {
+                return -1;
+            }
         }
     }
+    
+    return 0;
 }

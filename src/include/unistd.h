@@ -259,12 +259,12 @@ struct amiga_window_properties {
 };
 
 /* Termcap functions */
-int	 tgetent __P((char *, char *));
-char	*tgetstr __P((char *, char **));
-int	 tgetflag __P((char *));
-int	 tgetnum __P((char *));
-char	*tgoto __P((char *, int, int));
-int	 tputs __P((char *, int, int (*)(char)));
+int	 tgetent __P((char *, const char *));
+char	*tgetstr __P((const char *, char **));
+int	 tgetflag __P((const char *));
+int	 tgetnum __P((const char *));
+char	*tgoto __P((const char *, int, int));
+int	 tputs __P((const char *, int, int (*)(int)));
 
 /* Enhanced termcap functions */
 int	 t_getent __P((struct tinfo **, const char *));
@@ -280,25 +280,16 @@ int	 t_setinfo __P((struct tinfo **, const char *));
 
 /* Core capability database functions */
 int	 cgetclose __P((void));
-int	 cgetent __P((char **, char **, char *));
+int	 cgetent __P((char **, char **, const char *));
 int	 cgetfirst __P((char **, char **));
 int	 cgetnext __P((char **, char **));
-int	 cgetmatch __P((char *, char *));
-int	 cgetnum __P((char *, char *, long *));
-int	 cgetset __P((char *));
-int	 cgetstr __P((char *, char *, char **));
-int	 cgetustr __P((char *, char *, char **));
-char	*cgetcap __P((char *, char *, int));
+int	 cgetmatch __P((const char *, const char *));
+int	 cgetnum __P((char *, const char *, long *));
+int	 cgetset __P((const char *));
+char	*cgetstr __P((char *, const char *, char **));
+int	 cgetustr __P((char *, const char *, char **));
+char	*cgetcap __P((char *, const char *, int));
 
-/* Amiga-specific termcap functions */
-int	 amiga_termcap_init __P((void));
-int	 amiga_termcap_get_console_info __P((struct amiga_console_info *));
-int	 amiga_termcap_set_console_mode __P((int));
-int	 amiga_termcap_get_keymap_info __P((struct amiga_keymap_info *));
-int	 amiga_termcap_set_keymap __P((char *));
-int	 amiga_termcap_get_window_info __P((struct amiga_window_info *));
-int	 amiga_termcap_set_window_properties __P((struct amiga_window_properties *));
-void	 amiga_termcap_cleanup __P((void));
 
 #endif /* !_POSIX_SOURCE */
 __END_DECLS

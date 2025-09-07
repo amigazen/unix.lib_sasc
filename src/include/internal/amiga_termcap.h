@@ -104,16 +104,22 @@ char *amiga_termcap_find_entry(const char *name);
 #define AMIGA_CAP_TERM_HEIGHT      "li"    /* Terminal height */
 
 /* Function prototypes for internal termcap functions */
-int cgetcap(const char *buf, const char *cap, int type);
+char *cgetcap(char *buf, const char *cap, int type);
 char *cgetstr(char *buf, const char *cap, char **area);
-int cgetnum(const char *buf, const char *cap, long *num);
-int cgetflag(const char *buf, const char *cap);
+int cgetnum(char *buf, const char *cap, long *num);
+int cgetflag(char *buf, const char *cap);
 
 /* Enhanced API function prototypes */
+int t_getent(struct tinfo **bp, const char *name);
 char *t_getstr(struct tinfo *info, const char *id, char **area, size_t *limit);
 int t_getnum(struct tinfo *info, const char *id);
 int t_getflag(struct tinfo *info, const char *id);
 char *t_agetstr(struct tinfo *info, const char *id);
+int t_getterm(struct tinfo *info, char **term, size_t *limit);
+int t_goto(struct tinfo *info, const char *cm, int destcol, int destline, char *buffer, size_t limit);
+int t_puts(struct tinfo *info, const char *cp, int affcnt, void (*outc)(char, void *), void *args);
+void t_freent(struct tinfo *info);
+int t_setinfo(struct tinfo **bp, const char *name);
 
 #ifdef __cplusplus
 }

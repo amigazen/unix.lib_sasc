@@ -30,6 +30,8 @@ char *amiga_terminfo_tparm_internal(const char *str, long p1, long p2, long p3,
     int param_count;
     long params[9];
     int i;
+    int oncol = 0;  /* Track whether we're on column or line */
+    int which;
     
     if (!str) return NULL;
     
@@ -52,6 +54,7 @@ char *amiga_terminfo_tparm_internal(const char *str, long p1, long p2, long p3,
     
     src = str;
     dst = tparm_buffer;
+    which = params[0];  /* Start with first parameter */
     
     while (*src && (dst - tparm_buffer) < sizeof(tparm_buffer) - 1) {
         if (*src == '%') {
@@ -72,12 +75,15 @@ char *amiga_terminfo_tparm_internal(const char *str, long p1, long p2, long p3,
                 }
                 src++;
             } else if (*src == 'd') {
-                /* First parameter as decimal */
+                /* Decimal number - alternate between parameters */
                 int len;
                 
                 if (param_count > 0) {
-                    len = sprintf(dst, "%ld", params[0]);
+                    len = sprintf(dst, "%ld", which);
                     dst += len;
+                    /* Switch between line and column */
+                    oncol = 1 - oncol;
+                    which = oncol ? params[1] : params[0];
                 }
                 src++;
             } else if (*src == 'i') {
@@ -94,8 +100,11 @@ char *amiga_terminfo_tparm_internal(const char *str, long p1, long p2, long p3,
                 int len;
                 
                 if (param_count > 0) {
-                    len = sprintf(dst, "%02ld", params[0]);
+                    len = sprintf(dst, "%02ld", which);
                     dst += len;
+                    /* Switch between line and column */
+                    oncol = 1 - oncol;
+                    which = oncol ? params[1] : params[0];
                 }
                 src++;
             } else if (*src == '3') {
@@ -103,8 +112,11 @@ char *amiga_terminfo_tparm_internal(const char *str, long p1, long p2, long p3,
                 int len;
                 
                 if (param_count > 0) {
-                    len = sprintf(dst, "%03ld", params[0]);
+                    len = sprintf(dst, "%03ld", which);
                     dst += len;
+                    /* Switch between line and column */
+                    oncol = 1 - oncol;
+                    which = oncol ? params[1] : params[0];
                 }
                 src++;
             } else if (*src == 'c') {
@@ -562,18 +574,6 @@ char *tiparm(const char *str, long p1, long p2, long p3, long p4, long p5,
     return amiga_terminfo_tparm_internal(str, p1, p2, p3, p4, p5, p6, p7, p8, p9);
 }
 
-int tputs(const char *str, int affcnt, int (*putc)(int))
-{
-    if (!str || !putc) return -1;
-    
-    /* Output the string character by character */
-    while (*str) {
-        if (putc(*str) == EOF) return -1;
-        str++;
-    }
-    
-    return 0;
-}
 
 int putp(const char *str)
 {

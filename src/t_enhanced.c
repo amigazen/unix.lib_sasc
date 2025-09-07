@@ -186,7 +186,7 @@ t_getflag(struct tinfo *info, const char *id)
         return 0;
     }
     
-    return (cgetcap(info->info, id, ':') == 1);
+    return (cgetcap(info->info, id, (int)':') == (char *)1);
 }
 
 /*

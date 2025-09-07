@@ -17,14 +17,14 @@
  * It handles the termcap format with colons as separators and
  * different capability types (boolean, numeric, string).
  */
-int
+char *
 cgetcap(char *buf, const char *cap, int type)
 {
     char *p, *q;
     int found;
     
     if (!buf || !cap) {
-        return -1;
+        return NULL;
     }
     
     
@@ -33,9 +33,19 @@ cgetcap(char *buf, const char *cap, int type)
     found = 0;
     
     while (*p) {
+        char *cap_start = p;
+        int is_disabled = 0;
+        
         /* Skip to next capability (skip colon if present) */
         if (*p == ':') {
             p++; /* Skip the colon */
+            cap_start = p;
+        }
+        
+        /* Check for ! prefix (disabled capability) - must be right after colon */
+        if (*p == '!') {
+            p++; /* Skip the ! */
+            is_disabled = 1;
         }
         
         /* Check if this capability matches */
@@ -47,7 +57,7 @@ cgetcap(char *buf, const char *cap, int type)
         
         /* Check if we found a complete match */
         if (*q == '\0' && (*p == ':' || *p == '=' || *p == '#' || *p == '\0')) {
-            found = 1;
+            found = is_disabled ? 2 : 1; /* 1=found, 2=found but disabled */
             break;
         }
         
@@ -58,30 +68,33 @@ cgetcap(char *buf, const char *cap, int type)
     }
     
     if (!found) {
-        return -1;
+        return NULL;
     }
     
     /* Handle different capability types */
     switch (type) {
     case ':':  /* Boolean capability */
-        return 1;
+        if (found == 2) {
+            return NULL;  /* Return NULL for disabled boolean capability */
+        }
+        return (char *)1;  /* Return non-NULL for boolean true */
         
     case '#':  /* Numeric capability */
         if (*p == '#') {
             p++; /* Skip the # */
-            return (int)strtol(p, NULL, 10);
+            return p;  /* Return pointer to numeric value */
         }
-        break;
+        return NULL;
         
     case '=':  /* String capability */
         if (*p == '=') {
             p++; /* Skip the = */
-            return (int)(long)p; /* Return pointer to string value */
+            return p; /* Return pointer to string value */
         }
-        break;
+        return NULL;
     }
     
-    return -1;
+    return NULL;
 }
 
 /*
@@ -102,8 +115,8 @@ cgetstr(char *buf, const char *cap, char **area)
     }
     
     /* Find the capability */
-    p = (char *)cgetcap(buf, cap, '=');
-    if (p == (char *)-1) {
+    p = (char *)cgetcap(buf, cap, (int)'=');
+    if (!p) {
         return NULL;
     }
     
@@ -214,8 +227,8 @@ cgetustr(char *buf, const char *cap, char **area)
     }
     
     /* Find the capability */
-    p = (char *)cgetcap(buf, cap, '=');
-    if (p == (char *)-1) {
+    p = (char *)cgetcap(buf, cap, (int)'=');
+    if (!p) {
         return NULL;
     }
     
@@ -250,18 +263,18 @@ cgetustr(char *buf, const char *cap, char **area)
 int
 cgetnum(char *buf, const char *cap, long *num)
 {
-    int result;
+    char *result;
     
     if (!buf || !cap || !num) {
         return -1;
     }
     
-    result = cgetcap(buf, cap, '#');
-    if (result == -1) {
+    result = cgetcap(buf, cap, (int)'#');
+    if (!result) {
         return -1;
     }
     
-    *num = (long)result;
+    *num = atol(result);
     
     return 0;
 }
@@ -274,16 +287,16 @@ cgetnum(char *buf, const char *cap, long *num)
 int
 cgetflag(char *buf, const char *cap)
 {
-    int result;
+    char *result;
     
     if (!buf || !cap) {
         return 0;
     }
     
-    result = cgetcap(buf, cap, ':');
-    if (result == -1) {
+    result = cgetcap(buf, cap, (int)':');
+    if (!result) {
         return 0;
     }
     
-    return result;
+    return (result == (char *)1) ? 1 : 0;
 }

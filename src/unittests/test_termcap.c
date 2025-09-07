@@ -16,12 +16,12 @@
 #include "/include/termcap.h"
 
 /* Function declarations - fallback in case headers don't work */
-int tgetent(char *bp, char *name);
-char *tgetstr(char *id, char **area);
-int tgetnum(char *id);
-int tgetflag(char *id);
-char *tgoto(char *cm, int col, int line);
-int tputs(char *cp, int affcnt, int (*outc)(char));
+int tgetent(char *bp, const char *name);
+char *tgetstr(const char *id, char **area);
+int tgetnum(const char *id);
+int tgetflag(const char *id);
+char *tgoto(const char *cm, int col, int line);
+int tputs(const char *cp, int affcnt, int (*outc)(int));
 
 /* Enhanced API function declarations */
 int t_getent(struct tinfo **bp, const char *name);
@@ -36,13 +36,13 @@ void t_freent(struct tinfo *info);
 int t_setinfo(struct tinfo **bp, const char *entry);
 
 /* Test output function for tputs */
-int test_putc(char c) {
+int test_putc(int c) {
     putchar(c);
     return 0;
 }
 
 /* Test helper functions */
-int test_string_capability(char *cap_name, char *expected_start, char *buffer, char **area) {
+int test_string_capability(const char *cap_name, const char *expected_start, char *buffer, char **area) {
     char *result = tgetstr(cap_name, area);
     if (!result) {
         printf("FAILURE: %s capability not found\n", cap_name);
@@ -57,7 +57,7 @@ int test_string_capability(char *cap_name, char *expected_start, char *buffer, c
     return 1;
 }
 
-int test_numeric_capability(char *cap_name, int min_value, int max_value) {
+int test_numeric_capability(const char *cap_name, int min_value, int max_value) {
     int result = tgetnum(cap_name);
     if (result <= 0) {
         printf("FAILURE: %s capability not found or invalid: %d\n", cap_name, result);
@@ -72,7 +72,7 @@ int test_numeric_capability(char *cap_name, int min_value, int max_value) {
     return 1;
 }
 
-int test_boolean_capability(char *cap_name, int expected) {
+int test_boolean_capability(const char *cap_name, int expected) {
     int result = tgetflag(cap_name);
     if (result != expected) {
         printf("FAILURE: %s capability: %s (expected %s)\n", 
@@ -84,7 +84,7 @@ int test_boolean_capability(char *cap_name, int expected) {
 }
 
 /* Enhanced API test helper functions */
-int test_enhanced_string_capability(struct tinfo *info, char *cap_name, char *expected_start) {
+int test_enhanced_string_capability(struct tinfo *info, const char *cap_name, const char *expected_start) {
     char area[256];
     char *ptr = area;
     size_t limit = sizeof(area);
@@ -102,7 +102,7 @@ int test_enhanced_string_capability(struct tinfo *info, char *cap_name, char *ex
     return 1;
 }
 
-int test_enhanced_numeric_capability(struct tinfo *info, char *cap_name, int min_value, int max_value) {
+int test_enhanced_numeric_capability(struct tinfo *info, const char *cap_name, int min_value, int max_value) {
     int result = t_getnum(info, cap_name);
     if (result <= 0) {
         printf("FAILURE: Enhanced %s capability not found or invalid: %d\n", cap_name, result);
@@ -117,7 +117,7 @@ int test_enhanced_numeric_capability(struct tinfo *info, char *cap_name, int min
     return 1;
 }
 
-int test_enhanced_boolean_capability(struct tinfo *info, char *cap_name, int expected) {
+int test_enhanced_boolean_capability(struct tinfo *info, const char *cap_name, int expected) {
     int result = t_getflag(info, cap_name);
     if (result != expected) {
         printf("FAILURE: Enhanced %s capability: %s (expected %s)\n", 
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 {
     char buffer[1024];
     char area[512];
-    char *ptr;
+    char *ptr = area;
     char *cl_str, *cm_str;
     char *goto_str;
     int result;

@@ -51,7 +51,7 @@ const struct cap_mapping amiga_cap_mappings[] = {
     {"clr_eol", "ce", 0},
     {"clr_eos", "cd", 0},
     {"bell", "bl", 0},
-    {"backspace", "bs", 0},
+    {"backspace", "backspace", 0},
     {"carriage_return", "cr", 0},
     {"line_feed", "do", 0},
     {"tab", "ta", 0},
@@ -257,19 +257,6 @@ const struct cap_mapping amiga_cap_mappings[] = {
     {"backspace_if_not_bs", "bs", 1},
     {"carriage_return_if_not_cr", "cr", 1},
     {"linefeed_if_not_lf", "do", 1},
-    {"has_status_line", "hs", 1},
-    {"status_line_esc_ok", "es", 1},
-    {"dest_tabs_magic_smso", "xt", 1},
-    {"tilde_glitch", "hz", 1},
-    {"xon_xoff", "xo", 1},
-    {"prtr_silent", "mc5i", 1},
-    {"hard_copy", "mc4i", 1},
-    {"non_rev_rmcup", "NR", 1},
-    {"no_pad_char", "NP", 1},
-    {"non_dest_scroll_region", "ND", 1},
-    {"can_change", "cc", 1},
-    {"back_color_erase", "ut", 1},
-    {"hue_lightness_saturation", "hl", 1},
     {"col_addr_glitch", "YA", 1},
     {"cr_cancels_micro_mode", "YB", 1},
     {"has_print_wheel", "YC", 1},
@@ -278,49 +265,6 @@ const struct cap_mapping amiga_cap_mappings[] = {
     {"ceol_standout_glitch", "YF", 1},
     {"eat_newline_glitch", "YG", 1},
     {"has_over_strike", "YH", 1},
-    {"memory_above", "YI", 1},
-    {"memory_below", "YJ", 1},
-    {"move_insert_mode", "YK", 1},
-    {"move_standout_mode", "YL", 1},
-    {"memory_lock", "YM", 1},
-    {"memory_unlock", "YN", 1},
-    {"linefeed_is_newline", "YO", 1},
-    {"backspace_delay", "YP", 1},
-    {"carriage_return_delay", "YQ", 1},
-    {"new_line_delay", "YR", 1},
-    {"over_strike_delay", "YS", 1},
-    {"horizontal_tab_delay", "YT", 1},
-    {"number_of_function_keys", "ku", 1},
-    {"vertical_tab_delay", "YV", 1},
-    {"form_feed_delay", "YW", 1},
-    {"backspace_if_not_bs", "bs", 1},
-    {"carriage_return_if_not_cr", "cr", 1},
-    {"linefeed_if_not_lf", "do", 1},
-    {"has_status_line", "hs", 1},
-    {"status_line_esc_ok", "es", 1},
-    {"dest_tabs_magic_smso", "xt", 1},
-    {"tilde_glitch", "hz", 1},
-    {"xon_xoff", "xo", 1},
-    {"prtr_silent", "mc5i", 1},
-    {"hard_copy", "mc4i", 1},
-    {"non_rev_rmcup", "NR", 1},
-    {"no_pad_char", "NP", 1},
-    {"non_dest_scroll_region", "ND", 1},
-    {"can_change", "cc", 1},
-    {"back_color_erase", "ut", 1},
-    {"hue_lightness_saturation", "hl", 1},
-    {"col_addr_glitch", "YA", 1},
-    {"cr_cancels_micro_mode", "YB", 1},
-    {"has_print_wheel", "YC", 1},
-    {"row_addr_glitch", "YD", 1},
-    {"semi_auto_right_margin", "YE", 1},
-    {"ceol_standout_glitch", "YF", 1},
-    {"eat_newline_glitch", "YG", 1},
-    {"has_over_strike", "YH", 1},
-    {"memory_above", "YI", 1},
-    {"memory_below", "YJ", 1},
-    {"move_insert_mode", "YK", 1},
-    {"move_standout_mode", "YL", 1},
     {"memory_lock", "YM", 1},
     {"memory_unlock", "YN", 1},
     {"linefeed_is_newline", "YO", 1},
@@ -364,60 +308,6 @@ const struct cap_mapping amiga_cap_mappings[] = {
     {"can_change", "ccc", 2},
     {"back_color_erase", "bce", 2},
     {"hue_lightness_saturation", "hls", 2},
-    {"col_addr_glitch", "xhpa", 2},
-    {"cr_cancels_micro_mode", "crxm", 2},
-    {"has_print_wheel", "daisy", 2},
-    {"row_addr_glitch", "xvpa", 2},
-    {"semi_auto_right_margin", "sam", 2},
-    {"ceol_standout_glitch", "xhp", 2},
-    {"eat_newline_glitch", "xenl", 2},
-    {"has_over_strike", "eo", 2},
-    {"memory_above", "da", 2},
-    {"memory_below", "db", 2},
-    {"move_insert_mode", "mi", 2},
-    {"move_standout_mode", "ms", 2},
-    {"memory_lock", "meml", 2},
-    {"memory_unlock", "memu", 2},
-    {"linefeed_is_newline", "xenl", 2},
-    {"backspace_if_not_bs", "bs", 2},
-    {"carriage_return_if_not_cr", "cr", 2},
-    {"linefeed_if_not_lf", "do", 2},
-    {"has_status_line", "hs", 2},
-    {"status_line_esc_ok", "es", 2},
-    {"dest_tabs_magic_smso", "xt", 2},
-    {"tilde_glitch", "hz", 2},
-    {"xon_xoff", "xo", 2},
-    {"prtr_silent", "mc5i", 2},
-    {"hard_copy", "mc4i", 2},
-    {"non_rev_rmcup", "NR", 2},
-    {"no_pad_char", "NP", 2},
-    {"non_dest_scroll_region", "ND", 2},
-    {"can_change", "cc", 2},
-    {"back_color_erase", "ut", 2},
-    {"hue_lightness_saturation", "hl", 2},
-    {"col_addr_glitch", "YA", 2},
-    {"cr_cancels_micro_mode", "YB", 2},
-    {"has_print_wheel", "YC", 2},
-    {"row_addr_glitch", "YD", 2},
-    {"semi_auto_right_margin", "YE", 2},
-    {"ceol_standout_glitch", "YF", 2},
-    {"eat_newline_glitch", "YG", 2},
-    {"has_over_strike", "YH", 2},
-    {"memory_above", "YI", 2},
-    {"memory_below", "YJ", 2},
-    {"move_insert_mode", "YK", 2},
-    {"move_standout_mode", "YL", 2},
-    {"memory_lock", "YM", 2},
-    {"memory_unlock", "YN", 2},
-    {"linefeed_is_newline", "YO", 2},
-    {"backspace_delay", "YP", 2},
-    {"carriage_return_delay", "YQ", 2},
-    {"new_line_delay", "YR", 2},
-    {"over_strike_delay", "YS", 2},
-    {"horizontal_tab_delay", "YT", 2},
-    {"number_of_function_keys", "ku", 2},
-    {"vertical_tab_delay", "YV", 2},
-    {"form_feed_delay", "YW", 2},
     
     {NULL, NULL, 0}  /* End marker */
 };
@@ -474,8 +364,8 @@ int amiga_terminfo_load_terminal(const char *term_name, TERMINAL **term)
     /* Initialize structure */
     memset(new_term, 0, sizeof(TERMINAL));
     
-    /* Allocate capability buffer */
-    cap_buffer = (char *)malloc(1024);
+    /* Allocate capability buffer - use larger size to accommodate full termcap entry */
+    cap_buffer = (char *)malloc(4096);
     if (!cap_buffer) {
         free(new_term);
         errno = ENOMEM;
@@ -633,6 +523,7 @@ int tigetnum(const char *capname)
 int tigetflag(const char *capname)
 {
     const char *termcap_name;
+    int result;
     
     if (!cur_term || !capname) return -1;
     
@@ -644,7 +535,10 @@ int tigetflag(const char *capname)
     if (amiga_terminfo_get_cap_type(capname) != 2) return -1;
     
     /* Get capability using termcap */
-    return tgetflag((char *)termcap_name);
+    result = tgetflag((char *)termcap_name);
+    
+    /* Return 0 for not found, 1 for found */
+    return (result == 1) ? 1 : 0;
 }
 
 int resetterm(void)
@@ -674,4 +568,66 @@ int saveterm(void)
 {
     /* Save terminal state */
     return TERMINFO_SUCCESS;
+}
+
+/* Utility functions */
+int tigetent(char *bp, const char *name)
+{
+    if (!bp || !name) return -1;
+    
+    /* Use tgetent to load termcap entry */
+    return tgetent(bp, name);
+}
+
+int tigetnum_static(const char *capname)
+{
+    const char *termcap_name;
+    
+    if (!capname) return -1;
+    
+    /* Use tigetnum but don't require setupterm */
+    termcap_name = amiga_terminfo_map_capname(capname);
+    if (!termcap_name) return -1;
+    
+    /* Check if it's a numeric capability */
+    if (amiga_terminfo_get_cap_type(capname) != 1) return -1;
+    
+    /* Get capability using termcap */
+    return tgetnum(termcap_name);
+}
+
+int tigetflag_static(const char *capname)
+{
+    const char *termcap_name;
+    
+    if (!capname) return -1;
+    
+    /* Use tigetflag but don't require setupterm */
+    termcap_name = amiga_terminfo_map_capname(capname);
+    if (!termcap_name) return -1;
+    
+    /* Check if it's a boolean capability */
+    if (amiga_terminfo_get_cap_type(capname) != 2) return -1;
+    
+    /* Get capability using termcap */
+    return tgetflag(termcap_name);
+}
+
+char *tigetstr_static(const char *capname)
+{
+    const char *termcap_name;
+    char *area;
+    
+    if (!capname) return NULL;
+    
+    /* Use tigetstr but don't require setupterm */
+    termcap_name = amiga_terminfo_map_capname(capname);
+    if (!termcap_name) return NULL;
+    
+    /* Check if it's a string capability */
+    if (amiga_terminfo_get_cap_type(capname) != 0) return NULL;
+    
+    /* Get capability using termcap */
+    area = NULL;
+    return tgetstr(termcap_name, &area);
 }
