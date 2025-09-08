@@ -62,11 +62,10 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 - *libiconv APIs*: A brand new implementation of libiconv functions integrated with _locale.library_, with basic support for Latin1 and UTF8 codesets to start with
 - *Unit tests*: Unit tests for many of the new functions, aiming to reach full test coverage in time
 - **curses.lib**: Updated version of Simon Raybould's Amiga port of _curses_ now BSD licensed
-- **termcap and terminfo**: A brand new termcap and terminfo implementation built around con-handler, keymap.device and console.device supporting Amiga ANSI escape codes
+- **termcap and terminfo**: A brand new termcap and terminfo implementation built around con-handler, keymap.library and console.device supporting Amiga compatible ANSI escape codes
 - **psockets.lib**: A brand new Amiga port of _psockets_ wrapping _bsdsocket.library_
 - **pthread.lib**: A brand new Amiga native implementation of _pthread_
-- **regex.library**: Updated shared library implementation of Henry Spender's regex functions
-- **Full set of POSIX libraries**: For full POSIX compatibility regex, libdl and libiconv are also needed... watch this space!
+- **regex.library**: Updated shared library implementation of Henry Spencer's regex functions made POSIX compatible
 - **Pipes support**: unix.lib dependencies Matt Dillon's _fifo_ and Per Bojsen's _APipe_ are now included directly in the project
 - **Designed for use with _unsui_**: Used as the standard C library for amigazen project's _unsui_ POSIX runtime for Amiga
 
@@ -102,6 +101,16 @@ Detailed build instructions will be available in the [BUILD.md](BUILD.md) file.
 
 ## Frequently Asked Questions
 
+### Is **UniLib3** a complete standalone C library?
+
+No, **UniLib3** and especially the _unix.lib_ core is designed to extend POSIX.1 and C99 C library functionality to existing C89 standard C libraries, in particular the _sc.lib_ and _scm.lib_ libraries that ship with SAS/C for Amiga. The SAS/C libraries are already extensive, covering all of C89 and many more utility functions, and also well optimised for Amiga computers, but in some cases have older function prototypes not compliant to the POSIX standard and deviating behaviours reflecting the needs and limits of 1990s Amiga development. Development of SAS/C for the Amiga ended in the early 1990s, before the standard set of C libraries settled and therefore it is missing many crucial functions, even if in many cases the underlying Amiga native libraries can support the functionality. **UniLib3** therefore exists to provide those missing functions as a superset of what _sc.lib_ provides, and eventually also the complex math extensions missing from _scm.lib_.
+
+To use _unix.lib_, it is necessary to ensure that your project has the UniLib3 include files ahead of your compiler's default C library headers, and to ensure _unix.lib_ is ahead of _sc.lib_ in the linker chain so that where functions that exist in both libraries, the **UniLib3** version is the one used.
+
+While **UniLib3**'s roadmap is currently focussed on providing the functions missing from _sc.lib_ over time there's no reason the additional functions needed to complete the coverage of other Amiga C compilers such as DICE cannot be added.
+
+With all that said, since the SAS/C library source code is not open source, nor maintained or readily available, a long term goal could be to also provide a complete C library with all-new implementations of the C89 standard library, but it is unlikely that such an implementation would be as well optimised, with many _sc.lib_ functions having been implemented in pure assembler.
+
 ### Will there be a shared library version of UniLib3?
 
 Before answering that, a discussion of how best to employ shared libraries. Dynamically loaded shared libraries require the whole library to be loaded into memory once, no matter how many applications use it, its only loaded once, but the whole thing is loaded. So this works well for libraries where most of the functions will be needed often, and a large number of programs will all be using the library. Boot up any Amiga and not only will ROM resident libraries like exec, dos and utility be loaded (that run directly from ROM and thus do not take up RAM space themselves) be available all the time because they are so fundamental to the running of the system, but many libraries will be loaded from disk too. Libraries like locale and datatypes are almost always going to be present unless running a lean boot to maximise free memory.
@@ -122,8 +131,7 @@ While AmigaOS 3.2's built-in queue-handler and PIPE: device provide basic pipe f
 #### **What Queue-Handler Provides:**
 - **Basic named pipes** (`PIPE:name`) and anonymous pipes
 - **Blocking I/O** with configurable buffer sizes
-- **Simple message passing** between processes
-- **Standard Amiga message port** interface
+- **Simple message passing** between processes using a standard Amiga message port interface
 
 #### **What's Missing for Full POSIX Compatibility:**
 
@@ -149,7 +157,6 @@ While AmigaOS 3.2's built-in queue-handler and PIPE: device provide basic pipe f
 **4. Performance and Reliability**
 - **Optimized buffering** - FIFO system provides better memory management
 - **Concurrent access** - Better handling of multiple readers/writers
-- **Memory efficiency** - Reduced overhead compared to generic message ports
 - **Robust error recovery** - Better handling of edge cases and error conditions
 
 #### **Why Both FIFO and APipe?**
@@ -176,6 +183,15 @@ Rather than trying to extend the basic Queue-Handler to support all POSIX featur
 
 The result is a complete POSIX pipe implementation that works seamlessly with both classic Amiga software and modern Unix applications ported to Amiga.
 
+### Which regex shared library is included here?
+
+There have been at least three shared library interfaces defined on Amiga over the years including:
+
+- **regex.library**: A shared library implementing the POSIX-defined regular expression API
+- **regexp.library**: A shared library similar to but different from the POSIX regular expression function interface, based on the well known Henry Spencer public domain algorithms
+- **pcre.library**: A shared library version of the Perl-compatible regular expression library, again similar to the above but defining a different interface and behaviours
+
+Since UniLib3 is a project to bring POSIX interfaces to Amiga, the regex.library is the one included here. However, of these three the source code has only ever been released for _regexp.library_ and _pcre.library_, so the version here is an all-new open source version designed to be API compatible with the previously released versions. The other two libraries can be found as part of the ToolKit project.
 
 ## Contact 
 
