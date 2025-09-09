@@ -13,6 +13,20 @@
 #define EOSERR		-1	/* Operating system error */
 #define EOVERFLOW	75	/* Value too large for defined data type */
 
+/* Ensure common error codes are defined */
+#ifndef ENOENT
+#define ENOENT		2	/* No such file or directory */
+#endif
+#ifndef EFAULT
+#define EFAULT		14	/* Bad address */
+#endif
+#ifndef EINVAL
+#define EINVAL		22	/* Invalid argument */
+#endif
+#ifndef EAGAIN
+#define EAGAIN		35	/* Resource temporarily unavailable */
+#endif
+
 /* Include the system errno.h for all the standard error codes */
 #include "netinclude:sys/errno.h"
 

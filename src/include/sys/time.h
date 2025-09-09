@@ -48,6 +48,15 @@
 #define tv_sec tv_secs
 #define tv_usec tv_micro
 
+/* POSIX timespec structure */
+#ifndef _TIMESPEC_DEFINED
+#define _TIMESPEC_DEFINED
+struct timespec {
+    time_t tv_sec;   /* seconds */
+    long tv_nsec;    /* nanoseconds */
+};
+#endif
+
 struct timezone {
 	int	tz_minuteswest;	/* minutes west of Greenwich */
 	int	tz_dsttime;	/* type of dst correction */
