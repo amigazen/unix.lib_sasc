@@ -27,7 +27,7 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	longlong.o lseek.o lstat.o memccpy.o memchr.o memcmp.o memcpy.o memset.o message.o mkdir.o mkfifo.o \
 	mkstemp.o mktemp.o nice.o onbreak.o open.o pathconf.o perror.o \
 	pclose.o posix_spawn.o pread.o processes.o protection.o pseudo_c.o \
-	pthread_getcpuclockid.o pwd.o pwrite.o raise.o rcmd.o rand_r.o random.o read.o readlink.o realpath.o regerror.o \
+	pthread_getcpuclockid.o pwd.o pwrite.o qsort.o raise.o rcmd.o rand_r.o random.o read.o readlink.o realpath.o regerror.o \
 	regex.o regexp.o regsub.o rename.o rindex.o rmdir.o scandir.o \
 	select.o setenv.o setgid.o setjmp.o setpgid.o setsid.o setuid.o \
 	settimeofday.o siglist.o signal.o signals.o sigpause.o sigprocmask.o \
@@ -54,10 +54,10 @@ LIBDL_NBOBJS = libdl.nbo
 LIBDL_DNBOBJS = libdl.dnbo
 
 # pthread library objects (separate from unix.lib)
-PTHREAD_OBJS = pthread.o pthread_sync.o pthread_startup.o
-PTHREAD_DOBJS = pthread.do pthread_sync.do pthread_startup.o
-PTHREAD_NBOBJS = pthread.nbo pthread_sync.nbo pthread_startup.o
-PTHREAD_DNBOBJS = pthread.dnbo pthread_sync.dnbo pthread_startup.o
+PTHREAD_OBJS = pthread.o pthread_sync.o pthread_startup.o psem_core.o semaphore_impl.o
+PTHREAD_DOBJS = pthread.do pthread_sync.do pthread_startup.o psem_core.do semaphore_impl.do
+PTHREAD_NBOBJS = pthread.nbo pthread_sync.nbo pthread_startup.o psem_core.nbo semaphore_impl.nbo
+PTHREAD_DNBOBJS = pthread.dnbo pthread_sync.dnbo pthread_startup.o psem_core.dnbo semaphore_impl.dnbo
 
 # psockets library objects (separate from unix.lib)
 PSOCKETS_OBJS = amigapsockets.o getaddrinfo.o getnameinfo.o inet_aton.o inet_ntop_ipv4.o inet_pton_ipv4.o poll.o resolver_stubs.o
@@ -94,6 +94,24 @@ PTHREADTEST_OBJS = unittests/pthread/pthread_test.o
 PTHREADTEST_DOBJS = unittests/pthread/pthread_test.do
 PTHREADTEST_NBOBJS = unittests/pthread/pthread_test.nbo
 PTHREADTEST_DNBOBJS = unittests/pthread/pthread_test.dnbo
+
+# semaphore test program objects
+SEMTEST_OBJS = unittests/pthread/semaphore_test.o
+SEMTEST_DOBJS = unittests/pthread/semaphore_test.do
+SEMTEST_NBOBJS = unittests/pthread/semaphore_test.nbo
+SEMTEST_DNBOBJS = unittests/pthread/semaphore_test.dnbo
+
+# pthread test program names
+PTHREADTEST_PROG = unittests/pthread/test_pthread
+PTHREADTEST_D_PROG = unittests/pthread/test_pthread_debug
+PTHREADTEST_NB_PROG = unittests/pthread/test_pthread_nb
+PTHREADTEST_DNB_PROG = unittests/pthread/test_pthread_dnb
+
+# semaphore test program names
+SEMTEST_PROG = unittests/pthread/semaphore_test
+SEMTEST_D_PROG = unittests/pthread/semaphore_test_debug
+SEMTEST_NB_PROG = unittests/pthread/semaphore_test_nb
+SEMTEST_DNB_PROG = unittests/pthread/semaphore_test_dnb
 
 # vfork test program objects
 VFORKTEST_OBJS = unittests/test_vfork.o
@@ -307,6 +325,12 @@ PTHREADTEST_D_PROG = test_pthreadd
 PTHREADTEST_NB_PROG = test_pthreadnb
 PTHREADTEST_DNB_PROG = test_pthreaddnb
 
+# semaphore test program names
+SEMTEST_PROG = test_semaphore
+SEMTEST_D_PROG = test_semaphored
+SEMTEST_NB_PROG = test_semaphorenb
+SEMTEST_DNB_PROG = test_semaphorednb
+
 # vfork test program names
 VFORKTEST_PROG = test_vfork
 VFORKTEST_D_PROG = test_vforkd
@@ -363,7 +387,7 @@ TERMINFOTEST_DNB_PROG = test_terminfodnb
 
 normal: SCOPTIONS amiga.gst $(LIB)
 
-all: normal amiganb.gst $(FARLIB) libdl-all pthread-all psockets-all fifo-all apipe-all vfork-test
+all: normal amiganb.gst $(FARLIB) libdl-all pthread-all psockets-all fifo-all apipe-all vfork-test semaphore-test
 
 debug: SCOPTIONS amiga.gst $(DLIB) amiganb.gst $(DFARLIB) libdl-debug pthread-debug psockets-debug vfork-test-debug
 
@@ -543,6 +567,23 @@ $(DLTEST_D_PROG): SCOPTIONS $(DLTEST_DOBJS) $(LIBDL_DLIB)
 $(DLTEST_DNB_PROG): SCOPTIONS $(DLTEST_DNBOBJS) $(LIBDL_DFARLIB)
 	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/$(DLTEST_DNB_PROG) FROM $(DLTEST_DNBOBJS) $(LIBDL_DFARLIB)
 
+# semaphore test programs
+$(SEMTEST_PROG): SCOPTIONS $(SEMTEST_OBJS) $(PTHREAD_LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) TO unittests/$(SEMTEST_PROG) FROM $(SEMTEST_OBJS) LIB $(PTHREAD_LIB)
+
+$(SEMTEST_NB_PROG): SCOPTIONS $(SEMTEST_NBOBJS) $(PTHREAD_FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) TO unittests/$(SEMTEST_NB_PROG) FROM $(SEMTEST_NBOBJS) LIB $(PTHREAD_FARLIB)
+
+$(SEMTEST_D_PROG): SCOPTIONS $(SEMTEST_DOBJS) $(PTHREAD_DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) TO unittests/$(SEMTEST_D_PROG) FROM $(SEMTEST_DOBJS) LIB $(PTHREAD_DLIB)
+
+$(SEMTEST_DNB_PROG): SCOPTIONS $(SEMTEST_DNBOBJS) $(PTHREAD_DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) TO unittests/$(SEMTEST_DNB_PROG) FROM $(SEMTEST_DNBOBJS) LIB $(PTHREAD_DFARLIB)
+
+semaphore-test: SCOPTIONS amiga.gst amiganb.gst $(SEMTEST_PROG) $(SEMTEST_NB_PROG)
+
+semaphore-test-debug: SCOPTIONS amiga.gst amiganb.gst $(SEMTEST_D_PROG) $(SEMTEST_DNB_PROG)
+
 # pthread test programs (output to unittests/pthread folder)
 $(PTHREADTEST_PROG): SCOPTIONS $(PTHREADTEST_OBJS) $(PTHREAD_LIB)
 	$(CC) $(CFLAGS) $(OFLAGS) TO unittests/pthread/$(PTHREADTEST_PROG) FROM $(PTHREADTEST_OBJS) LIB $(PTHREAD_LIB)
@@ -628,6 +669,7 @@ clean:
 	-$(RM) $(TESTLIB_LIB) $(TESTLIB_FARLIB) $(TESTLIB_DLIB) $(TESTLIB_DFARLIB)
 	-$(RM) unittests/$(DLTEST_PROG) unittests/$(DLTEST_D_PROG) unittests/$(DLTEST_NB_PROG) unittests/$(DLTEST_DNB_PROG)
 	-$(RM) unittests/pthread/$(PTHREADTEST_PROG) unittests/pthread/$(PTHREADTEST_D_PROG) unittests/pthread/$(PTHREADTEST_NB_PROG) unittests/pthread/$(PTHREADTEST_DNB_PROG)
+	-$(RM) unittests/$(SEMTEST_PROG) unittests/$(SEMTEST_D_PROG) unittests/$(SEMTEST_NB_PROG) unittests/$(SEMTEST_DNB_PROG)
 	-$(RM) unittests/$(VFORKTEST_PROG) unittests/$(VFORKTEST_D_PROG) unittests/$(VFORKTEST_NB_PROG) unittests/$(VFORKTEST_DNB_PROG)
 	-$(RM) unittests/psockets/$(PSOCKETSTEST_PROG) unittests/psockets/$(PSOCKETSTEST_D_PROG) unittests/psockets/$(PSOCKETSTEST_NB_PROG) unittests/psockets/$(PSOCKETSTEST_DNB_PROG)
 	-$(RM) unittests/$(AMIGALOCALETEST_PROG) unittests/$(AMIGALOCALETEST_D_PROG) unittests/$(AMIGALOCALETEST_NB_PROG) unittests/$(AMIGALOCALETEST_DNB_PROG)
@@ -1139,6 +1181,16 @@ pthread_sync.dnbo: pthread_sync.c include/amigapthread.h include/pthread.h inclu
 
 pthread_startup.o: pthread_startup.s
 
+psem_core.o: psem_core.c include/semaphore.h include/pthread.h include/amigapthread.h
+psem_core.do: psem_core.c include/semaphore.h include/pthread.h include/amigapthread.h
+psem_core.nbo: psem_core.c include/semaphore.h include/pthread.h include/amigapthread.h
+psem_core.dnbo: psem_core.c include/semaphore.h include/pthread.h include/amigapthread.h
+
+semaphore_impl.o: semaphore_impl.c include/semaphore.h include/pthread.h include/amigapthread.h
+semaphore_impl.do: semaphore_impl.c include/semaphore.h include/pthread.h include/amigapthread.h
+semaphore_impl.nbo: semaphore_impl.c include/semaphore.h include/pthread.h include/amigapthread.h
+semaphore_impl.dnbo: semaphore_impl.c include/semaphore.h include/pthread.h include/amigapthread.h
+
 # Test library dependencies (in unittests folder)
 unittests/testlib.o: unittests/testlib.c
 unittests/testlib.do: unittests/testlib.c
@@ -1156,6 +1208,12 @@ unittests/pthread/pthread_test.o: unittests/pthread/pthread_test.c include/amiga
 unittests/pthread/pthread_test.do: unittests/pthread/pthread_test.c include/amigapthread.h include/pthread.h include/semaphore.h
 unittests/pthread/pthread_test.nbo: unittests/pthread/pthread_test.c include/amigapthread.h include/pthread.h include/semaphore.h
 unittests/pthread/pthread_test.dnbo: unittests/pthread/pthread_test.c include/amigapthread.h include/pthread.h include/semaphore.h
+
+# semaphore test dependencies
+unittests/pthread/semaphore_test.o: unittests/pthread/semaphore_test.c include/amigapthread.h include/pthread.h include/semaphore.h
+unittests/pthread/semaphore_test.do: unittests/pthread/semaphore_test.c include/amigapthread.h include/pthread.h include/semaphore.h
+unittests/pthread/semaphore_test.nbo: unittests/pthread/semaphore_test.c include/amigapthread.h include/pthread.h include/semaphore.h
+unittests/pthread/semaphore_test.dnbo: unittests/pthread/semaphore_test.c include/amigapthread.h include/pthread.h include/semaphore.h
 
 
 
@@ -1452,16 +1510,16 @@ unittests/test_termcap.nbo: unittests/test_termcap.c include/termcap.h include/u
 unittests/test_termcap.dnbo: unittests/test_termcap.c include/termcap.h include/unistd.h amiga.h
 
 $(TERMCAPTEST_PROG): $(TERMCAPTEST_OBJS) $(TERMCAP_LIB) $(LIB)
-	$(CC) $(CFLAGS) $(OFLAGS) $(TERMCAPTEST_OBJS) $(TERMCAP_LIB) $(LIB) -o $(TERMCAPTEST_PROG)
+	$(CC) $(CFLAGS) $(OFLAGS) $(TERMCAPTEST_OBJS) $(TERMCAP_LIB) $(LIB) TO $(TERMCAPTEST_PROG)
 
 $(TERMCAPTEST_D_PROG): $(TERMCAPTEST_DOBJS) $(TERMCAP_DLIB) $(DLIB)
-	$(CC) $(CFLAGS) $(DFLAGS) $(TERMCAPTEST_DOBJS) $(TERMCAP_DLIB) $(DLIB) -o $(TERMCAPTEST_D_PROG)
+	$(CC) $(CFLAGS) $(DFLAGS) $(TERMCAPTEST_DOBJS) $(TERMCAP_DLIB) $(DLIB) TO $(TERMCAPTEST_D_PROG)
 
 $(TERMCAPTEST_NB_PROG): $(TERMCAPTEST_NBOBJS) $(TERMCAP_FARLIB) $(FARLIB)
-	$(CC) $(CFLAGS_NB) $(OFLAGS) $(TERMCAPTEST_NBOBJS) $(TERMCAP_FARLIB) $(FARLIB) -o $(TERMCAPTEST_NB_PROG)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) $(TERMCAPTEST_NBOBJS) $(TERMCAP_FARLIB) $(FARLIB) TO $(TERMCAPTEST_NB_PROG)
 
 $(TERMCAPTEST_DNB_PROG): $(TERMCAPTEST_DNBOBJS) $(TERMCAP_DFARLIB) $(DFARLIB)
-	$(CC) $(CFLAGS_NB) $(DFLAGS) $(TERMCAPTEST_DNBOBJS) $(TERMCAP_DFARLIB) $(DFARLIB) -o $(TERMCAPTEST_DNB_PROG)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) $(TERMCAPTEST_DNBOBJS) $(TERMCAP_DFARLIB) $(DFARLIB) TO $(TERMCAPTEST_DNB_PROG)
 
 test_termcap: $(TERMCAPTEST_PROG)
 
@@ -1536,16 +1594,16 @@ unittests/test_terminfo.nbo: unittests/test_terminfo.c include/terminfo.h amiga.
 unittests/test_terminfo.dnbo: unittests/test_terminfo.c include/terminfo.h amiga.h
 
 $(TERMINFOTEST_PROG): $(TERMINFOTEST_OBJS) $(TERMINFO_LIB) $(TERMCAP_LIB) $(LIB)
-	$(CC) $(CFLAGS) $(OFLAGS) $(TERMINFOTEST_OBJS) $(TERMINFO_LIB) $(TERMCAP_LIB) $(LIB) -o $(TERMINFOTEST_PROG)
+	$(CC) $(CFLAGS) $(OFLAGS) $(TERMINFOTEST_OBJS) $(TERMINFO_LIB) $(TERMCAP_LIB) $(LIB) TO $(TERMINFOTEST_PROG)
 
 $(TERMINFOTEST_D_PROG): $(TERMINFOTEST_DOBJS) $(TERMINFO_DLIB) $(TERMCAP_DLIB) $(DLIB)
-	$(CC) $(CFLAGS) $(DFLAGS) $(TERMINFOTEST_DOBJS) $(TERMINFO_DLIB) $(TERMCAP_DLIB) $(DLIB) -o $(TERMINFOTEST_D_PROG)
+	$(CC) $(CFLAGS) $(DFLAGS) $(TERMINFOTEST_DOBJS) $(TERMINFO_DLIB) $(TERMCAP_DLIB) $(DLIB) TO $(TERMINFOTEST_D_PROG)
 
 $(TERMINFOTEST_NB_PROG): $(TERMINFOTEST_NBOBJS) $(TERMINFO_FARLIB) $(TERMCAP_FARLIB) $(FARLIB)
-	$(CC) $(CFLAGS_NB) $(OFLAGS) $(TERMINFOTEST_NBOBJS) $(TERMINFO_FARLIB) $(TERMCAP_FARLIB) $(FARLIB) -o $(TERMINFOTEST_NB_PROG)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) $(TERMINFOTEST_NBOBJS) $(TERMINFO_FARLIB) $(TERMCAP_FARLIB) $(FARLIB) TO $(TERMINFOTEST_NB_PROG)
 
 $(TERMINFOTEST_DNB_PROG): $(TERMINFOTEST_DNBOBJS) $(TERMINFO_DFARLIB) $(TERMCAP_DFARLIB) $(DFARLIB)
-	$(CC) $(CFLAGS_NB) $(DFLAGS) $(TERMINFOTEST_DNBOBJS) $(TERMINFO_DFARLIB) $(TERMCAP_DFARLIB) $(DFARLIB) -o $(TERMINFOTEST_DNB_PROG)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) $(TERMINFOTEST_DNBOBJS) $(TERMINFO_DFARLIB) $(TERMCAP_DFARLIB) $(DFARLIB) TO $(TERMINFOTEST_DNB_PROG)
 
 test_terminfo: $(TERMINFOTEST_PROG)
 
@@ -1556,3 +1614,49 @@ test_terminfo-nb: $(TERMINFOTEST_NB_PROG)
 test_terminfo-nb-debug: $(TERMINFOTEST_DNB_PROG)
 
 test_terminfo-all: $(TERMINFOTEST_PROG) $(TERMINFOTEST_D_PROG) $(TERMINFOTEST_NB_PROG) $(TERMINFOTEST_DNB_PROG)
+
+# pthread test program build rules
+$(PTHREADTEST_PROG): $(PTHREADTEST_OBJS) $(PTHREAD_LIB) $(LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) $(PTHREADTEST_OBJS) $(PTHREAD_LIB) $(LIB) TO $(PTHREADTEST_PROG)
+
+$(PTHREADTEST_D_PROG): $(PTHREADTEST_DOBJS) $(PTHREAD_DLIB) $(DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) $(PTHREADTEST_DOBJS) $(PTHREAD_DLIB) $(DLIB) TO $(PTHREADTEST_D_PROG)
+
+$(PTHREADTEST_NB_PROG): $(PTHREADTEST_NBOBJS) $(PTHREAD_FARLIB) $(FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) $(PTHREADTEST_NBOBJS) $(PTHREAD_FARLIB) $(FARLIB) TO $(PTHREADTEST_NB_PROG)
+
+$(PTHREADTEST_DNB_PROG): $(PTHREADTEST_DNBOBJS) $(PTHREAD_DFARLIB) $(DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) $(PTHREADTEST_DNBOBJS) $(PTHREAD_DFARLIB) $(DFARLIB) TO $(PTHREADTEST_DNB_PROG)
+
+pthread-test: $(PTHREADTEST_PROG)
+
+pthread-test-debug: $(PTHREADTEST_D_PROG)
+
+pthread-test-nb: $(PTHREADTEST_NB_PROG)
+
+pthread-test-nb-debug: $(PTHREADTEST_DNB_PROG)
+
+pthread-test-all: $(PTHREADTEST_PROG) $(PTHREADTEST_D_PROG) $(PTHREADTEST_NB_PROG) $(PTHREADTEST_DNB_PROG)
+
+# semaphore test program build rules
+$(SEMTEST_PROG): $(SEMTEST_OBJS) $(PTHREAD_LIB) $(LIB)
+	$(CC) $(CFLAGS) $(OFLAGS) $(SEMTEST_OBJS) $(PTHREAD_LIB) $(LIB) TO $(SEMTEST_PROG)
+
+$(SEMTEST_D_PROG): $(SEMTEST_DOBJS) $(PTHREAD_DLIB) $(DLIB)
+	$(CC) $(CFLAGS) $(DFLAGS) $(SEMTEST_DOBJS) $(PTHREAD_DLIB) $(DLIB) TO $(SEMTEST_D_PROG)
+
+$(SEMTEST_NB_PROG): $(SEMTEST_NBOBJS) $(PTHREAD_FARLIB) $(FARLIB)
+	$(CC) $(CFLAGS_NB) $(OFLAGS) $(SEMTEST_NBOBJS) $(PTHREAD_FARLIB) $(FARLIB) TO $(SEMTEST_NB_PROG)
+
+$(SEMTEST_DNB_PROG): $(SEMTEST_DNBOBJS) $(PTHREAD_DFARLIB) $(DFARLIB)
+	$(CC) $(CFLAGS_NB) $(DFLAGS) $(SEMTEST_DNBOBJS) $(PTHREAD_DFARLIB) $(DFARLIB) TO $(SEMTEST_DNB_PROG)
+
+semaphore-test: $(SEMTEST_PROG)
+
+semaphore-test-debug: $(SEMTEST_D_PROG)
+
+semaphore-test-nb: $(SEMTEST_NB_PROG)
+
+semaphore-test-nb-debug: $(SEMTEST_DNB_PROG)
+
+semaphore-test-all: $(SEMTEST_PROG) $(SEMTEST_D_PROG) $(SEMTEST_NB_PROG) $(SEMTEST_DNB_PROG)

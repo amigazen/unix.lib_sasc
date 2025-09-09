@@ -27,5 +27,8 @@ extern uint32_t crc32_string(const char *);
 /* Thread-safe random number generation */
 extern int rand_r(unsigned int *);
 
+/* Standard C library sorting function */
+extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
+
 #endif
 #endif

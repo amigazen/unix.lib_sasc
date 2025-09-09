@@ -17,6 +17,9 @@
 #include <setjmp.h>
 #include <time.h>
 
+/* Include semaphore definitions */
+#include "semaphore.h"
+
 /* POSIX timespec structure - only define if not already defined */
 #ifndef _TIMESPEC_DEFINED
 struct timespec {
@@ -167,6 +170,9 @@ struct pthread_once {
     int done;
     struct SignalSemaphore semaphore;
 };
+
+/* Once control initializer macro */
+#define PTHREAD_ONCE_INIT { 0, {0} }
 
 /* Thread management functions */
 int pthread_create(pthread_t *thread, const pthread_attr_t *attr, 
