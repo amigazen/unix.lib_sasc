@@ -64,7 +64,10 @@ static char *Bfmt[] =
 
 static size_t gsize;
 static char *pt;
+static char tbuf[32];  /* Buffer for temporary string formatting */
 static int _add(register char *), _conv(int, int, char), _secs(struct tm *);
+static int iso8601wknum(const struct tm *), iso8601year(const struct tm *);
+static int weeknumber(const struct tm *, int);
 
 static size_t _fmt(register char *, struct tm *);
 
@@ -136,7 +139,7 @@ static size_t
 		    }
 		    continue;
 		case 'C':
-		    if (!_fmt("%a %b %e %H:%M:%S %Y", t))
+		    if (!_conv((t->tm_year + TM_YEAR_BASE) / 100, 2, '0'))
 			return (0);
 		    continue;
 		case 'c':
@@ -276,6 +279,52 @@ static size_t
 		    if (!t->tm_zone || !_add(t->tm_zone))
 			return (0);
 		    continue;
+		case 'z':	/* time zone offset east of GMT e.g. -0600 */
+		    {
+			long off;
+			extern time_t timezone;
+			extern int daylight;
+			
+			/* Calculate offset in minutes east of GMT */
+			off = -timezone / 60;
+			
+			if (off < 0) {
+			    sprintf(tbuf, "-%02d%02d", (-off) / 60, (-off) % 60);
+			} else {
+			    sprintf(tbuf, "+%02d%02d", off / 60, off % 60);
+			}
+			if (!_add(tbuf))
+			    return (0);
+		    }
+		    continue;
+		case 'V':	/* week of year according ISO 8601 */
+		    {
+			int week = iso8601wknum(t);
+			if (!_conv(week, 2, '0'))
+			    return (0);
+		    }
+		    continue;
+		case 'u':	/* ISO 8601: Weekday as a decimal number [1 (Monday) - 7] */
+		    if (!_conv(t->tm_wday == 0 ? 7 : t->tm_wday, 1, '0'))
+			return (0);
+		    continue;
+		case 'G':	/* Year of ISO week */
+		case 'g':	/* Year of ISO week (2 digits) */
+		    {
+			int iso_year = iso8601year(t);
+			if (*format == 'g') {
+			    if (!_conv(iso_year % 100, 2, '0'))
+				return (0);
+			} else {
+			    if (!_conv(iso_year, 4, '0'))
+				return (0);
+			}
+		    }
+		    continue;
+		case 'E':	/* POSIX locale extensions, ignored for now */
+		case 'O':	/* POSIX locale extensions, ignored for now */
+		    /* Skip these for now - could be implemented with locale support */
+		    continue;
 		case '%':
 		    /*
 		     * X311J/88-090 (4.12.3.5): if conversion char is
@@ -327,4 +376,92 @@ static _add(register char *str)
 	if (!(*pt = *str++))
 	    return (1);
     }
+}
+
+/* ISO 8601 week number calculation */
+static int
+iso8601wknum(const struct tm *timeptr)
+{
+    int weeknum, jan1day, diff;
+    int year = timeptr->tm_year + 1900;
+    
+    /* Get week number, Monday as first day of the week */
+    weeknum = weeknumber(timeptr, 1);
+    
+    /* What day of the week does January 1 fall on? */
+    jan1day = timeptr->tm_wday - (timeptr->tm_yday % 7);
+    if (jan1day < 0)
+	jan1day += 7;
+    
+    /* If Jan 1 was a Monday through Thursday, it was in week 1 */
+    switch (jan1day) {
+    case 1: /* Monday */
+	break;
+    case 2: /* Tuesday */
+    case 3: /* Wednesday */
+    case 4: /* Thursday */
+	weeknum++;
+	break;
+    case 5: /* Friday */
+    case 6: /* Saturday */
+    case 0: /* Sunday */
+	if (weeknum == 0) {
+	    /* This is week 52 or 53 of the previous year */
+	    struct tm dec31ly;
+	    dec31ly = *timeptr;
+	    dec31ly.tm_mday = 31;
+	    dec31ly.tm_mon = 11;
+	    dec31ly.tm_year = year - 1901;
+	    dec31ly.tm_hour = 12;
+	    dec31ly.tm_min = 0;
+	    dec31ly.tm_sec = 0;
+	    dec31ly.tm_isdst = -1;
+	    
+	    mktime(&dec31ly);
+	    weeknum = weeknumber(&dec31ly, 1);
+	}
+	break;
+    }
+    
+    return weeknum;
+}
+
+/* ISO 8601 year calculation */
+static int
+iso8601year(const struct tm *timeptr)
+{
+    int weeknum = iso8601wknum(timeptr);
+    int year = timeptr->tm_year + 1900;
+    
+    /* If it's December but the ISO week number is one,
+     * that week is in next year */
+    if (timeptr->tm_mon == 11 && weeknum == 1) {
+	return year + 1;
+    }
+    
+    /* If it's January but the ISO week number is 52 or 53,
+     * that week is in last year */
+    if (timeptr->tm_mon == 0 && (weeknum == 52 || weeknum == 53)) {
+	return year - 1;
+    }
+    
+    return year;
+}
+
+/* Week number calculation with configurable first day of week */
+static int
+weeknumber(const struct tm *timeptr, int firstweekday)
+{
+    int wday = timeptr->tm_wday;
+    int ret;
+    
+    if (firstweekday == 1) {
+	/* Monday is first day of week */
+	if (wday == 0)
+	    wday = 7;
+	wday--;
+    }
+    
+    ret = (timeptr->tm_yday + 7 - wday) / 7;
+    return ret;
 }
