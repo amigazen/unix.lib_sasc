@@ -247,6 +247,8 @@ void ipc_init_all(void)
     shm_init();
     msg_init();
     sem_init();
+    posix_shm_init();
+    mmap_init();
 }
 
 /* Cleanup all IPC systems */
@@ -255,4 +257,6 @@ void ipc_cleanup_all(void)
     shm_cleanup();
     msg_cleanup();
     sem_cleanup();
+    posix_shm_cleanup();
+    mmap_cleanup();
 }

@@ -123,5 +123,9 @@ void msg_init(void);
 void msg_cleanup(void);
 void sem_init(void);
 void sem_cleanup(void);
+void posix_shm_init(void);
+void posix_shm_cleanup(void);
+void mmap_init(void);
+void mmap_cleanup(void);
 
 #endif /* IPC_INTERNAL_H__ */

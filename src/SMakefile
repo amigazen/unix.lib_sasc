@@ -16,7 +16,8 @@ AR = oml
 AS = asm
 
 OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
-	amigalocale.o asprintf.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o \
+	amigalocale.o amiga_path_utils.o amiga_wildcard.o amiga_popen.o \
+	asprintf.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o \
 	clock.o clock_getcpuclockid.o close.o \
 	creat.o crypt.o ctime.o devices.o difftime.o dir.o dir_data.o dirname.o dup.o dup2.o \
 	dprintf.o endpwent.o err.o error.o error_msg.o 	exec.o fcntl.o fd_setsize.o fibstat.o files.o fnmatch.o fpathconf.o \
@@ -44,7 +45,8 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	vasprintf.o vsnprintf.o wait.o wait4.o waitpid.o wcscat.o wcscmp.o \
 	wcscpy.o wcslen.o wcsncmp.o wcsncpy.o write.o \
 	_printf.o _scanf.o fprintf.o sprintf.o scanf.o \
-	mq_core.o mq_helpers.o mq_advanced.o mq_integration.o rt.o
+	mq_core.o mq_helpers.o mq_advanced.o mq_integration.o rt.o \
+	ipc_core.o shm.o msg.o sem.o ftok.o shm_posix.o mmap.o
 	
 
 # libdl library objects (separate from unix.lib)

@@ -34,11 +34,17 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 
 **Version 1 (Sometime prior to 1995)**: The original unix.lib was created and placed into the public domain by David Gay specifically to support his port of GNU Emacs to Amiga. This first version provided essential Unix-compatibility functions needed for Emacs to run on Amiga, focusing on the specific requirements of that port.
 
-**Version ?** - A unix.lib of unknown provenance was also included with the Inet225 TCP/IP stack but the source code for this has not been made public. 
-
 **Version 2 (1996)**: A second version was further developed by Enrico Forestieri who expanded the library to support porting various x11 programs to Amiga. This version added many new functions as well as bsdsocket.library support.
 
 **UniLib3 (2025)**: This current version by amigazen project presents a complete refactor and expansion, incorporating not only the lessons learned from previous versions but also significant contributions merged in from Irmen de Jong's Amiga Python 2 implementation and other BSD license-compatible projects. UniLib3 aims to be a comprehensive, POSIX and C99 standards-compliant solution pulling together all of the Unix-compatibility open source projects for Amiga from over the years into one unified library, excluding GPL/GNU projects for licensing reasons.
+
+### Other unix.lib libraries
+
+**Version ?** - A unix.lib of unknown provenance was also included with the Inet225 TCP/IP stack but the source code for this has not been made public. 
+
+**clib2 version** - Olaf Barthel's clib2 generates several library targets including one called unix.lib which is a companion to the clib2 c.lib. This seems to simply contain a spillover of functions that did not fit in the main C library and is not meant to be used standalone. To avoid clashes with the original unix.lib that is part of UniLib3, the ToolKit SDK version of clib2 available at https://github.com/amigazen/clib2 renames this target "x.lib".
+
+**AmigaPerl version** - Going even further back to 1990, David Grubbs created a simple unix.lib with functions necessary for his port of Perl 3. Some of those functions have been added to UniLib3's unix.lib where they offered something additional, including the Unix style file paths processing and wildcard handling.
 
 ### Key Features
 
@@ -60,11 +66,12 @@ UniLib3 represents the third major evolution of Unix-compatibility libraries for
 - *AmiTCP netlib*: Reimplements new versions of the POSIX functions provided by AmiTCP's netlib - rcmd(), herror() and the syslog API wrapping _bsdsocket.library_
 - *librt APIs*: A brand new implementation of librt functions starting with POSIX mq_* message queues built on top of message ports, realtime.library and timer.device
 - *libiconv APIs*: A brand new implementation of libiconv functions integrated with _locale.library_, with basic support for Latin1 and UTF8 codesets to start with
+- *SysV IPC APIs*: SysV IPC implementation backported from the OS4 _sysvipc.library_ by Peter Bengtsson
 - *Unit tests*: Unit tests for many of the new functions, aiming to reach full test coverage in time
 - **curses.lib**: Updated version of Simon Raybould's Amiga port of _curses_ now BSD licensed
 - **termcap and terminfo**: A brand new termcap and terminfo implementation built around con-handler, keymap.library and console.device supporting Amiga compatible ANSI escape codes
 - **psockets.lib**: A brand new Amiga port of _psockets_ wrapping _bsdsocket.library_
-- **pthread.lib**: A brand new Amiga native implementation of _pthread_
+- **pthread.lib**: A brand new Amiga native implementation of _pthread_ also including Diego Cassoran's _psem_ semaphores
 - **regex.library**: Updated shared library implementation of Henry Spencer's regex functions made POSIX compatible
 - **Pipes support**: unix.lib dependencies Matt Dillon's _fifo_ and Per Bojsen's _APipe_ are now included directly in the project
 - **Designed for use with _unsui_**: Used as the standard C library for amigazen project's _unsui_ POSIX runtime for Amiga
@@ -105,11 +112,17 @@ Detailed build instructions will be available in the [BUILD.md](BUILD.md) file.
 
 No, **UniLib3** and especially the _unix.lib_ core is designed to extend POSIX.1 and C99 C library functionality to existing C89 standard C libraries, in particular the _sc.lib_ and _scm.lib_ libraries that ship with SAS/C for Amiga. The SAS/C libraries are already extensive, covering all of C89 and many more utility functions, and also well optimised for Amiga computers, but in some cases have older function prototypes not compliant to the POSIX standard and deviating behaviours reflecting the needs and limits of 1990s Amiga development. Development of SAS/C for the Amiga ended in the early 1990s, before the standard set of C libraries settled and therefore it is missing many crucial functions, even if in many cases the underlying Amiga native libraries can support the functionality. **UniLib3** therefore exists to provide those missing functions as a superset of what _sc.lib_ provides, and eventually also the complex math extensions missing from _scm.lib_.
 
-To use _unix.lib_, it is necessary to ensure that your project has the UniLib3 include files ahead of your compiler's default C library headers, and to ensure _unix.lib_ is ahead of _sc.lib_ in the linker chain so that where functions that exist in both libraries, the **UniLib3** version is the one used.
+To use _unix.lib_, it is necessary to ensure that your project has the **UniLib3** include files ahead of your compiler's default C library headers, and to ensure _unix.lib_ is ahead of _sc.lib_ in the linker chain so that where functions that exist in both libraries, the **UniLib3** version is the one used.
 
 While **UniLib3**'s roadmap is currently focussed on providing the functions missing from _sc.lib_ over time there's no reason the additional functions needed to complete the coverage of other Amiga C compilers such as DICE cannot be added.
 
 With all that said, since the SAS/C library source code is not open source, nor maintained or readily available, a long term goal could be to also provide a complete C library with all-new implementations of the C89 standard library, but it is unlikely that such an implementation would be as well optimised, with many _sc.lib_ functions having been implemented in pure assembler.
+
+### How can a C library help make Amiga a more robust and reliable platform?
+
+Amiga has well known limitations in system reliability and stability that come as a result of its physical hardware pre-dating consumer personal computing hardware coming with features such as memory management units as standard. Furthermore the exec architecture turns the weakness of the lack of memory protection and resource tracking into a performance advantage, specifically employing a shared memory space to avoid the context switching overhead microkernels experience when implementing a hard division between supervisor and user space.
+
+A partial solution to this problem, is for software to be built on top of a C library that provides a lot of protections automatically. Historically features such as automatic stack checking, Ctrl-C checking, resource tracking and cleanup, added a high memory and processing time overhead often left unused in the name of maximising application performance. But today's Amigas, even classic hardware, typically have upgraded memory and faster CPUs meaning that overhead goes away. 
 
 ### Will there be a shared library version of UniLib3?
 
@@ -191,7 +204,7 @@ There have been at least three shared library interfaces defined on Amiga over t
 - **regexp.library**: A shared library similar to but different from the POSIX regular expression function interface, based on the well known Henry Spencer public domain algorithms
 - **pcre.library**: A shared library version of the Perl-compatible regular expression library, again similar to the above but defining a different interface and behaviours
 
-Since UniLib3 is a project to bring POSIX interfaces to Amiga, the regex.library is the one included here. However, of these three the source code has only ever been released for _regexp.library_ and _pcre.library_, so the version here is an all-new open source version designed to be API compatible with the previously released versions. The other two libraries can be found as part of the ToolKit project.
+Since UniLib3 is a project to bring POSIX interfaces to Amiga, the _regex.library_ is the one included here. However, of these three the source code has only ever been released for _regexp.library_ and _pcre.library_, so the version here is an all-new open source version designed to be API compatible with the previously released versions. The other two libraries can be found as part of the ToolKit project.
 
 ## Contact 
 
@@ -209,10 +222,13 @@ UniLib3 is part of amigazen project's effort to modernize Amiga development tool
 
 - **David Gay** - Original creator of unix.lib who used it for his Emacs port to Amiga
 - **Enrico Forestieri** - Developer of the second version of unix.lib, expanding it with more functions and adding sockets support
-- **Irmen de Jong** - The developer behind the original Amiga Python 2, whose C library implementation code has been incorporated into UniLib3
-- **Henry Spencer** - Author of the public domain string functions distributed as 'stringlib' and the regex functions in regex.library
-- **Simon John Raybould** - Author of the curses library implementation for Amiga
+- **Irmen de Jong** - The developer behind the original Amiga Python 2, whose amiga compatibility code has been incorporated into UniLib3
+- **Henry Spencer** - Author of the public domain string functions distributed as _stringlib_ and the regex functions in _regex.library_
+- **Simon John Raybould** - Author of the _curses_ library implementation for Amiga
 - **Greg Parker** - Author of poll.c used in the _psockets_ implementation
 - **Matt Dillon** - Creator of the FIFO system included here, and countless other Unix-on-Amiga foundation stones, not least the DICE compiler itself
 - **Per Bojsen** - Developer of APipe 
+- **Diego Cassoran** - Developer of _libpsem_, an Amiga native POSIX semaphores implementation
+- **Peter Bengtsson** - Developer of _sysvipc.library_ for OS4
+- **David Grubb** - Ported Perl version 3 to Amiga in 1990 and at the same time created a set of Unix functions
 - **The Regents of the University of California** - Original BSD code contributors

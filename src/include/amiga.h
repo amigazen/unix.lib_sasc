@@ -56,6 +56,13 @@ extern int wildcard_is_empty(wildcard_strlist *);
 #endif
 
 /*
+ * Include additional Amiga-specific utility modules
+ */
+#include "amiga_path_utils.h"
+#include "amiga_wildcard.h"
+#include "amiga_popen.h"
+
+/*
  * Additional Amiga-specific helper functions can be added here
  * as they are implemented.
  */
