@@ -28,8 +28,8 @@
  * - Is optimized for performance with register variables
  * - Is C89 compliant for SAS/C compiler compatibility
  * 
- * Note: This implementation handles overlap detection and uses memmove behavior
- * when overlap is detected, which is safer but may be slower than a pure memcpy.
+ * Note: This implementation does not handle overlapping memory areas.
+ * Use memmove() if the memory areas may overlap.
  */
 void *memcpy(void *dest, const void *src, size_t n)
 {
@@ -44,19 +44,9 @@ void *memcpy(void *dest, const void *src, size_t n)
     s = (const char *)src;
     d = (char *)dest;
     
-    /* Check for overlap and handle appropriately */
-    if (s <= d && s + (n-1) >= d) {
-        /* Overlap detected, must copy right-to-left */
-        s += n - 1;
-        d += n - 1;
-        for (i = n; i > 0; i--) {
-            *d-- = *s--;
-        }
-    } else {
-        /* No overlap, copy left-to-right */
-        for (i = 0; i < n; i++) {
-            d[i] = s[i];
-        }
+    /* Copy from source to destination (no overlap handling) */
+    for (i = 0; i < n; i++) {
+        d[i] = s[i];
     }
     
     return dest;

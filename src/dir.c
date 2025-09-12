@@ -163,11 +163,15 @@ void seekdir(DIR * dir, long loc)
     dir->dd_loc = loc;
 }
 
-#if 0
-void rewwinddir(DIR * dir)
+void rewinddir(DIR * dir)
 {
-    __chkabort();
-    gobble_dir(dir);
-}
+    iDIR *info = (iDIR *) dir->dd_buf;
 
-#endif
+    __chkabort();
+    if (!dir) return;
+    
+    /* Reset directory position to beginning */
+    info->pos = info->files;
+    dir->dd_loc = 0;
+    info->seeked = 0;
+}

@@ -14,9 +14,16 @@
 
 char *getlogin(void)
 {
+    char *user;
+    
     chkabort();
     
-    /* On AmigaOS, there's no login system, so return a default */
-    /* This could be made configurable via environment variables */
-    return "amiga"; /* TODO: make this use the environment variable USER */
+    /* Check for USER environment variable first */
+    user = getenv("USER");
+    if (user && *user) {
+        return user;
+    }
+    
+    /* Fall back to default if USER not set or empty */
+    return "amiga";
 }
