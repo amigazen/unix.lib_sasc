@@ -17,7 +17,7 @@ AS = asm
 
 OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	amigalocale.o amiga_path_utils.o amiga_wildcard.o amiga_popen.o \
-	asprintf.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o \
+	asprintf.o atof.o atol.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o \
 	clock.o clock_getcpuclockid.o close.o \
 	creat.o crypt.o ctime.o devices.o difftime.o dir.o dir_data.o dirname.o dup.o dup2.o \
 	dprintf.o endpwent.o err.o error.o error_msg.o 	exec.o fcntl.o fd_setsize.o fibstat.o files.o fnmatch.o fpathconf.o \
@@ -36,9 +36,9 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	strcoll.o strcpy.o strcspn.o strdup.o strerror.o strerror_r.o strftime.o stricmp.o \
 	syslog.o \
 	strlcat.o strlcpy.o strlen.o strncat.o strncpy.o strndup.o \
-	strnicmp.o strnlen.o strncmp.o strpbrk.o strptime.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o \
+	strnicmp.o strnlen.o strncmp.o strpbrk.o strptime.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o strtoul.o \
 	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o \
-	amigatimer.o timers.o tolower.o toupper.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
+	amigatimer.o timers.o toint.o tolower.o toupper.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
 	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o util.o vfork.o \
 	crc32_main.o \
 	crc32_string.o wildcard_init.o wildcard_elements.o wildcard_pattern.o \
@@ -47,7 +47,8 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	_printf.o _scanf.o fprintf.o sprintf.o scanf.o \
 	mq_core.o mq_helpers.o mq_advanced.o mq_integration.o rt.o \
 	ipc_core.o shm.o msg.o sem.o ftok.o shm_posix.o mmap.o \
-	fopen.o fclose.o fread.o fwrite.o fgetc.o fputc.o fgets.o fputs.o format.o _ftoa.o _scandouble.o fdopen.o bufmgt.o fseek.o
+	fopen.o fclose.o fread.o fwrite.o fgetc.o fputc.o fgets.o fputs.o format.o _ftoa.o _scandouble.o fdopen.o bufmgt.o fseek.o gets.o \
+	strtod.o strtosd.o strtosud.o
 	
 
 # libdl library objects (separate from unix.lib)
@@ -888,7 +889,13 @@ strxfrm.o: strxfrm.c
 
 strtolower.o: strtolower.c
 strupr.o: strupr.c
+atof.o: atof.c
 atol.o: atol.c
+strtod.o: strtod.c
+strtosd.o: strtosd.c
+strtosud.o: strtosud.c
+strtoul.o: strtoul.c
+toint.o: toint.c
 swab.o: swab.c
 crc32_main.o: crc32_main.c
 crc32_string.o: crc32_string.c
@@ -1491,6 +1498,8 @@ bufmgt.nbo: bufmgt.c amiga.h include/stdio.h include/stdlib.h include/unistd.h
 bufmgt.dnbo: bufmgt.c amiga.h include/stdio.h include/stdlib.h include/unistd.h
 
 fseek.o: fseek.c amiga.h include/stdio.h include/unistd.h include/errno.h
+
+gets.o: gets.c amiga.h include/stdio.h
 format.do: format.c amiga.h include/stdio.h include/string.h include/limits.h
 format.nbo: format.c amiga.h include/stdio.h include/string.h include/limits.h
 format.dnbo: format.c amiga.h include/stdio.h include/string.h include/limits.h
