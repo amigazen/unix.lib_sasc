@@ -10,6 +10,8 @@
  */
 
 #include <string.h>
+#include <proto/utility.h>
+#include "amiga.h"
 
 /**
  * @brief Copy a string
@@ -21,10 +23,10 @@
  * terminating null byte ('\0'), to the buffer pointed to by 'dest'.
  * 
  * This implementation:
- * - Copies the entire source string including the null terminator
- * - Returns a pointer to the destination string
- * - Does not perform bounds checking (caller must ensure sufficient space)
- * - Is optimized for performance with register variables
+ * - Uses Amiga Strncpy() for optimal performance when available
+ * - Falls back to optimized C implementation for compatibility
+ * - Handles NULL pointers gracefully
+ * - Is optimized for Amiga with register variables
  * - Is C89 compliant for SAS/C compiler compatibility
  * 
  * Warning: The destination buffer must be large enough to hold the source string
@@ -32,16 +34,24 @@
  */
 char *strcpy(char *dest, const char *src)
 {
-    char *dscan;
-    const char *sscan;
+    /* Validate parameters */
+    if (dest == NULL || src == NULL) {
+        return dest;
+    }
     
-    dscan = dest;
-    sscan = src;
-    
-    /* Copy characters until we reach the null terminator */
-    while ((*dscan++ = *sscan++) != '\0') {
-        /* Empty loop body - assignment and increment happen in condition */
+    /* Use Amiga Strncpy for optimal performance */
+    /* We use a large buffer size since strcpy() doesn't have size limits */
+    if (Strncpy((UBYTE *)dest, (const UBYTE *)src, 0x7FFFFFFF) == NULL) {
+        /* Fallback to C implementation if Strncpy fails */
+        char *dscan = dest;
+        const char *sscan = src;
+        
+        /* Copy characters until we reach the null terminator */
+        while ((*dscan++ = *sscan++) != '\0') {
+            /* Empty loop body - assignment and increment happen in condition */
+        }
     }
     
     return dest;
 }
+

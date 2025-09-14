@@ -1,10 +1,10 @@
 #
 #	SMakefile for unix emulation library
 #
+#   Copyright (c) 1990 David Gay
 #	Copyright (c) 1995-96 Enrico Forestieri
 #	Copyright (c) 2025 amigazen project
-)
-#			    All rights reserved.
+#	All rights reserved.
 #
 
 DEST = /SDK/lib/
@@ -38,7 +38,7 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	strlcat.o strlcpy.o strlen.o strncat.o strncpy.o strndup.o \
 	strnicmp.o strnlen.o strncmp.o strpbrk.o strptime.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o \
 	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o \
-	amigatimer.o timers.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
+	amigatimer.o timers.o tolower.o toupper.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
 	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o util.o vfork.o \
 	crc32_main.o \
 	crc32_string.o wildcard_init.o wildcard_elements.o wildcard_pattern.o \
@@ -46,7 +46,8 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	wcscpy.o wcslen.o wcsncmp.o wcsncpy.o write.o \
 	_printf.o _scanf.o fprintf.o sprintf.o scanf.o \
 	mq_core.o mq_helpers.o mq_advanced.o mq_integration.o rt.o \
-	ipc_core.o shm.o msg.o sem.o ftok.o shm_posix.o mmap.o
+	ipc_core.o shm.o msg.o sem.o ftok.o shm_posix.o mmap.o \
+	fopen.o fclose.o fread.o fwrite.o fgetc.o fputc.o fgets.o fputs.o format.o
 	
 
 # libdl library objects (separate from unix.lib)
@@ -187,7 +188,8 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	wildcard_elements.do wildcard_pattern.do vasprintf.do \
 	vsnprintf.do wait.do wait4.do waitpid.do write.do \
 	_printf.do _scanf.do fprintf.do sprintf.do scanf.do \
-	atol.do swab.do
+	atol.do swab.do \
+	fopen.do fclose.do fread.do fwrite.do fgetc.do fputc.do fgets.do fputs.do format.do
 
 NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	amigalocale.nbo amigatime.nbo asprintf.nbo basename.nbo bcmp.nbo bcopy.nbo bzero.nbo \
@@ -217,7 +219,8 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	crc32_main.nbo crc32_string.nbo wildcard_init.nbo \
 	wildcard_elements.nbo wildcard_pattern.nbo vasprintf.nbo \
 	vsnprintf.nbo wait.nbo wait4.nbo waitpid.nbo write.nbo \
-	_printf.nbo _scanf.nbo fprintf.nbo sprintf.nbo scanf.nbo
+	_printf.nbo _scanf.nbo fprintf.nbo sprintf.nbo scanf.nbo \
+	fopen.nbo fclose.nbo fread.nbo fwrite.nbo fgetc.nbo fputc.nbo fgets.nbo fputs.nbo format.nbo
 
 DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	amigados.dnbo amigalocale.dnbo amigatime.dnbo asprintf.dnbo basename.dnbo bcmp.dnbo \
@@ -251,7 +254,8 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	crc32_main.dnbo crc32_string.dnbo wildcard_init.dnbo \
 	wildcard_elements.dnbo wildcard_pattern.dnbo vasprintf.dnbo vsnprintf.dnbo \
 	wait.dnbo \
-	wait4.dnbo waitpid.dnbo write.dnbo
+	wait4.dnbo waitpid.dnbo write.dnbo \
+	fopen.dnbo fclose.dnbo fread.dnbo fwrite.dnbo fgetc.dnbo fputc.dnbo fgets.dnbo fputs.dnbo format.dnbo
 
 ASMOBJS = child.o _sprintf.o _setjmp.o pthread_startup.o
 
@@ -261,6 +265,12 @@ ALLDOBJS = $(DOBJS) $(ASMOBJS)
 ALLDNBOBJS = $(DNBOBJS) $(ASMOBJS)
 
 DEFS = DEF AMITCP=1 DEF NO_MACROS=1 DEF __USE_SYSBASE=1
+
+# Build with SAS/C library compatibility
+# When _WITH_SCLIB is defined, C89 functions are not included
+# (they are provided by SAS/C sc.lib instead)
+# Usage: smake WITH_SCLIB=1
+#DEFS = DEF _WITH_SCLIB=1 DEF AMITCP=1 DEF NO_MACROS=1 DEF __USE_SYSBASE=1
 
 IDIRS = IDIR=include IDIR=include/internal IDIR=include: IDIR=netinclude: 
 
@@ -1413,6 +1423,52 @@ utime.dnbo: utime.c timeconvert.h amiga.h
 wait4.dnbo: wait4.c processes.h signals.h amiga.h
 vfork.dnbo: vfork.c include/unistd.h include/amigapthread.h pthread_priv.h amiga.h
 write.dnbo: write.c amiga.h
+
+# New StdIO function dependencies
+fopen.o: fopen.c amiga.h include/stdio.h include/fcntl.h include/errno.h
+fopen.do: fopen.c amiga.h include/stdio.h include/fcntl.h include/errno.h
+fopen.nbo: fopen.c amiga.h include/stdio.h include/fcntl.h include/errno.h
+fopen.dnbo: fopen.c amiga.h include/stdio.h include/fcntl.h include/errno.h
+
+fclose.o: fclose.c amiga.h include/stdio.h include/errno.h
+fclose.do: fclose.c amiga.h include/stdio.h include/errno.h
+fclose.nbo: fclose.c amiga.h include/stdio.h include/errno.h
+fclose.dnbo: fclose.c amiga.h include/stdio.h include/errno.h
+
+fread.o: fread.c amiga.h include/stdio.h include/errno.h
+fread.do: fread.c amiga.h include/stdio.h include/errno.h
+fread.nbo: fread.c amiga.h include/stdio.h include/errno.h
+fread.dnbo: fread.c amiga.h include/stdio.h include/errno.h
+
+fwrite.o: fwrite.c amiga.h include/stdio.h include/errno.h
+fwrite.do: fwrite.c amiga.h include/stdio.h include/errno.h
+fwrite.nbo: fwrite.c amiga.h include/stdio.h include/errno.h
+fwrite.dnbo: fwrite.c amiga.h include/stdio.h include/errno.h
+
+fgetc.o: fgetc.c amiga.h include/stdio.h include/errno.h
+fgetc.do: fgetc.c amiga.h include/stdio.h include/errno.h
+fgetc.nbo: fgetc.c amiga.h include/stdio.h include/errno.h
+fgetc.dnbo: fgetc.c amiga.h include/stdio.h include/errno.h
+
+fputc.o: fputc.c amiga.h include/stdio.h include/errno.h
+fputc.do: fputc.c amiga.h include/stdio.h include/errno.h
+fputc.nbo: fputc.c amiga.h include/stdio.h include/errno.h
+fputc.dnbo: fputc.c amiga.h include/stdio.h include/errno.h
+
+fgets.o: fgets.c amiga.h include/stdio.h include/errno.h
+fgets.do: fgets.c amiga.h include/stdio.h include/errno.h
+fgets.nbo: fgets.c amiga.h include/stdio.h include/errno.h
+fgets.dnbo: fgets.c amiga.h include/stdio.h include/errno.h
+
+fputs.o: fputs.c amiga.h include/stdio.h include/errno.h
+fputs.do: fputs.c amiga.h include/stdio.h include/errno.h
+fputs.nbo: fputs.c amiga.h include/stdio.h include/errno.h
+fputs.dnbo: fputs.c amiga.h include/stdio.h include/errno.h
+
+format.o: format.c amiga.h include/stdio.h include/string.h include/limits.h
+format.do: format.c amiga.h include/stdio.h include/string.h include/limits.h
+format.nbo: format.c amiga.h include/stdio.h include/string.h include/limits.h
+format.dnbo: format.c amiga.h include/stdio.h include/string.h include/limits.h
 
 # Termcap library build targets
 $(TERMCAP_LIB): $(TERMCAP_OBJS)

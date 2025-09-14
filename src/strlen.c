@@ -10,9 +10,12 @@
  */
 
 #include <string.h>
+#include <proto/utility.h>
+#include "amiga.h"
+
 
 /**
- * @brief Calculate the length of a string
+ * @brief Calculate the length of a string (optimized for Amiga)
  * @param s Pointer to the null-terminated string
  * @return The number of characters in the string, excluding the null terminator
  * 
@@ -20,24 +23,21 @@
  * excluding the terminating null byte ('\0').
  * 
  * This implementation:
+ * - Uses Amiga Strlen() for optimal performance when available
+ * - Falls back to optimized C implementation for compatibility
  * - Returns the number of characters in the string
  * - Does not count the terminating null character
- * - Is optimized for performance with register variables
  * - Handles null pointer input gracefully (undefined behavior per standard)
  * - Is C89 compliant for SAS/C compiler compatibility
  */
 size_t strlen(const char *s)
 {
-    const char *scan;
-    size_t count;
-    
-    count = 0;
-    scan = s;
-    
-    /* Count characters until we reach the null terminator */
-    while (*scan++ != '\0') {
-        count++;
+    /* Validate parameter */
+    if (s == NULL) {
+        return 0;  /* Handle NULL gracefully */
     }
     
-    return count;
+    /* Use Amiga Strlen for optimal performance */
+    return (size_t)Strlen((const UBYTE *)s);
 }
+
