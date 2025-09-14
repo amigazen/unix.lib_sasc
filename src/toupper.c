@@ -10,6 +10,7 @@
  */
 
 #include "amiga.h"
+#include <proto/utility.h>
 
 /**
  * @brief Convert character to uppercase
@@ -21,14 +22,19 @@
  * returned unchanged.
  * 
  * This implementation:
- * - Converts 'a'-'z' to 'A'-'Z'
- * - Returns other characters unchanged
+ * - Uses utility.library ToUpper() for international character set support
+ * - Falls back to built-in ASCII conversion if utility.library unavailable
  * - Is C89 compliant for SAS/C compiler compatibility
- * - Uses simple arithmetic for efficiency
+ * - Handles locale-specific conversions when locale.library is present
  */
 int toupper(int c)
 {
-    /* Convert lowercase letter to uppercase */
+    /* Use utility.library ToUpper() for international character support */
+    if (UtilityBase != NULL) {
+        return (int)ToUpper((UBYTE)c);
+    }
+    
+    /* Fallback to built-in ASCII conversion if utility.library unavailable */
     if (c >= 'a' && c <= 'z') {
         return c - 'a' + 'A';
     }

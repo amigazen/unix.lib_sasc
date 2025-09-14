@@ -10,6 +10,7 @@
  */
 
 #include "amiga.h"
+#include <proto/utility.h>
 
 /**
  * @brief Convert character to lowercase
@@ -21,14 +22,19 @@
  * returned unchanged.
  * 
  * This implementation:
- * - Converts 'A'-'Z' to 'a'-'z'
- * - Returns other characters unchanged
+ * - Uses utility.library ToLower() for international character set support
+ * - Falls back to built-in ASCII conversion if utility.library unavailable
  * - Is C89 compliant for SAS/C compiler compatibility
- * - Uses simple arithmetic for efficiency
+ * - Handles locale-specific conversions when locale.library is present
  */
 int tolower(int c)
 {
-    /* Convert uppercase letter to lowercase */
+    /* Use utility.library ToLower() for international character support */
+    if (UtilityBase != NULL) {
+        return (int)ToLower((UBYTE)c);
+    }
+    
+    /* Fallback to built-in ASCII conversion if utility.library unavailable */
     if (c >= 'A' && c <= 'Z') {
         return c - 'A' + 'a';
     }
