@@ -67,6 +67,8 @@ extern char *strtok(char *, const char *);
 extern void *memccpy(void *, const void *, int, size_t);
 extern size_t strxfrm(char *, const char *, size_t);
 
+/* Character manipulation functions - provided by ctype.h */
+
 /* Additional string utility functions */
 extern void strtolower(char *);
 extern char *strupr(char *);

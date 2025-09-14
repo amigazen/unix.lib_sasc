@@ -13,9 +13,10 @@
 #include "amiga.h"
 #include "stdio.h"
 
-/* Internal constants */
-#define FALSE (0)
-#define TRUE (!FALSE)
+/* Forward declarations for floating point scanning functions */
+extern double *_scandouble(int (*get)(), int (*unget)(), int maxlen, double *result);
+
+/* Internal constants - TRUE/FALSE provided by exec/types.h */
 
 /* Number string for conversions */
 static char _numstr[] = "0123456789ABCDEF";
@@ -162,13 +163,9 @@ int _scanf(void *ip, int (*get)(), int (*unget)(), const char *fmt, va_list args
     double *dval;
     char *cval;
     int *nval;
-    int width, store, neg, base, endnull, rngflag;
+    int width, store, neg, endnull;
     int cnt = 0;
     int c;
-    char digits[32];
-    char *q;
-    long frac, expo;
-    double fx;
     
     if (!*fmt) {
         return 0;
@@ -337,12 +334,16 @@ int _scanf(void *ip, int (*get)(), int (*unget)(), const char *fmt, va_list args
                 case 'e':
                 case 'g':
                 case 'E':
+                case 'F':
                 case 'G':
-                    /* Floating point */
+                    /* Floating point - use _scandouble for better scanning */
                     dval = va_arg(args, double *);
                     if (dval && store) {
-                        *dval = fp_scan(get, unget, &width);
-                        cnt++;
+                        double result;
+                        if (_scandouble(get, unget, (width > 0) ? width : 1024, &result) != NULL) {
+                            *dval = result;
+                            cnt++;
+                        }
                     }
                     break;
                     

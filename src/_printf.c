@@ -14,9 +14,11 @@
 #include "amiga.h"
 #include "stdio.h"
 
-/* Internal constants */
-#define FALSE (0)
-#define TRUE (!FALSE)
+/* Forward declarations for floating point functions */
+extern char *_ftoa(double num, int precision);
+extern char *_etoa(double num, int precision);
+extern char *_gtoa(double num, int precision);
+extern char *_justify(char *str, int width, int pad);
 
 /* Number string for conversions */
 static char _numstr[] = "0123456789ABCDEF";
@@ -117,7 +119,6 @@ static int _prtfld(char *op, int (*put)(), unsigned char *buf,
         width = len;
     }
     
-    cnt = width;
     width -= len;
     
     while (width || len) {
@@ -153,13 +154,12 @@ int _printf(void *op, int (*put)(), const char *fmt, va_list args)
 {
     char *p;
     char *sval;
-    int ival;
     long lval;
     unsigned long ulval;
     double dval;
     char cval;
     char numbuf[32];
-    int width, preci, ljustf, sign, pad, radix;
+    int width, preci, ljustf, sign, pad;
     int cnt = 0;
     
     for (p = (char *)fmt; *p; p++) {
@@ -274,19 +274,49 @@ int _printf(void *op, int (*put)(), const char *fmt, va_list args)
                 break;
                 
             case 'f':
-            case 'e':
-            case 'g':
-            case 'E':
-            case 'G':
-                /* Floating point support - basic implementation */
+            case 'F':
+                /* Floating point - use _ftoa for better formatting */
                 dval = va_arg(args, double);
                 if (isnan(dval)) {
                     strcpy(numbuf, "nan");
                 } else if (isinf(dval)) {
-                    strcpy(numbuf, "inf");
+                    strcpy(numbuf, dval < 0 ? "-inf" : "inf");
                 } else {
-                    /* Simple floating point formatting */
-                    sprintf(numbuf, "%.6f", dval);
+                    /* Use _ftoa for better floating point formatting */
+                    char *float_str = _ftoa(dval, (preci >= 0) ? preci : 6);
+                    strcpy(numbuf, float_str);
+                }
+                cnt += _prtfld(op, put, numbuf, ljustf, 0, pad, width, preci);
+                break;
+                
+            case 'e':
+            case 'E':
+                /* Scientific notation - use _etoa for better formatting */
+                dval = va_arg(args, double);
+                if (isnan(dval)) {
+                    strcpy(numbuf, "nan");
+                } else if (isinf(dval)) {
+                    strcpy(numbuf, dval < 0 ? "-inf" : "inf");
+                } else {
+                    /* Use _etoa for better scientific notation formatting */
+                    char *float_str = _etoa(dval, (preci >= 0) ? preci : 6);
+                    strcpy(numbuf, float_str);
+                }
+                cnt += _prtfld(op, put, numbuf, ljustf, 0, pad, width, preci);
+                break;
+                
+            case 'g':
+            case 'G':
+                /* General format - use _gtoa for better formatting */
+                dval = va_arg(args, double);
+                if (isnan(dval)) {
+                    strcpy(numbuf, "nan");
+                } else if (isinf(dval)) {
+                    strcpy(numbuf, dval < 0 ? "-inf" : "inf");
+                } else {
+                    /* Use _gtoa for better general format formatting */
+                    char *float_str = _gtoa(dval, (preci >= 0) ? preci : 6);
+                    strcpy(numbuf, float_str);
                 }
                 cnt += _prtfld(op, put, numbuf, ljustf, 0, pad, width, preci);
                 break;
