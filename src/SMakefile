@@ -47,7 +47,7 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	_printf.o _scanf.o fprintf.o sprintf.o scanf.o \
 	mq_core.o mq_helpers.o mq_advanced.o mq_integration.o rt.o \
 	ipc_core.o shm.o msg.o sem.o ftok.o shm_posix.o mmap.o \
-	fopen.o fclose.o fread.o fwrite.o fgetc.o fputc.o fgets.o fputs.o format.o
+	fopen.o fclose.o fread.o fwrite.o fgetc.o fputc.o fgets.o fputs.o format.o _ftoa.o _scandouble.o fdopen.o bufmgt.o fseek.o
 	
 
 # libdl library objects (separate from unix.lib)
@@ -1466,6 +1466,31 @@ fputs.nbo: fputs.c amiga.h include/stdio.h include/errno.h
 fputs.dnbo: fputs.c amiga.h include/stdio.h include/errno.h
 
 format.o: format.c amiga.h include/stdio.h include/string.h include/limits.h
+format.do: format.c amiga.h include/stdio.h include/string.h include/limits.h
+format.nbo: format.c amiga.h include/stdio.h include/string.h include/limits.h
+format.dnbo: format.c amiga.h include/stdio.h include/string.h include/limits.h
+
+_ftoa.o: _ftoa.c amiga.h include/stdio.h include/math.h include/string.h
+_ftoa.do: _ftoa.c amiga.h include/stdio.h include/math.h include/string.h
+_ftoa.nbo: _ftoa.c amiga.h include/stdio.h include/math.h include/string.h
+_ftoa.dnbo: _ftoa.c amiga.h include/stdio.h include/math.h include/string.h
+
+_scandouble.o: _scandouble.c amiga.h include/stdio.h include/ctype.h include/math.h
+_scandouble.do: _scandouble.c amiga.h include/stdio.h include/ctype.h include/math.h
+_scandouble.nbo: _scandouble.c amiga.h include/stdio.h include/ctype.h include/math.h
+_scandouble.dnbo: _scandouble.c amiga.h include/stdio.h include/ctype.h include/math.h
+
+fdopen.o: fdopen.c amiga.h include/stdio.h include/unistd.h
+fdopen.do: fdopen.c amiga.h include/stdio.h include/unistd.h
+fdopen.nbo: fdopen.c amiga.h include/stdio.h include/unistd.h
+fdopen.dnbo: fdopen.c amiga.h include/stdio.h include/unistd.h
+
+bufmgt.o: bufmgt.c amiga.h include/stdio.h include/stdlib.h include/unistd.h
+bufmgt.do: bufmgt.c amiga.h include/stdio.h include/stdlib.h include/unistd.h
+bufmgt.nbo: bufmgt.c amiga.h include/stdio.h include/stdlib.h include/unistd.h
+bufmgt.dnbo: bufmgt.c amiga.h include/stdio.h include/stdlib.h include/unistd.h
+
+fseek.o: fseek.c amiga.h include/stdio.h include/unistd.h include/errno.h
 format.do: format.c amiga.h include/stdio.h include/string.h include/limits.h
 format.nbo: format.c amiga.h include/stdio.h include/string.h include/limits.h
 format.dnbo: format.c amiga.h include/stdio.h include/string.h include/limits.h
