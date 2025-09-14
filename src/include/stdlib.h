@@ -30,5 +30,14 @@ extern int rand_r(unsigned int *);
 /* Standard C library sorting function */
 extern void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 
+/* String conversion functions */
+extern double atof(const char *);
+extern double strtod(const char *, char **);
+extern unsigned long strtoul(const char *, char **, int);
+
+
+/* Helper functions */
+extern int toint(char);
+
 #endif
 #endif

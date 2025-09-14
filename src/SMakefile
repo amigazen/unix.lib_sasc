@@ -17,17 +17,17 @@ AS = asm
 
 OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	amigalocale.o amiga_path_utils.o amiga_wildcard.o amiga_popen.o \
-	asprintf.o atof.o atol.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o \
+	asprintf.o atof.o atol.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o chkabort.o \
 	clock.o clock_getcpuclockid.o close.o \
 	creat.o crypt.o ctime.o devices.o difftime.o dir.o dir_data.o dirname.o dup.o dup2.o \
-	dprintf.o endpwent.o err.o error.o error_msg.o 	exec.o fcntl.o fd_setsize.o fibstat.o files.o fnmatch.o fpathconf.o \
+	dprintf.o endpwent.o err.o error.o error_msg.o 	exec.o exit.o fcntl.o fd_setsize.o fibstat.o files.o fnmatch.o fpathconf.o \
 	fstat.o fsync.o ftruncate.o 	getdtablesize.o getegid.o geteuid.o \
 	getenv.o getgid.o gethostname.o getlogin.o getopt.o getopt1.o \
 	getopt_long.o getpass.o getpid.o getppid.o gettimeofday.o getuid.o getwd.o \
 	gid.o glob.o grp.o herror.o hypot.o iconv.o index.o ioctl.o isatty.o kill.o kprintf.o link.o \
-	longlong.o lseek.o lstat.o memccpy.o memchr.o memcmp.o memcpy.o memset.o message.o mkdir.o mkfifo.o \
+	longlong.o lseek.o lstat.o malloc.o memccpy.o memchr.o memcmp.o memcpy.o memset.o message.o mkdir.o mkfifo.o \
 	mkstemp.o mktemp.o nice.o onbreak.o open.o pathconf.o perror.o \
-	pclose.o posix_spawn.o pread.o processes.o protection.o pseudo_c.o \
+	pclose.o posix_spawn.o pread.o printf.o processes.o protection.o pseudo_c.o \
 	pthread_getcpuclockid.o pwd.o pwrite.o qsort.o raise.o rcmd.o rand_r.o random.o read.o readlink.o realpath.o regerror.o \
 	regex.o regexp.o regsub.o rename.o rindex.o rmdir.o scandir.o \
 	select.o setenv.o setgid.o setjmp.o setpgid.o setsid.o setuid.o \
@@ -780,6 +780,7 @@ _exit.o: _exit.c signals.h amiga.h
 _main.o: _main.c amigados.h signals.h amiga.h
 abort.o: abort.c amiga.h
 access.o: access.c amiga.h
+chkabort.o: chkabort.c amiga.h
 chdir.o: chdir.c amiga.h
 alloca.o: alloca.c
 amigados.o: amigados.c signals.h amiga.h
@@ -800,6 +801,7 @@ endpwent.o: endpwent.c amiga.h
 error.o: error.c amiga.h
 error_msg.o: error_msg.c amiga.h
 exec.o: exec.c processes.h amiga.h
+exit.o: exit.c amiga.h
 fchmod.o: fchmod.c amiga.h
 fcntl.o: fcntl.c amiga.h
 fd_setsize.o: fd_setsize.c include/sys/types.h
@@ -834,6 +836,7 @@ mktemp.o: mktemp.c amiga.h
 onbreak.o: onbreak.c signals.h amiga.h
 open.o: open.c amigados.h amiga.h
 perror.o: perror.c amiga.h
+printf.o: printf.c amiga.h
 
 popen.o: popen.c amigados.h amiga.h
 mq_core.o: mq_core.c include/internal/mq_internal.h amiga.h
