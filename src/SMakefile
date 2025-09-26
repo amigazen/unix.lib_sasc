@@ -19,8 +19,8 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	amigalocale.o amiga_path_utils.o amiga_wildcard.o amiga_popen.o \
 	asprintf.o atof.o atol.o basename.o bcmp.o bcopy.o bzero.o chdir.o chmod.o chown.o chkabort.o \
 	clock.o clock_getcpuclockid.o close.o \
-	creat.o crypt.o ctime.o devices.o difftime.o dir.o dir_data.o dirname.o dup.o dup2.o \
-	dprintf.o endpwent.o err.o error.o error_msg.o 	exec.o exit.o fcntl.o fd_setsize.o fibstat.o files.o fnmatch.o fpathconf.o \
+	creat.o crypt.o ctime.o ctype.o devices.o difftime.o dir.o dir_data.o dirname.o dup.o dup2.o \
+	dprintf.o endpwent.o err.o error.o error_msg.o 	exec.o execl.o execlp.o execle.o execv.o execve.o execvp.o exit.o fcntl.o fd_setsize.o fibstat.o files.o fnmatch.o fpathconf.o \
 	fstat.o fsync.o ftruncate.o 	getdtablesize.o getegid.o geteuid.o \
 	getenv.o getgid.o gethostname.o getlogin.o getopt.o getopt1.o \
 	getopt_long.o getpass.o getpid.o getppid.o gettimeofday.o getuid.o getwd.o \
@@ -34,13 +34,13 @@ OBJS =	_exit.o _main.o abort.o access.o alloca.o amigados.o amigatime.o \
 	settimeofday.o siglist.o signal.o signals.o sigpause.o sigprocmask.o \
 	sigsetmask.o sleep.o snprintf.o sockets.o sched_functions.o stat.o strcasecmp.o strcat.o strchr.o strcmp.o \
 	strcoll.o strcpy.o strcspn.o strdup.o strerror.o strerror_r.o strftime.o stricmp.o \
-	syslog.o \
+	syslog.o syserr.o \
 	strlcat.o strlcpy.o strlen.o strncat.o strncpy.o strndup.o \
 	strnicmp.o strnlen.o strncmp.o strpbrk.o strptime.o strrchr.o strsep.o strspn.o strstr.o strtok.o strtok_r.o strtol.o strtoll.o strtoul.o \
-	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o \
-	amigatimer.o timers.o toint.o tolower.o toupper.o truncate.o tzset.o uid.o umask.o uname.o unlink.o \
+	strxfrm.o symlink.o sysconf.o system.o tempnam.o time.o timeconvert.o times.o \
+	amigatimer.o timers.o toint.o tolower.o toupper.o truncate.o tzset.o uid.o ulimit.o umask.o uname.o unlink.o \
 	unsetenv.o usleep.o utime.o utimes.o ustat.o statvfs.o strtolower.o strupr.o util.o vfork.o \
-	crc32_main.o \
+	search.o wordexp.o crc32_main.o \
 	crc32_string.o wildcard_init.o wildcard_elements.o wildcard_pattern.o \
 	vasprintf.o vsnprintf.o wait.o wait4.o waitpid.o wcscat.o wcscmp.o \
 	wcscpy.o wcslen.o wcsncmp.o wcsncpy.o write.o \
@@ -181,10 +181,10 @@ DOBJS =	_exit.do _main.do abort.do access.do alloca.do amigados.do \
 	syslog.do \
 	stricmp.do strlcat.do strlcpy.do strlen.do strncat.do strncpy.do \
 	strndup.do strnicmp.do strnlen.do strncmp.do strpbrk.do strrchr.do strsep.do strspn.do strstr.do strtok.do strtok_r.do strtol.do \
-	strtoll.do strxfrm.do symlink.do sysconf.do system.do tempnam.do time.do \
-	timeconvert.do amigatimer.do timers.do truncate.do tzset.do uid.do umask.do uname.do \
+	strtoll.do strxfrm.do symlink.do sysconf.do system.do tempnam.do time.do timeconvert.do times.do \
+	amigatimer.do timers.do truncate.do tzset.do uid.do ulimit.do umask.do uname.do \
 	unlink.do unsetenv.do usleep.do utime.do utimes.do ustat.do statvfs.do \
-	strtolower.do strupr.do vfork.do \
+	strtolower.do strupr.do vfork.do search.do wordexp.do \
 	crc32_main.do crc32_string.do wildcard_init.do \
 	wildcard_elements.do wildcard_pattern.do vasprintf.do \
 	vsnprintf.do wait.do wait4.do waitpid.do write.do \
@@ -213,10 +213,10 @@ NBOBJS=	_exit.nbo _main.nbo abort.nbo access.nbo alloca.nbo amigados.nbo \
 	strcasecmp.nbo strcat.nbo strchr.nbo strcmp.nbo strcoll.nbo strcpy.nbo strcspn.nbo strdup.nbo strerror.nbo strerror_r.nbo strftime.nbo strptime.nbo \
 	stricmp.nbo strlcat.nbo strlcpy.nbo strlen.nbo strncat.nbo strncpy.nbo \
 	strndup.nbo strnicmp.nbo strnlen.nbo strncmp.nbo strpbrk.nbo strrchr.nbo strsep.nbo strspn.nbo strstr.nbo strtok.nbo strtok_r.nbo strtol.nbo \
-	strtoll.nbo strxfrm.nbo symlink.nbo sysconf.nbo system.nbo tempnam.nbo time.nbo \
-	timeconvert.nbo amigatimer.nbo timers.nbo truncate.nbo tzset.nbo uid.nbo umask.nbo uname.nbo \
+	strtoll.nbo strxfrm.nbo symlink.nbo sysconf.nbo system.nbo tempnam.nbo time.nbo timeconvert.nbo times.nbo \
+	amigatimer.nbo timers.nbo truncate.nbo tzset.nbo uid.nbo ulimit.nbo umask.nbo uname.nbo \
 	unlink.nbo unsetenv.nbo usleep.nbo utime.nbo utimes.nbo ustat.nbo statvfs.nbo \
-	strtolower.nbo strupr.nbo vfork.nbo \
+	strtolower.nbo strupr.nbo vfork.nbo search.nbo wordexp.nbo \
 	crc32_main.nbo crc32_string.nbo wildcard_init.nbo \
 	wildcard_elements.nbo wildcard_pattern.nbo vasprintf.nbo \
 	vsnprintf.nbo wait.nbo wait4.nbo waitpid.nbo write.nbo \
@@ -249,9 +249,10 @@ DNBOBJS=_exit.dnbo _main.dnbo abort.dnbo access.dnbo alloca.dnbo \
 	strlcpy.dnbo strlen.dnbo strncat.dnbo strncpy.dnbo strncmp.dnbo strndup.dnbo \
 	strnicmp.dnbo strnlen.dnbo strpbrk.dnbo strrchr.dnbo strsep.dnbo strspn.dnbo strstr.dnbo strtok.dnbo strtok_r.dnbo strtol.dnbo \
 	strtoll.dnbo strxfrm.dnbo symlink.dnbo sysconf.dnbo system.dnbo tempnam.dnbo \
-	time.dnbo timeconvert.dnbo amigatimer.dnbo timers.dnbo truncate.dnbo tzset.dnbo \
-	uid.dnbo umask.dnbo uname.dnbo unlink.dnbo unsetenv.dnbo usleep.dnbo \
+	time.dnbo timeconvert.dnbo times.dnbo amigatimer.dnbo timers.dnbo truncate.dnbo tzset.dnbo \
+	uid.dnbo ulimit.dnbo umask.dnbo uname.dnbo unlink.dnbo unsetenv.dnbo usleep.dnbo \
 	utime.dnbo utimes.dnbo ustat.dnbo statvfs.dnbo 	strtolower.dnbo strupr.dnbo vfork.dnbo \
+	search.dnbo wordexp.dnbo \
 	crc32_main.dnbo crc32_string.dnbo wildcard_init.dnbo \
 	wildcard_elements.dnbo wildcard_pattern.dnbo vasprintf.dnbo vsnprintf.dnbo \
 	wait.dnbo \
@@ -793,6 +794,7 @@ chown.o: chown.c amiga.h
 close.o: close.c amiga.h
 creat.o: creat.c amiga.h
 ctime.o: ctime.c
+ctype.o: ctype.c amiga.h
 devices.o: devices.c amiga.h
 dir.o: dir.c dir_data.h amiga.h
 dir_data.o: dir_data.c dir_data.h amiga.h
@@ -801,6 +803,12 @@ endpwent.o: endpwent.c amiga.h
 error.o: error.c amiga.h
 error_msg.o: error_msg.c amiga.h
 exec.o: exec.c processes.h amiga.h
+execl.o: execl.c amiga.h
+execlp.o: execlp.c amiga.h
+execle.o: execle.c amiga.h
+execv.o: execv.c amiga.h
+execve.o: execve.c amiga.h
+execvp.o: execvp.c amiga.h
 exit.o: exit.c amiga.h
 fchmod.o: fchmod.c amiga.h
 fcntl.o: fcntl.c amiga.h
@@ -875,6 +883,7 @@ strdup.o: strdup.c
 strerror.o: strerror.c
 strlcat.o: strlcat.c
 syslog.o: syslog.c amiga.h
+syserr.o: syserr.c amiga.h
 strlcpy.o: strlcpy.c
 strncat.o: strncat.c
 strncpy.o: strncpy.c
