@@ -23,6 +23,14 @@ typedef enum {
     ENTER
 } ACTION;
 
+/* Visit codes for twalk() */
+typedef enum {
+    preorder,
+    postorder,
+    endorder,
+    leaf
+} VISIT;
+
 /* Entry structure for hsearch() */
 typedef struct entry {
     char *key;
@@ -30,8 +38,10 @@ typedef struct entry {
 } ENTRY;
 
 /* Function prototypes */
+#ifndef _WITH_SCLIB
 void *bsearch(const void *key, const void *base, size_t nmemb, size_t size,
               int (*compar)(const void *, const void *));
+#endif
 void *lfind(const void *key, const void *base, size_t *nmemb, size_t size,
             int (*compar)(const void *, const void *));
 void *lsearch(const void *key, void *base, size_t *nmemb, size_t size,
@@ -43,21 +53,13 @@ void hdestroy(void);
 ENTRY *hsearch(ENTRY item, ACTION action);
 int insque(void *element, void *pred);
 int remque(void *element);
-void *tdelete(const void *restrict key, void **restrict rootp,
+void *tdelete(const void *key, void **rootp,
               int (*compar)(const void *, const void *));
 void *tfind(const void *key, void *const *rootp,
             int (*compar)(const void *, const void *));
 void *tsearch(const void *key, void **rootp,
               int (*compar)(const void *, const void *));
 void twalk(const void *root, void (*action)(const void *, VISIT, int));
-
-/* Visit codes for twalk() */
-typedef enum {
-    preorder,
-    postorder,
-    endorder,
-    leaf
-} VISIT;
 
 #ifdef __cplusplus
 }
