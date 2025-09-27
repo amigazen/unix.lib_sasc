@@ -2,6 +2,7 @@
 #include <signal.h>
 
 extern void _close_all(void);
+extern void __regargs __chkabort(void);
 
 void __saveds abort(void)
 {

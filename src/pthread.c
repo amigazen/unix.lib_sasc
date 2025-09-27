@@ -13,6 +13,9 @@
 static void pthread_cooperative_cancel_check(struct ThreadPair *tp);
 static void pthread_cooperative_cleanup(struct ThreadPair *tp);
 
+/* External function declarations */
+extern void __regargs __chkabort(void);
+
 static LONG CustomASyncRun(STRPTR name, STRPTR cmd, struct ProcessControlBlock *pcb)
 {
     struct Process *process;
@@ -844,4 +847,19 @@ void __saveds pthread_constructor(void)
 void __saveds pthread_destructor(void)
 {
     pthread_library_cleanup();
+}
+
+/*
+ * pthread-aware chkabort() override
+ * This overrides sc.lib's chkabort() when pthread.lib is linked first
+ * 
+ * Call chain: chkabort() -> pthread_testcancel() -> __chkabort()
+ */
+void chkabort(void)
+{
+    /* Check for pthread cancellation first */
+    pthread_testcancel();
+    
+    /* Then call the internal break checking function */
+    __chkabort();
 }

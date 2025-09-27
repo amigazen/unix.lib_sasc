@@ -19,7 +19,9 @@ extern struct Library *TimerBase;
 int convert_oserr(int ioerr);
 void _seterr(void);
 void __regargs __chkabort(void);
-#define chkabort __chkabort
+void chkabort(void);
+/* Note: chkabort() macro removed to allow pthread-aware override */
+/* #define chkabort __chkabort */
 
 #define ERROR do { _seterr(); return -1; } while(0)
 #define AMIGA_UID 1
