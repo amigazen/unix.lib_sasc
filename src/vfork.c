@@ -63,6 +63,38 @@ static void vfork_init(void)
  * 
  * This implementation uses pthread to create a child process that
  * simulates vfork() behavior on AmigaOS.
+ * 
+ * FUTURE ENHANCEMENTS (inspired by Cygwin's approach):
+ * 
+ * 1. PROPER FORK SEMANTICS:
+ *    - Child should return 0, parent should return child PID
+ *    - Both processes should continue from fork point
+ *    - Use setjmp/longjmp for context switching
+ *    - Implement proper signal mask handling
+ * 
+ * 2. MEMORY SHARING OPTIMIZATION:
+ *    - True memory sharing between parent and child
+ *    - Copy-on-write for modified pages
+ *    - Efficient memory layout consistency
+ *    - Handle stack and heap sharing properly
+ * 
+ * 3. RESOURCE INHERITANCE:
+ *    - Duplicate file descriptors properly
+ *    - Inherit working directory and environment
+ *    - Copy signal handlers and masks
+ *    - Handle process attributes correctly
+ * 
+ * 4. SYNCHRONIZATION IMPROVEMENTS:
+ *    - Better parent-child coordination
+ *    - Proper wait/exit handling
+ *    - Signal delivery mechanisms
+ *    - Resource cleanup on exit
+ * 
+ * 5. PERFORMANCE OPTIMIZATIONS:
+ *    - Minimize memory copying
+ *    - Efficient context switching
+ *    - Lazy resource duplication
+ *    - Optimized synchronization primitives
  */
 pid_t vfork(void)
 {
@@ -106,6 +138,27 @@ pid_t vfork(void)
     state->child_output = state->parent_output;
     state->child_error = state->parent_error;
     
+    /* FUTURE ENHANCEMENT: Context switching with setjmp/longjmp
+     * 
+     * Cygwin's approach would be:
+     * static jmp_buf vfork_context;
+     * if (setjmp(vfork_context) == 0) {
+     *     // Parent path - create child thread
+     *     // ... existing code ...
+     *     return (pid_t)thread;  // Parent returns child PID
+     * } else {
+     *     // Child path - resume execution here
+     *     // Child should return 0 to indicate it's the child
+     *     return 0;
+     * }
+     * 
+     * This would require:
+     * 1. Saving parent context before creating child thread
+     * 2. Child thread to call longjmp() to resume at vfork point
+     * 3. Proper signal mask handling during context switch
+     * 4. Memory sharing between parent and child thread
+     */
+    
     /* Create pthread that will become the child process */
     result = pthread_create(&thread, NULL, vfork_thread_entry, state);
     if (result != 0) {
@@ -116,6 +169,21 @@ pid_t vfork(void)
     
     state->thread_id = thread;
     state->thread_created = TRUE;
+    
+    /* FUTURE ENHANCEMENT: Proper vfork semantics
+     * 
+     * Current implementation doesn't achieve true vfork() behavior:
+     * - Child runs in separate thread context
+     * - No context switching mechanism
+     * - No proper return value handling
+     * - No memory sharing between parent and child
+     * 
+     * Cygwin's approach ensures:
+     * - Child returns 0, parent returns child PID
+     * - Both processes continue from vfork point
+     * - True memory sharing until exec() or exit()
+     * - Proper signal handling and inheritance
+     */
     
     /* Wait for child thread to initialize */
     /* In a real vfork(), the child would return 0 here */
