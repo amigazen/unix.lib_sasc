@@ -195,6 +195,19 @@ int	__creat __P((const char *, int));
 	 world S_IWRITE is the amiga delete bit.
 	 We always set the archive bit off.
 */
-#endif
+
+#define O_STDIO		0x1000		/* AC stdio mode */
+#define OPEN_MAX	20		/* Maximum number of open files */
+
+/* AC device structure */
+struct _device {
+    long	_fileHandle;	/* Actually, a (struct FileHandle *)	*/
+    long	_mode;		/* The mode flags of this device	*/
+};
+
+/* AC global variable */
+extern short _numdev;
+
+#endif /* AMIGA */
 
 #endif /* !_FCNTL_H_ */

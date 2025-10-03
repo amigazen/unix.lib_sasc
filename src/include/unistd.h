@@ -47,6 +47,8 @@
 
 #include <spawn.h>
 
+int open(const char *pathname, int flags, ...);
+
 /* POSIX utsname structure for uname() */
 struct utsname {
     char sysname[65];    /* Operating system name */
@@ -70,7 +72,10 @@ struct utsname {
 #define	NULL		0	/* null pointer constant */
 #endif
 
-typedef	int ssize_t;		/* count of bytes or error indication */
+#ifndef _SSIZE_T_DEFINED
+#define _SSIZE_T_DEFINED
+typedef	long ssize_t;		/* count of bytes or error indication */
+#endif
 
 __BEGIN_DECLS
 void	 _exit __P((int));
@@ -128,7 +133,7 @@ pid_t	 tcgetpgrp __P((int));
 int	 tcsetpgrp __P((int, pid_t));
 char	*ttyname __P((int));
 int	 unlink __P((const char *));
-ssize_t	 write __P((int, const void *, unsigned int));
+ssize_t	 write __P((int, const void *, size_t));
 
 /* POSIX functions */
 int	 usleep __P((unsigned int));
@@ -136,7 +141,7 @@ int	 usleep __P((unsigned int));
 #if 1 /* for compatibility with SASC 6.xx */
 off_t	 __lseek __P((int, off_t, int));
 ssize_t	 __read __P((int, void *, size_t));
-ssize_t	 __write __P((int, const void *, unsigned int));
+ssize_t	 __write __P((int, const void *, size_t));
 int	 __close __P((int));
 
 /* lseek, read, write, and close are now proper functions, not macros, to avoid macro expansion conflicts */
@@ -191,7 +196,6 @@ int	 revoke __P((const char *));
 int	 rresvport __P((int *));
 int	 ruserok __P((const char *, int, const char *, const char *));
 void	*sbrk __P((unsigned));
-int	 select __P((int, fd_set *, fd_set *, fd_set *, struct timeval *));
 int	 setegid __P((gid_t));
 int	 seteuid __P((uid_t));
 int	 setgroups __P((int, const int *));

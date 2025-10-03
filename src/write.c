@@ -2,9 +2,10 @@
 #include "files.h"
 #include <fcntl.h>
 #include <unistd.h>
+#include <stddef.h>
 
 /* Internal implementation */
-int __write(int fd, const void *buffer, unsigned int length)
+ssize_t __write(int fd, const void *buffer, size_t length)
 {
     struct fileinfo *fi;
 
@@ -21,7 +22,7 @@ int __write(int fd, const void *buffer, unsigned int length)
 }
 
 /* Public POSIX write function */
-int write(int fd, const void *buffer, unsigned int length)
+ssize_t write(int fd, const void *buffer, size_t length)
 {
     return __write(fd, buffer, length);
 }

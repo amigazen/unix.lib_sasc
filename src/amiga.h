@@ -40,5 +40,6 @@ void _fibstat(struct FileInfoBlock *fib, int isroot, struct stat *sbuf, long dev
 #ifdef _SASC
 #ifndef restrict
 #define restrict
-#endif#endif
+#endif
+#endif
 */

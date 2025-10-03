@@ -55,12 +55,19 @@ extern int wildcard_is_empty(wildcard_strlist *);
 #define CTOB(ptr) ((long)(ptr) >> 2)
 #endif
 
+
 /*
  * Include additional Amiga-specific utility modules
  */
 #include "amiga_path_utils.h"
 #include "amiga_wildcard.h"
 #include "amiga_popen.h"
+
+#include <exec/types.h>
+#include <proto/exec.h>
+#include <proto/dos.h>
+#include <proto/utility.h>
+#include <clib/alib_protos.h>
 
 /*
  * Additional Amiga-specific helper functions can be added here

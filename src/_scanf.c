@@ -14,7 +14,7 @@
 #include "stdio.h"
 
 /* Forward declarations for floating point scanning functions */
-extern double *_scandouble(int (*get)(), int (*unget)(), int maxlen, double *result);
+extern double *_scandouble(int (*get)(void), int (*unget)(int), int maxlen, double *result);
 
 /* Internal constants - TRUE/FALSE provided by exec/types.h */
 
@@ -22,13 +22,13 @@ extern double *_scandouble(int (*get)(), int (*unget)(), int maxlen, double *res
 static char _numstr[] = "0123456789ABCDEF";
 
 /* Forward declarations */
-static double fp_scan(int (*get)(), int (*unget)(), int *width);
-static int skip_whitespace(int (*get)(), int (*unget)());
+static double fp_scan(int (*get)(void), int (*unget)(int), int *width);
+static int skip_whitespace(int (*get)(void), int (*unget)(int));
 
 /*
  * skip_whitespace - Skip whitespace characters
  */
-static int skip_whitespace(int (*get)(), int (*unget)())
+static int skip_whitespace(int (*get)(void), int (*unget)(int))
 {
     int c;
     int skipped = 0;
@@ -47,7 +47,7 @@ static int skip_whitespace(int (*get)(), int (*unget)())
 /*
  * fp_scan - Scan floating point number
  */
-static double fp_scan(int (*get)(), int (*unget)(), int *width)
+static double fp_scan(int (*get)(void), int (*unget)(int), int *width)
 {
     double result = 0.0;
     double fraction = 0.0;

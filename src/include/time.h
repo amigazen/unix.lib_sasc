@@ -38,6 +38,9 @@
 
 #include <sys/types.h>
 
+/* Standard time constants */
+#define CLK_TCK	50		/* clock ticks per second */
+
 struct tm {
 	int	tm_sec;		/* seconds after the minute [0-60] */
 	int	tm_min;		/* minutes after the hour [0-59] */

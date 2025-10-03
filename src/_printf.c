@@ -28,7 +28,7 @@ static char *_strlwr(char *string);
 static char *_ultoa(unsigned long n, char *buffer, int radix);
 static char *_ltoa(long n, char *buffer, int radix);
 static char *strrv(char *str);
-static int _prtfld(char *op, int (*put)(), unsigned char *buf, 
+static int _prtfld(char *op, int (*put)(int, void *), unsigned char *buf, 
                    int ljustf, char sign, char pad, int width, int preci);
 
 /*
@@ -97,7 +97,7 @@ static char *_ltoa(long n, char *buffer, int radix)
 /*
  * _prtfld - Output formatted field with padding and justification
  */
-static int _prtfld(char *op, int (*put)(), unsigned char *buf, 
+static int _prtfld(char *op, int (*put)(int, void *), unsigned char *buf, 
                    int ljustf, char sign, char pad, int width, int preci)
 {
     int cnt = 0, len;
@@ -150,7 +150,7 @@ showsign:
  * _printf - Core printf implementation
  * Supports: %d, %u, %x, %X, %c, %s, %b (BSTR), %f, %e, %g, %o, %p
  */
-int _printf(void *op, int (*put)(), const char *fmt, va_list args)
+int _printf(void *op, int (*put)(int, void *), const char *fmt, va_list args)
 {
     char *p;
     char *sval;

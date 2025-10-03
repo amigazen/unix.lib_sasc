@@ -4,7 +4,7 @@
  *
  * This module provides utilities for converting Unix-style paths to Amiga
  * conventions, handling special device mappings, and path normalization.
- * Based on the amigaizepath.c implementation from the Amiga Perl port.
+ * Based on the amigaizepath.c implementation from the Amiga Perl 3 port.
  *
  * Copyright (C) 2025 by amigazen project
  */

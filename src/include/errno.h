@@ -9,6 +9,17 @@
 *
 */
 
+/* Include the system errno.h for all the standard error codes */
+#include "netinclude:sys/errno.h"
+
+/* ANSI C required error numbers */
+#ifndef EDOM
+#define EDOM		1	/* Domain error */
+#endif
+#ifndef ERANGE
+#define ERANGE		2	/* Range error */
+#endif
+
 /* Additional error codes not in the system errno.h */
 #define EOSERR		-1	/* Operating system error */
 #define EOVERFLOW	75	/* Value too large for defined data type */
@@ -27,8 +38,15 @@
 #define EAGAIN		35	/* Resource temporarily unavailable */
 #endif
 
-/* Include the system errno.h for all the standard error codes */
-#include "netinclude:sys/errno.h"
+/* C99 error codes */
+#ifndef EILSEQ
+#define EILSEQ		84	/* Illegal byte sequence */
+#endif
+#ifndef ENOTSUP
+#define ENOTSUP		95	/* Operation not supported */
+#endif
+
+
 
 /* Additional declarations specific to our implementation */
 extern int __near _OSERR;

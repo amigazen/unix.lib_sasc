@@ -1,20 +1,23 @@
+/* sys/socket.h - Socket interface definitions */
+
 #ifndef _SYS_SOCKET_H
 #define _SYS_SOCKET_H
 
-#ifdef AMITCP
+#include <sys/types.h>
 
-/* When building with AMITCP, use netinclude headers directly */
-#include "netinclude:sys/socket.h"
+/* Socket address families */
+#define AF_INET 2
 
-#else
-
-/* Support for socket pairs only */
-#define AF_UNIX 1
+/* Socket types */
 #define SOCK_STREAM 1
 
-#endif
+/* Missing socket function prototypes */
+int socket(int domain, int type, int protocol);
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+int close(int fd);
 
-/* Our additional functions */
-extern int socketpair(int, int, int, int *);
+/* Missing network function prototypes */
+struct hostent *gethostbyname(const char *name);
 
-#endif
+#endif /* _SYS_SOCKET_H */

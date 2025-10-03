@@ -15,10 +15,13 @@
 #include <unistd.h>
 
 /* timespec structure for C89 compatibility */
+#ifndef _TIMESPEC_DEFINED
+#define _TIMESPEC_DEFINED
 struct timespec {
     time_t tv_sec;
     long tv_nsec;
 };
+#endif
 
 /* Message queue descriptor */
 typedef struct mq_descriptor *mqd_t;

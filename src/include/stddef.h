@@ -13,10 +13,44 @@
 #define _UNIX_STDDEF_H
 
 #ifdef __SASC
+/* Include SAS/C's built-in stddef.h */
 #include "sc:include/stddef.h"
 #else
-#error Wrong compiler (SAS/C required)
+
+#ifndef STDDEF_H
+#define STDDEF_H
+
+#ifndef NULL
+#define NULL ((void *)0)
 #endif
+
+#ifndef offsetof
+#define offsetof(type, member) ((size_t)&((type *)0)->member)
+#endif
+
+typedef int ptrdiff_t;
+typedef unsigned int size_t;
+
+/* C99 wide character type - properly defined for Amiga */
+#ifndef __cplusplus
+#ifndef _WCHAR_T_DEFINED
+#define _WCHAR_T_DEFINED
+typedef unsigned short wchar_t;  /* 16-bit wide character for Amiga */
+#endif
+#endif
+
+/* C99 maximum alignment type */
+#ifndef _MAX_ALIGN_T_DEFINED
+#define _MAX_ALIGN_T_DEFINED
+typedef struct {
+    long long __max_align_ll;
+    long double __max_align_ld;
+} max_align_t;
+#endif
+
+#endif /* STDDEF_H */
+
+#endif /* __SASC */
 
 /* Additional POSIX extensions not provided by SAS/C stddef.h */
 

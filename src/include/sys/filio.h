@@ -17,6 +17,8 @@
 #endif
 
 /* Our additional definitions */
+#ifndef FIONBIO
 #define FIONBIO _IOW('f', 126, long) /* ioctl to change non blocking mode
 					data (an int *) is a pointer a boolean,
 					TRUE for non-blocking io */
+#endif
